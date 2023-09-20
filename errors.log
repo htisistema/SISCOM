@@ -1,0 +1,5 @@
+ERROR:root:Ocorreu um erro:
+Traceback (most recent call last):
+  File "C:\HTI\PYTHON\SISCOM\SAC42.py", line 35, in <module>
+    hti_global.conexao_cursor.execute(f"SELECT * FROM sacsetup")
+AttributeError: 'str' object has no attribute 'execute'

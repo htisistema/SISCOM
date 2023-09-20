@@ -1,0 +1,117 @@
+VERIFICAR ERROS
+***************
+import logging
+import traceback
+
+logging.basicConfig(filename='errors.log', level=logging.ERROR)
+
+try:
+    codigo
+
+except Exception as e:
+    logging.exception("Ocorreu um erro:")
+    traceback.print_exc()
+
+
+
+
+
+Verificar SSD
+***************
+fsutil behavior query DisableDeleteNotify
+fsutil behavior set disabledeletenotify 0
+fsutil behavior set disabledeletenotify 1
+
+TIPO DE MENSAGENS
+*****************
+QMessageBox.question()
+QMessageBox.information()
+QMessageBox.critical()
+QMessageBox.about()
+
+
+TIPO DE BORDAS
+**************
+None: sem borda.
+Flat: borda simples, sem relevo.
+Sunken: borda em relevo para dentro.
+Raised: borda em relevo para fora.
+Groove: borda em relevo tipo entalhe (efeito 3D).
+Ridge: borda em relevo tipo aresta (efeito 3D).
+Inset: borda em relevo tipo entalhe, em cor escura (efeito 3D).
+Outset: borda em relevo tipo aresta, em cor clara (efeito 3D).
+
+# LIMPA VARIAVEL OU OBJETO
+valor = campo_data.cleanText()
+
+# CRIAR ARQUIVO DE LOG
+logging.info('Starting my app')
+O método info() é um dos cinco níveis de logging suportados pelo módulo logging, com níveis crescentes de gravidade (em ordem crescente): DEBUG, INFO, WARNING, ERROR, e CRITICAL.
+
+# so poder digitar de 1 a 9
+import re
+from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtCore import QRegExp
+
+# ...
+
+# Defina uma expressão regular para permitir apenas os dígitos de 1 a 9
+regex = QRegExp("[1-9]")
+
+# Crie um validador de expressão regular e atribua-o ao QLineEdit
+validator = QRegExpValidator(regex)
+tela.msnivel.setValidator(validator)
+
+### Para pesquisar um caractere em uma string (que é uma variável do tipo texto no Python), você pode utilizar o método find() ou o operador in.
+# O método find() retorna a posição da primeira ocorrência do caractere na string, ou -1 se não encontrar. Por exemplo:
+texto = "exemplo de texto"
+posicao = texto.find("e")
+print(posicao)  # Saída: 0
+
+# Já o operador in retorna um valor booleano indicando se o caractere está presente na string ou não. Por exemplo:
+texto = "exemplo de texto"
+presente = "e" in texto
+
+print(presente)  # Saída: True
+
+## pegar caracter de qualquer posicao em uma variavel
+texto = "Exemplo"
+segundo_caractere = texto[1]
+print(segundo_caractere) # Saída: x
+
+SQL EXEMPLO
+############
+contador
+with c as (
+    select
+        rdb$set_context('USER_TRANSACTION','SEQ',
+            cast(coalesce(rdb$get_context('USER_TRANSACTION','SEQ'),0) as integer) + 1) s,
+        cast(rdb$get_context('USER_TRANSACTION','SEQ') as integer) g
+    from rdb$database
+)
+select
+    (select c.g from c where c.s >= 0) SEQUENCIA,
+    pcod_merc AS CLIENTE,
+    pmerc AS PRODUTO,
+    SUM(pquantd) AS quantidade,
+    SUM(pquantd * pvlr_fat) AS valor,
+    '2023-12-31' AS data_vencimento,
+    1 AS forma_pagamento,
+    'pago' AS situacao
+from sacped_s GROUP BY SEQUENCIA,
+  pcod_merc,
+  pmerc
+
+
+# PROCURAR FURO EM UMA SEQUENCIA EM UMA TABELA
+
+select
+    first 1 t.id_ant + 1 de,
+    cast(t.cod_merc as int) - 1 ate
+from (
+    select
+        (select first 1 cast(a1.cod_merc as int) from sacmerc a1 where cast(a1.cod_merc as int) < cast(a.cod_merc as int) order by cast(a1.cod_merc as int) desc) as id_ant,
+        cast(a.cod_merc as int) as cod_merc
+    from sacmerc a
+    order by cast(a.cod_merc as int)) t
+where coalesce(t.id_ant,0) <> cast(t.cod_merc as int) - 1

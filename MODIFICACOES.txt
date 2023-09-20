@@ -1,0 +1,22 @@
+no SAC1FIN2 ESTAR COM pyqt6
+
+update sacmerc set volume = 0 where volume IS NULL
+update sacmerc set saldo_est = 0 where saldo_est IS NULL
+update sacmerc set icm = 0 where icm IS NULL
+update sacmerc set A_CUST_REA = 0 where A_CUST_REA IS NULL
+update sacmerc set PR_NOTA = 0 where PR_NOTA IS NULL
+update sacmerc set VLR_MERC = 0 where VLR_MERC IS NULL
+update sacmerc set CUST_MERC = 0 where CUST_MERC IS NULL
+update sacmerc set CUST_REAL = 0 where CUST_REAL IS NULL
+update sacmerc set PR_VENDA = 0 where PR_VENDA IS NULL
+update sacmerc set PR_VENDA1 = 0 where PR_VENDA1 IS NULL
+update sacmerc set VAREJO = 0 where VAREJO IS NULL
+update sacmerc set PR_FAT = 0 where PR_FAT IS NULL
+update sacmerc set a_cust_mer = 0 where a_cust_mer IS NULL
+update sacmerc set a_cust_rea = 0 where a_cust_rea IS NULL
+
+apagar o SACUF e SACCID
+roda o sistema SISCOM HARBOUR para criar novamente e carregar dos DBF
+
+
+

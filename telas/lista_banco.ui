@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1260</width>
+    <height>680</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTableWidget" name="tableWidget">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>90</y>
+      <width>1211</width>
+      <height>550</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="horizontalHeaderCascadingSectionResizes">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderCascadingSectionResizes">
+     <bool>true</bool>
+    </attribute>
+    <column>
+     <property name="text">
+      <string notr="true">Codigo</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Numero</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Banco</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Agencia</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>DV</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Conta </string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>DV</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>DV Ag/Conta</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Modalidade</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>No. Convenio</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Codigo Cedente</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Codigo Carteira</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Codigo Transmissao</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Dias Protesto</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Valor Despesa R$</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Local Pagamento</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>10</y>
+      <width>450</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>BANCOS Cadastrados</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_inclusao">
+    <property name="geometry">
+     <rect>
+      <x>910</x>
+      <y>50</y>
+      <width>90</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Inclusao</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rb_alteracao">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>50</y>
+      <width>90</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Alteracao</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_sair">
+    <property name="geometry">
+     <rect>
+      <x>1070</x>
+      <y>50</y>
+      <width>90</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Sair</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rb_exclusao">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>50</y>
+      <width>90</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Exclusao</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

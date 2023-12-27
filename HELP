@@ -1,3 +1,20 @@
+ERAR O EXECUTAVEL
+pyinstaller --onefile -w --icon=C:\HTI\PYTHON\SISHOST\imagem\htiico.jpg --name=SISHOST sishost.py
+
+cx-Freeze
+python setup.py build
+
+background-color: rgb(85, 170, 255); # COR PARA FAZER TELAS
+
+remover espacos em branco de uma string: .strip() ou .replace(" ","")
+
+
+from PyQt6 import QtWidgets
+
+# Criar o QTableWidget
+table_widget = QtWidgets.QTableWidget()
+
+
 VERIFICAR ERROS
 ***************
 import logging

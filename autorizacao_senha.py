@@ -1,7 +1,7 @@
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 import keyboard
-from main import SISTEMA, VERSAO
+from SISCOM import SISTEMA, VERSAO
 from hti_funcoes import ver_nivel, dcripto
 import hti_global
 import time

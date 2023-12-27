@@ -2,7 +2,7 @@
 
 import os
 from PyQt6 import uic, QtWidgets, QtCore
-from PyQt6.QtGui import QIcon, QGuiApplication
+from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QButtonGroup, QRadioButton, QMessageBox
 from datetime import datetime, date
 import hti_global
@@ -10,7 +10,7 @@ import hti_global
 titulo = "INCLUSÃO DE CLIENTES"
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\hticliente.ui")
+tela = uic.loadUi(f"{hti_global.c_ui}\\SAC130.ui")
 icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
 icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
 icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
@@ -36,6 +36,13 @@ nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
+if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+else:
+    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+
+pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
+tela.empresa.setPixmap(pixmap_redimensionado)
 
 
 hti_global.conexao_cursor.execute(f"SELECT * FROM sacsetup")

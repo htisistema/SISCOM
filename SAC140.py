@@ -2,7 +2,7 @@
 
 import os
 from PyQt6 import uic, QtWidgets, QtCore
-from PyQt6.QtGui import QIcon, QGuiApplication
+from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox
 from datetime import datetime, date
 from hti_funcoes import ver_nivel, conexao_banco, verificar_conexao
@@ -12,13 +12,14 @@ import hti_global
 titulo = "INCLUSÃO DE FORNECEDOR"
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\htifornecedor.ui")
+tela = uic.loadUi(f"{hti_global.c_ui}\\sac140.ui")
 icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
 icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
 icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
 icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
 icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
+print('ok')
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
@@ -43,8 +44,17 @@ nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
+if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+else:
+    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+
+pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
+tela.empresa.setPixmap(pixmap_redimensionado)
+
 
 data_vazia = date(1900, 1, 1)
+m_set = []
 
 
 def sac140():
@@ -213,12 +223,11 @@ def salvar_fornecedor():
 def inclusao_fornecedor():
     # global mprg
     # mprg = 'SAC140'
-    nivel_acess = hti_global.geral_nivel_usuario
-    print(nome_file)
-    if not ver_nivel(nome_file, 'INCLUSAO DE FORNECEDOR/CONTA APAGAR', '15', nivel_acess, 'AMBIE', '  '):
-        tela.close()
-        tela.closeEvent = on_close_event
-        return
+    # nivel_acess = hti_global.geral_nivel_usuario
+    # if not ver_nivel(nome_file, 'INCLUSAO DE FORNECEDOR/CONTA APAGAR', '15', nivel_acess, 'AMBIE', '  '):
+    #     tela.close()
+    #     tela.closeEvent = on_close_event
+    #     return
 
     # PEGAR O ULTIMO NUMERO DOS fornecedor E ACRESCENTA 1
     hti_global.conexao_cursor.execute("SELECT max(cod_forn) FROM sacforn")
@@ -282,7 +291,6 @@ def inclusao_fornecedor():
 
 
 if __name__ == '__main__':
-    print('sac140')
     conexao_banco()
     verificar_conexao()
     sac140()

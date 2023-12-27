@@ -3,7 +3,7 @@
 import os
 from PyQt6 import uic
 from PyQt6 import QtWidgets, QtCore
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QRadioButton
 from PyQt6.QtGui import QGuiApplication
 from datetime import datetime
@@ -14,7 +14,7 @@ titulo = "INCLUSÃO DE PRODUTOS"
 
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\htiproduto.ui")
+tela = uic.loadUi(f"{hti_global.c_ui}\\sac110.ui")
 tela.setWindowTitle(titulo)
 icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
 icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
@@ -44,6 +44,13 @@ nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
+if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+else:
+    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+
+pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
+tela.empresa.setPixmap(pixmap_redimensionado)
 
 hti_global.conexao_cursor.execute(f"SELECT * FROM sacsetup")
 # Recupere o resultado

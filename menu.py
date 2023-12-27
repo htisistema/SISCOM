@@ -6,7 +6,7 @@ from PyQt6 import QtWidgets
 from PyQt6.QtGui import QIcon
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtGui import QGuiApplication
-from main import VERSAO, SISTEMA, nome_computador, endereco_ip
+from SISCOM import VERSAO, SISTEMA, nome_computador, endereco_ip
 import hti_global
 
 # PEGA O NOME DO ARQUIVO EM EXECUCAO

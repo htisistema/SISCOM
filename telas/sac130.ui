@@ -41,7 +41,7 @@
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>7</number>
     </property>
     <property name="elideMode">
      <enum>Qt::ElideNone</enum>
@@ -181,7 +181,7 @@
       </property>
       <property name="dateTime">
        <datetime>
-        <hour>21</hour>
+        <hour>12</hour>
         <minute>0</minute>
         <second>0</second>
         <year>1900</year>
@@ -246,7 +246,7 @@
       </property>
       <property name="dateTime">
        <datetime>
-        <hour>21</hour>
+        <hour>12</hour>
         <minute>0</minute>
         <second>0</second>
         <year>1900</year>
@@ -565,51 +565,6 @@
      <attribute name="title">
       <string>Outros dados</string>
      </attribute>
-     <widget class="QRadioButton" name="RB_pocket_sim">
-      <property name="geometry">
-       <rect>
-        <x>160</x>
-        <y>130</y>
-        <width>51</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>10</pointsize>
-        <italic>false</italic>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
-      <property name="text">
-       <string>Sim</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="RB_pocket_nao">
-      <property name="geometry">
-       <rect>
-        <x>230</x>
-        <y>130</y>
-        <width>51</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>10</pointsize>
-        <italic>false</italic>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Nao</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_78">
       <property name="geometry">
        <rect>
@@ -829,6 +784,64 @@
       <property name="maxLength">
        <number>14</number>
       </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>130</y>
+        <width>120</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+      <widget class="QRadioButton" name="RB_pocket_nao">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>0</y>
+         <width>51</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <italic>false</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Nao</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="RB_pocket_sim">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>51</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <italic>false</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Sim</string>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_5">
@@ -1299,87 +1312,6 @@
        <string>Area:</string>
       </property>
      </widget>
-     <widget class="QRadioButton" name="rb_boleto_sim">
-      <property name="geometry">
-       <rect>
-        <x>210</x>
-        <y>10</y>
-        <width>51</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
-      <property name="text">
-       <string>Sim</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="rb_boleto_nao">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>10</y>
-        <width>50</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Nao</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="rb_vare">
-      <property name="geometry">
-       <rect>
-        <x>210</x>
-        <y>90</y>
-        <width>70</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Varejo</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="rb_atac">
-      <property name="geometry">
-       <rect>
-        <x>286</x>
-        <y>90</y>
-        <width>80</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Atacado</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="rb_bloqueio_sim">
-      <property name="geometry">
-       <rect>
-        <x>210</x>
-        <y>130</y>
-        <width>51</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Sim</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="rb_bloqueio_nao">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>130</y>
-        <width>50</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Nao</string>
-      </property>
-     </widget>
      <widget class="QDoubleSpinBox" name="doubleSpinBox">
       <property name="geometry">
        <rect>
@@ -1448,32 +1380,6 @@
        <double>0.000000000000000</double>
       </property>
      </widget>
-     <widget class="QRadioButton" name="rb_spc_nao">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>50</y>
-        <width>50</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Nao</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="rb_spc_sim">
-      <property name="geometry">
-       <rect>
-        <x>210</x>
-        <y>50</y>
-        <width>51</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Sim</string>
-      </property>
-     </widget>
      <widget class="QComboBox" name="comboBox_16">
       <property name="geometry">
        <rect>
@@ -1486,6 +1392,165 @@
       <property name="styleSheet">
        <string notr="true"/>
       </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>10</y>
+        <width>110</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+      <widget class="QRadioButton" name="rb_boleto_nao">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>0</y>
+         <width>50</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Nao</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="rb_boleto_sim">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>51</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Sim</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_4">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>50</y>
+        <width>110</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+      <widget class="QRadioButton" name="rb_spc_nao">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>0</y>
+         <width>50</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Nao</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="rb_spc_sim">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>51</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Sim</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_5">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>90</y>
+        <width>160</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+      <widget class="QRadioButton" name="rb_atac">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>0</y>
+         <width>80</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Atacado</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="rb_vare">
+       <property name="geometry">
+        <rect>
+         <x>4</x>
+         <y>0</y>
+         <width>70</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Varejo</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_6">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>130</y>
+        <width>110</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+      <widget class="QRadioButton" name="rb_bloqueio_nao">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>0</y>
+         <width>50</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Nao</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="rb_bloqueio_sim">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>51</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Sim</string>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
@@ -2160,7 +2225,7 @@
        <rect>
         <x>9</x>
         <y>250</y>
-        <width>131</width>
+        <width>140</width>
         <height>31</height>
        </rect>
       </property>
@@ -2173,7 +2238,7 @@
        <rect>
         <x>9</x>
         <y>90</y>
-        <width>131</width>
+        <width>140</width>
         <height>30</height>
        </rect>
       </property>
@@ -2199,7 +2264,7 @@
        <rect>
         <x>9</x>
         <y>290</y>
-        <width>131</width>
+        <width>140</width>
         <height>31</height>
        </rect>
       </property>
@@ -2262,7 +2327,7 @@
      <widget class="QDateEdit" name="mdesde2">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>160</x>
         <y>290</y>
         <width>88</width>
         <height>30</height>
@@ -2285,7 +2350,7 @@
      <widget class="QLineEdit" name="mnome_r1">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>160</x>
         <y>9</y>
         <width>271</width>
         <height>30</height>
@@ -2303,7 +2368,7 @@
        <rect>
         <x>9</x>
         <y>9</y>
-        <width>131</width>
+        <width>140</width>
         <height>30</height>
        </rect>
       </property>
@@ -2343,7 +2408,7 @@
      <widget class="QDateEdit" name="mdesde1">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>160</x>
         <y>210</y>
         <width>88</width>
         <height>30</height>
@@ -2389,7 +2454,7 @@
      <widget class="QLineEdit" name="mnome_r2">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>160</x>
         <y>90</y>
         <width>271</width>
         <height>30</height>
@@ -2405,7 +2470,7 @@
      <widget class="QLineEdit" name="mloja2">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>160</x>
         <y>250</y>
         <width>211</width>
         <height>30</height>
@@ -2468,7 +2533,7 @@
        <rect>
         <x>9</x>
         <y>50</y>
-        <width>131</width>
+        <width>140</width>
         <height>31</height>
        </rect>
       </property>
@@ -2624,7 +2689,7 @@
      <widget class="QLineEdit" name="mfone_r1">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>160</x>
         <y>50</y>
         <width>91</width>
         <height>30</height>
@@ -2684,7 +2749,7 @@
        <rect>
         <x>9</x>
         <y>170</y>
-        <width>131</width>
+        <width>140</width>
         <height>31</height>
        </rect>
       </property>
@@ -2697,7 +2762,7 @@
        <rect>
         <x>9</x>
         <y>210</y>
-        <width>131</width>
+        <width>140</width>
         <height>31</height>
        </rect>
       </property>
@@ -2710,7 +2775,7 @@
        <rect>
         <x>9</x>
         <y>130</y>
-        <width>131</width>
+        <width>140</width>
         <height>30</height>
        </rect>
       </property>
@@ -2721,7 +2786,7 @@
      <widget class="QLineEdit" name="mfone_r2">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>160</x>
         <y>130</y>
         <width>91</width>
         <height>30</height>
@@ -2756,7 +2821,7 @@
      <widget class="QLineEdit" name="mloja1">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>160</x>
         <y>170</y>
         <width>211</width>
         <height>30</height>
@@ -3167,10 +3232,10 @@
    <widget class="QLabel" name="tit_cliente">
     <property name="geometry">
      <rect>
-      <x>400</x>
+      <x>120</x>
       <y>10</y>
-      <width>351</width>
-      <height>31</height>
+      <width>1030</width>
+      <height>50</height>
      </rect>
     </property>
     <property name="font">
@@ -3393,6 +3458,36 @@
       <string>Orcamentos</string>
      </property>
     </widget>
+   </widget>
+   <widget class="QLabel" name="empresa">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>0</y>
+      <width>61</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 81 10pt &quot;Rockwell Extra Bold&quot;;
+
+background-color: rgb(223, 213, 255);
+
+border-color: rgb(162, 162, 162);
+
+border-style: Outset;
+border-width: 2px;
+border-radius: 12px;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>CADASTRO.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>

@@ -12,7 +12,7 @@ import hti_global
 titulo = "ALTERACAO DE CLIENTES"
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\hticliente.ui")
+tela = uic.loadUi(f"{hti_global.c_ui}\\sac130.ui")
 icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
 icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
 icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")

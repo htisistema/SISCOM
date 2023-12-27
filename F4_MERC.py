@@ -1,15 +1,15 @@
-# LISTA CLIENTES CADASTRADOS
+# LISTA CLIENTES PRODUTOS
 
 import sys
 import os
 from PyQt6 import uic, QtWidgets, QtCore
-from PyQt6.QtGui import QIcon, QGuiApplication
+from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QButtonGroup, QApplication
 import hti_global
 
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_produto.ui")
+tela = uic.loadUi(f"{hti_global.c_ui}\\f4_merc.ui")
 tela.setWindowTitle('PRODUTOS CADASTRADO')
 icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
 icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
@@ -32,6 +32,13 @@ if hti_global.mtp_tela == 'G':
         tela.setGeometry(screen_geometry)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
+if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+else:
+    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+
+pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
+tela.empresa.setPixmap(pixmap_redimensionado)
 
 
 def on_close_event(event):

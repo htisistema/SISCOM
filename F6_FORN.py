@@ -1,15 +1,14 @@
 # LISTA DE FORNECEDORES
 
 from PyQt6 import uic, QtWidgets
-from PyQt6.QtGui import QIcon
-from PyQt6.QtGui import QGuiApplication
+from PyQt6.QtGui import QGuiApplication, QPixmap, QIcon
 from PyQt6.QtWidgets import QButtonGroup
 import hti_global
 import os
 
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_fornecedor.ui")
+tela = uic.loadUi(f"{hti_global.c_ui}\\f6_forn.ui")
 tela.setWindowTitle('FORNECEDOR CADASTRADO')
 icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
 icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
@@ -35,6 +34,13 @@ nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
 nome_arquivo = os.path.basename(__file__)
+if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+else:
+    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+
+pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
+tela.empresa.setPixmap(pixmap_redimensionado)
 
 
 def fecha_tela():

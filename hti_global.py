@@ -26,10 +26,10 @@ estados = ['AC - ACRE', 'AL - ALAGOAS', 'AP - AMAPA', 'AM - AMAZONAS', 'BA - BAH
 # Crie uma classe para a folha de estilo CSS
 style_sheet = """
 QWidget {
-    border-radius: 8px;
+    border-radius: 6px;
 }
 QLabel {
-    border-radius: 8px;
+    border-radius: 6px;
     font: 800 10pt "Arial";
     border-color: rgb(162, 162, 162);
     background-color: rgb(164, 185, 255);
@@ -37,7 +37,7 @@ QLabel {
     border-width: 2px;
 }
 QLineEdit {
-    border-radius: 8px;
+    border-radius: 6px;
     font: 800 10pt "Arial";
     background-color: rgb(255, 255, 255);
     border-color: rgb(132, 168, 163);
@@ -46,7 +46,7 @@ QLineEdit {
 
 }
 QDateEdit {
-    border-radius: 8px;
+    border-radius: 6px;
     font: 800 10pt "Arial";
     background-color: rgb(255, 255, 255);
     border-color: rgb(132, 168, 163);
@@ -61,18 +61,18 @@ QPushButton {
     border-color: rgb(132, 168, 163);
     border-style: Outset;
     border-width: 2px;
-    border-radius: 8px;
+    border-radius: 6px;
 }
 QPushButton:pressed {
     background-color: rgb(255, 255, 255);
     border-color: blue;
     border-style: Outset;
     border-width: 2px;
-    border-radius: 8px;
+    border-radius: 6px;
 }
 
 QComboBox {
-    border-radius: 8px;
+    border-radius: 6px;
     font: 800 10pt "Arial";
     background-color: rgb(255, 255, 255);
     border-color: rgb(132, 168, 163);
@@ -80,7 +80,7 @@ QComboBox {
     border-width: 2px;
 }
 QRadioButton {
-    border-radius: 8px;
+    border-radius: 6px;
     font: 800 10pt "Arial";
     border-color: rgb(162, 162, 162);
     background-color: rgb(164, 185, 255);
@@ -89,7 +89,7 @@ QRadioButton {
 
 }
 QDoubleSpinBox {
-    border-radius: 8px;
+    border-radius: 6px;
     font: 800 10pt "Arial";
     background-color: rgb(255, 255, 255);
     border-color: rgb(132, 168, 163);
@@ -97,7 +97,7 @@ QDoubleSpinBox {
     border-width: 2px;
 }
 QMainWindow {
-    border-radius: 8px;
+    border-radius: 6px;
     font: 800 10pt "Arial";
     border-color: rgb(162, 162, 162);
     background-color: rgb(190, 216, 255);
@@ -105,7 +105,7 @@ QMainWindow {
     border-width: 2px;
 }
 QGroupBox {
-    border-radius: 8px;
+    border-radius: 6px;
     font: 800 10pt "Arial";
     border-color: rgb(162, 162, 162);
     background-color: rgb(190, 216, 255);
@@ -113,7 +113,7 @@ QGroupBox {
     border-width: 2px;
 }
 MainWindow {
-    border-radius: 8px;
+    border-radius: 6px;
     font: 800 10pt "Arial";
     border-color: rgb(162, 162, 162);
     background-color: rgb(190, 216, 255);
@@ -122,7 +122,7 @@ MainWindow {
 }
 
 QTableWidget {
-    border-radius: 8px;
+    border-radius: 6px;
     font: 800 10pt "Arial";
     background-color: rgb(255, 255, 255);
     border-color: rgb(132, 168, 163);

@@ -1,14 +1,14 @@
 # LISTA DE CLIENTES
 
-from PyQt6 import uic, QtWidgets, QtCore
-from PyQt6.QtGui import QIcon, QGuiApplication
+from PyQt6 import uic, QtWidgets
+from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QButtonGroup
 import os
 import hti_global
 
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_cliente.ui")
+tela = uic.loadUi(f"{hti_global.c_ui}\\f7_cli.ui")
 tela.setWindowTitle('CLIENTES CADASTRADO')
 icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
 icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
@@ -29,15 +29,20 @@ if hti_global.mtp_tela == 'G':
         screen_geometry = primary_screen.geometry()
         tela.setGeometry(screen_geometry)
 
-
 # PEGA O NOME DO ARQUIVO EM EXECUCAO
 nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
-
 tela.statusBar.showMessage(f"<< {nome_file} >>")
+if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+else:
+    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
 
-tela.comboBox.addItems(["Geral", "Razao", "Fantasia", "Cidade"])
-tela.comboBox.setCurrentIndex(0)  # coloca o focus no index
+pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
+tela.empresa.setPixmap(pixmap_redimensionado)
+
+# tela.comboBox.addItems(["Geral", "Razao", "Fantasia", "Cidade"])
+# tela.comboBox.setCurrentIndex(0)  # coloca o focus no index
 
 
 def on_close_event(event):
@@ -93,7 +98,6 @@ def botao_item():
 
 
 def editar_item(row):
-    rb_tipo_consulta = None
     item = tela.tableWidget.item(row, 0)
     tela.tableWidget.itemDoubleClicked.disconnect()
     # print(item.text())
@@ -118,62 +122,18 @@ def editar_item(row):
 
 
 def pesquisa():
-    index = tela.comboBox.currentIndex()
-    mop = tela.comboBox.itemText(index)
-    cb_mtipo = mop[0]
-    lbl_nome_cliente = tela.findChild(QtWidgets.QLabel, "label_pesquisa")
-    # if cb_mtipo == 'C':
-    #     lbl_nome_cliente.setText("Pesquisa por Cidade:")
-    # elif cb_mtipo == 'R':
-    #     lbl_nome_cliente.setText("Pesquisa por Razao:")
-    # elif cb_mtipo == 'F':
-    #     lbl_nome_cliente.setText("Pesquisa por Fantasia:")
-    # elif cb_mtipo == 'G':
-    #     lbl_nome_cliente.setText("Pesquisa por GERAL:")
-    #
-    # print(cb_mtipo)
     nome_buscar = tela.pesquisa.text()
-    if cb_mtipo == 'G':
-        lbl_nome_cliente.setText("Pesquisa por GERAL:")
-        hti_global.conexao_cursor.execute(f"SELECT CAST(cod_cli as char(5)) as cod_cli,COALESCE(razao, ' ') as razao,"
-                                          f"COALESCE(nome, ' ') as nome,COALESCE(cgc, ' ') as cgc,"
-                                          f"COALESCE(cpf, ' ') as cpf, tel1, cidade,"
-                                          f"uf, REPLACE(CAST(limite AS DECIMAL(18,2)), '.', ',') as limite_formatado, "
-                                          f"obs "
-                                          f"FROM saccli WHERE (nome LIKE UPPER('%{nome_buscar}%') OR "
-                                          f"razao LIKE UPPER('%{nome_buscar}%') "
-                                          f"OR cod_cli LIKE UPPER('%{nome_buscar}%') "
-                                          f"or cgc LIKE UPPER('%{nome_buscar}%') "
-                                          f"OR cpf LIKE UPPER('%{nome_buscar}%') "
-                                          f"OR tel1 LIKE UPPER('%{nome_buscar}%')) ORDER BY razao")
-
-    elif cb_mtipo == 'C':
-        lbl_nome_cliente.setText("Pesquisa por Cidade:")
-        hti_global.conexao_cursor.execute(f"SELECT CAST(cod_cli as char(5)) as cod_cli,COALESCE(razao, ' ') as razao,"
-                                          f"COALESCE(nome, ' ') as nome,COALESCE(cgc, ' ') as cgc,"
-                                          f"COALESCE(cpf, ' ') as cpf, tel1, "
-                                          f"COALESCE(cidade, ' ') as cid, "
-                                          f"uf, REPLACE(CAST(limite AS DECIMAL(18,2)), '.', ',') as limite_formatado, "
-                                          f"obs "
-                                          f"FROM saccli WHERE cidade = UPPER('{nome_buscar}') ORDER BY cidade")
-
-    elif cb_mtipo == 'R':
-        lbl_nome_cliente.setText("Pesquisa por Razao:")
-        hti_global.conexao_cursor.execute(f"SELECT CAST(cod_cli as char(5)) as cod_cli,COALESCE(razao, ' ') as razao,"
-                                          f"COALESCE(nome, ' ') as nome,COALESCE(cgc, ' ') as cgc,"
-                                          f"COALESCE(cpf, ' ') as cpf, tel1, cidade,"
-                                          f"uf, REPLACE(CAST(limite AS DECIMAL(18,2)), '.', ',') as limite_formatado, "
-                                          f"obs "
-                                          f"FROM saccli WHERE razao LIKE UPPER('{nome_buscar}%') ORDER BY razao")
-
-    elif cb_mtipo == 'F':
-        lbl_nome_cliente.setText("Pesquisa por Fantasia:")
-        hti_global.conexao_cursor.execute(f"SELECT CAST(cod_cli as char(5)) as cod_cli,COALESCE(razao, ' ') as razao,"
-                                          f"COALESCE(nome, ' ') as nome,COALESCE(cgc, ' ') as cgc,"
-                                          f"COALESCE(cpf, ' ') as cpf, tel1, Cidade,"
-                                          f"uf, REPLACE(CAST(limite AS DECIMAL(18,2)), '.', ',') as limite_formatado, "
-                                          f"obs "
-                                          f"FROM saccli WHERE nome LIKE UPPER('{nome_buscar}%') ORDER BY nome")
+    hti_global.conexao_cursor.execute(f"SELECT CAST(cod_cli as char(5)) as cod_cli,COALESCE(razao, ' ') as razao, "
+                                      f"COALESCE(nome, ' ') as nome,COALESCE(cgc, ' ') as cgc, "
+                                      f"COALESCE(cpf, ' ') as cpf, tel1, cidade, "
+                                      f"uf, REPLACE(CAST(limite AS DECIMAL(18,2)), '.', ',') as limite_formatado, "
+                                      f"obs "
+                                      f"FROM saccli WHERE (nome LIKE UPPER('%{nome_buscar}%') OR "
+                                      f"razao LIKE UPPER('%{nome_buscar}%') "
+                                      f"OR cod_cli LIKE UPPER('%{nome_buscar}%') "
+                                      f"or cgc LIKE UPPER('%{nome_buscar}%') "
+                                      f"OR cpf LIKE UPPER('%{nome_buscar}%') "
+                                      f"OR tel1 LIKE UPPER('%{nome_buscar}%')) ORDER BY razao")
 
 
 def listar_cliente():

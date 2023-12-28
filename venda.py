@@ -1,6 +1,6 @@
 from PyQt6 import uic, QtWidgets, QtGui
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
-from PyQt6.QtWidgets import QApplication, QMainWindow
+from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from hti_funcoes import conexao_banco
 import hti_global
 import os
@@ -68,13 +68,20 @@ else:
 pixmap_redimensionado = usuario.scaled(185, 190)  # redimensiona a imagem para 100x100
 tela.usuario.setPixmap(pixmap_redimensionado)
 lbl_operador.setText(f" Operador: {hti_global.geral_cod_usuario}")
+lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
+
+mnum_ped = ''
 
 
 def executar_consulta():
+    # tela.mcodigo.textChanged.connect(pesquisa_produto)
+    tela.mcodigo.returnPressed.connect(pesquisa_produto)
+    lbl_numero_pedido.setText(f" Numero Pedido: {mnum_ped}")
+
     try:
         hti_global.conexao_cursor.execute(f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat, "
                                           f"sum(pquantd * pvlr_fat) as soma "
-                                          f"FROM sacped_s WHERE pnum_ped = '145082' group by 1,2,3,4")
+                                          f"FROM sacped_s WHERE pnum_ped = '{mnum_ped}' group by 1,2,3,4")
         # # 145082Recupere o resultado
         resultados = hti_global.conexao_cursor.fetchall()
         hti_global.conexao_bd.commit()
@@ -83,23 +90,25 @@ def executar_consulta():
         lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
         fonte = QtGui.QFont()
         fonte.setFamily("Courier")
-        fonte.setPointSize(10)
+        fonte.setPointSize(9)
         tela.textBrowser.setFont(fonte)
 
-        tela.textBrowser.append(' Codigo   Descricao                  ')
+        tela.textBrowser.append('Itens Codigo   Descricao                  ')
         # tela.textBrowser.append('Quant.   Valor R$   Total R$')
-        tela.textBrowser.append('-------------------------------------------------')
+        tela.textBrowser.append('--------------------------------------------------------')
         mtotal_geral = 0
+        i = 0
         # Exibir os resultados no QTextEdit
         if len(resultados) > 0:
             for resultado in resultados:
+                i += 1
                 pcod_merc, pmerc, pquantd, pvlr_fat, soma = resultado
                 mcodigo = pcod_merc
                 mquantd = "{:9,.3f}".format(pquantd)
                 mvalor = '{:10,.2f}'.format(pvlr_fat)
                 msoma = "{:12,.2f}".format(soma)
-                linha = f"  {pcod_merc}  {pmerc}"  # Formatar o campo valor como float com 2 casas decimais
-                linha1 = f"  {mquantd} x {mvalor} = {msoma}"  # Formatar o campo valor como float com 2 casas decimais
+                linha = f"  {i}   {pcod_merc}  {pmerc}"  # Formatar o campo valor como float com 2 casas decimais
+                linha1 = f"                   {mquantd} x {mvalor} = {msoma}"  # Formatar o campo valor como float com 2 casas decimais
                 mtotal_geral += soma
                 # linha = ' '.join(map(str, resultado))
                 tela.textBrowser.append(linha)
@@ -113,7 +122,7 @@ def executar_consulta():
                 else:
                     imagem1 = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
 
-            pixmap_redim = imagem1.scaled(450, 350)  # redimensiona a imagem para 100x100
+            pixmap_redim = imagem1.scaled(500, 350)  # redimensiona a imagem para 100x100
             tela.foto_produto.setPixmap(pixmap_redim)
             mtotal_g = "{:12,.2f}".format(mtotal_geral)
             linha1 = f"SUB-TOTAL: {mtotal_g}"
@@ -137,6 +146,30 @@ def executar_consulta():
         print(f"Erro ao executar a consulta: {e}")
 
 
+def pesquisa_produto():
+    nome_buscar = tela.mcodigo.text()
+    if len(nome_buscar) <= 5:
+        hti_global.conexao_cursor.execute(f"select cod_merc, merc, pr_venda FROM sacmerc "
+                                          f"WHERE cod_merc = '{nome_buscar}'")
+    else:
+        hti_global.conexao_cursor.execute(f"select cod_merc, merc, pr_venda FROM sacmerc "
+                                          f"WHERE cod_barr = '{nome_buscar}'")
+    resutado_prod = hti_global.conexao_cursor.fetchone()
+    hti_global.conexao_bd.commit()
+    if resutado_prod is not None:
+        QMessageBox.information(tela, "Pesquisa de PRODUTO", f"PRODUTO: '{resutado_prod[0]}'")
+        if not mnum_ped == '':
+            print(mnum_ped)
+        return
+    else:
+        QMessageBox.information(tela, "Pesquisa de PRODUTO", "PRODUTO nao encontrado...!!!")
+        return
+
+
+# def venda():
+#     tela.mcodigo.textChanged.connect(pesquisa_produto)
+#     return
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -150,6 +183,7 @@ class MainWindow(QMainWindow):
 if __name__ == '__main__':
     # from hti_funcoes import conexao_banco
     # conexao_banco()
+    mnum_ped = '145082'
     MainWindow()
     # tela.show()
     # app.exec()

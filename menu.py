@@ -6,7 +6,7 @@ from PyQt6 import QtWidgets
 from PyQt6.QtGui import QIcon
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtGui import QGuiApplication
-from SISCOM import VERSAO, SISTEMA, nome_computador, endereco_ip
+from SISCOM import nome_computador, endereco_ip
 import hti_global
 
 # PEGA O NOME DO ARQUIVO EM EXECUCAO
@@ -38,7 +38,7 @@ pixmap_redimensionado = imagem.scaled(450, 250)  # redimensiona a imagem para 10
 tela.imagem_menu.setPixmap(pixmap_redimensionado)
 # tela.showMaximized()
 
-logohti = QPixmap(f"{hti_global.c_imagem}\\LOGOhti.jpg")
+logohti = QPixmap(f"{hti_global.c_imagem}\\logoHTI.png")
 pixmap_redimensionado = logohti.scaled(195, 190)  # redimensiona a imagem para 100x100
 tela.logohti.setPixmap(pixmap_redimensionado)
 
@@ -55,7 +55,7 @@ lbl_nome_usuario = tela.findChild(QtWidgets.QLabel, "nome_usuario")
 lbl_nome_usuario.setText(f"Codigo: {hti_global.geral_cod_usuario} - {hti_global.geral_nivel_usuario}")
 
 lbl_versao = tela.findChild(QtWidgets.QLabel, "versao_menu")
-lbl_versao.setText(f'Versao: {VERSAO}')
+lbl_versao.setText(f'Versao: {hti_global.VERSAO}')
 
 
 def on_close_event(event):
@@ -76,6 +76,11 @@ def sair():
     hti_global.conexao_cursor.close()
     tela.close()
     app_menu.quit()
+
+
+def incluir_venda():
+    from venda import MainWindow
+    MainWindow()
 
 
 def m_produto():
@@ -196,7 +201,7 @@ def criar_menu():
     empresa = empresa.strip()
     cnpj = str(m_set[122])
     cnpj = cnpj[:14]
-    tela.setWindowTitle(f'{empresa} - CNPJ: {cnpj}                    {SISTEMA}   Versao: {VERSAO}')
+    tela.setWindowTitle(f'{empresa} - CNPJ: {cnpj}                    {hti_global.SISTEMA}   Versao: {hti_global.VERSAO}')
     tela.actionProduto.triggered.connect(m_produto)
     tela.actionCliente.triggered.connect(m_cadcli)
     tela.actionUsuarios.triggered.connect(m_usuario)
@@ -219,6 +224,7 @@ def criar_menu():
     tela.actionTipos_de_Documentos.triggered.connect(m_documento)
     tela.actionGrupos_Sub_Grupo.triggered.connect(m_grupo)
     tela.actionRegiao_vendedor.triggered.connect(m_regiao)
+    tela.bt_venda.clicked.connect(incluir_venda)
     # tela.actionTipos_de_Documentos.triggered.connect(m_documento)
     # tela.actionTipos_de_Documentos.triggered.connect(m_documento)
     # tela.actionTipos_de_Documentos.triggered.connect(m_documento)

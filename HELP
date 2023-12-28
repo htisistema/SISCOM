@@ -1,5 +1,5 @@
 ERAR O EXECUTAVEL
-pyinstaller --onefile -w --icon=C:\HTI\PYTHON\SISHOST\imagem\htiico.jpg --name=SISHOST sishost.py
+pyinstaller --onefile -w --icon=C:\HTI\SISCOM\imagem\htiico.jpg --name=SISCOM siscom.py
 
 cx-Freeze
 python setup.py build

@@ -1,12 +1,32 @@
 import configparser
 from PyQt6 import QtWidgets
 
+VERSAO = 'v23.04.13'
+SISTEMA = '.: SISCOM :. Sistema Automacao Comercial'
+SIT_TIP = 'SISCOM'
+HTISISTEMA = '.: HTI Sistemas Ltda :.'
+CNPJ_HTI = '24494200000106'
+INSC_MUNCI = '066728339'
+RAZAO_HTI = 'M. EDUARDA B. B. CINTRA'
+END_HTI = 'Rua Cicero Monteiro'
+MNUM_HTI = '1040'
+COMP_HTI = ''
+BAIRRO_HTI = 'Centro'
+CIDADE_HTI = 'Tacaimbo'
+UF_HTI = 'PE'
+CEP_HTI = '55140000'
+FONE_HTI = '993127894'
+
+
 geral_cod_usuario = '999'
 geral_nivel_usuario = '15 '
 VERSAO_ANTIGA = 'v23.04.13'
 m_autorizado = False
 config = configparser.ConfigParser()
 config.read('sisconfig.ini')
+c_usuario = config.get('caminho_usuario', 'caminho_usuario')
+c_cliente = config.get('caminho_cliente', 'caminho_cliente')
+c_produto = config.get('caminho_produto', 'caminho_produto')
 c_imagem = config.get('caminho_imagem', 'caminho_img')
 c_ui = config.get('caminho_ui', 'caminho_ui')
 mtipo_temrinal = config.get('tipo_terminal', 'tipo_term')
@@ -26,108 +46,108 @@ estados = ['AC - ACRE', 'AL - ALAGOAS', 'AP - AMAPA', 'AM - AMAZONAS', 'BA - BAH
 # Crie uma classe para a folha de estilo CSS
 style_sheet = """
 QWidget {
-    border-radius: 6px;
+    border-radius: 4px;
 }
 QLabel {
-    border-radius: 6px;
-    font: 800 10pt "Arial";
+    font: 700 10pt "Segoe UI";
     border-color: rgb(162, 162, 162);
     background-color: rgb(164, 185, 255);
     border-style: Outset;
     border-width: 2px;
+    border-radius: 4px;
 }
 QLineEdit {
-    border-radius: 6px;
-    font: 800 10pt "Arial";
+    font: 700 12pt "Segoe UI";
     background-color: rgb(255, 255, 255);
     border-color: rgb(132, 168, 163);
     border-style: Outset;
     border-width: 2px;
+    border-radius: 4px;
 
 }
 QDateEdit {
-    border-radius: 6px;
-    font: 800 10pt "Arial";
+    font: 700 12pt "Segoe UI";
     background-color: rgb(255, 255, 255);
     border-color: rgb(132, 168, 163);
     border-style: Outset;
     border-width: 2px;
+    border-radius: 4px;
 
 }
 
 QPushButton {
-    font: 800 10pt "Arial";
+    font: 700 12pt "Segoe UI";
     background-color: rgb(164, 185, 255);
     border-color: rgb(132, 168, 163);
     border-style: Outset;
     border-width: 2px;
-    border-radius: 6px;
+    border-radius: 4px;
 }
 QPushButton:pressed {
     background-color: rgb(255, 255, 255);
     border-color: blue;
     border-style: Outset;
     border-width: 2px;
-    border-radius: 6px;
+    border-radius: 4px;
 }
 
 QComboBox {
-    border-radius: 6px;
-    font: 800 10pt "Arial";
+    font: 700 12pt "Segoe UI";
     background-color: rgb(255, 255, 255);
     border-color: rgb(132, 168, 163);
     border-style: Outset;
     border-width: 2px;
+    border-radius: 4px;
 }
 QRadioButton {
-    border-radius: 6px;
-    font: 800 10pt "Arial";
+    font: 700 12pt "Segoe UI";
     border-color: rgb(162, 162, 162);
     background-color: rgb(164, 185, 255);
     border-style: Outset;
     border-width: 2px;
+    border-radius: 4px;
 
 }
 QDoubleSpinBox {
-    border-radius: 6px;
-    font: 800 10pt "Arial";
+    font: 700 12pt "Segoe UI";
     background-color: rgb(255, 255, 255);
     border-color: rgb(132, 168, 163);
     border-style: Outset;
     border-width: 2px;
+    border-radius: 4px;
 }
 QMainWindow {
-    border-radius: 6px;
-    font: 800 10pt "Arial";
+    font: 700 12pt "Segoe UI";
     border-color: rgb(162, 162, 162);
     background-color: rgb(190, 216, 255);
     border-style: Outset;
     border-width: 2px;
+    border-radius: 4px;
 }
 QGroupBox {
-    border-radius: 6px;
-    font: 800 10pt "Arial";
+    font: 700 12pt "Segoe UI";
     border-color: rgb(162, 162, 162);
     background-color: rgb(190, 216, 255);
     border-style: Outset;
     border-width: 2px;
+    border-radius: 4px;
 }
 MainWindow {
-    border-radius: 6px;
-    font: 800 10pt "Arial";
+    font: 700 12pt "Segoe UI";
     border-color: rgb(162, 162, 162);
     background-color: rgb(190, 216, 255);
     border-style: Outset;
     border-width: 2px;
+    border-radius: 4px;
 }
 
 QTableWidget {
-    border-radius: 6px;
-    font: 800 10pt "Arial";
+    font: 700 12pt "Segoe UI";
     background-color: rgb(255, 255, 255);
     border-color: rgb(132, 168, 163);
     border-style: Outset;
     border-width: 2px;
+    border-radius: 4px;
 }
 
 """

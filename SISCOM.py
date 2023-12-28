@@ -24,21 +24,21 @@ import hti_global
 # make_shortcut(caminho_sistema, caminho_atalho, icon=caminho_imagem)
 
 
-VERSAO = 'v23.04.13'
-SIT_TIP = 'SISCOM'
-SISTEMA = '.: SISCOM :. Sistema Automacao Comercial'
-HTISISTEMA = '.: HTI Sistemas Ltda :.'
-CNPJ_HTI = '24494200000106'
-INSC_MUNCI = '066728339'
-RAZAO_HTI = 'M. EDUARDA B. B. CINTRA'
-END_HTI = 'Rua Cicero Monteiro'
-MNUM_HTI = '1040'
-COMP_HTI = ''
-BAIRRO_HTI = 'Centro'
-CIDADE_HTI = 'Tacaimbo'
-UF_HTI = 'PE'
-CEP_HTI = '55140000'
-FONE_HTI = '993127894'
+# VERSAO = 'v23.04.13'
+# SIT_TIP = 'SISCOM'
+# SISTEMA = '.: SISCOM :. Sistema Automacao Comercial'
+# HTISISTEMA = '.: HTI Sistemas Ltda :.'
+# CNPJ_HTI = '24494200000106'
+# INSC_MUNCI = '066728339'
+# RAZAO_HTI = 'M. EDUARDA B. B. CINTRA'
+# END_HTI = 'Rua Cicero Monteiro'
+# MNUM_HTI = '1040'
+# COMP_HTI = ''
+# BAIRRO_HTI = 'Centro'
+# CIDADE_HTI = 'Tacaimbo'
+# UF_HTI = 'PE'
+# CEP_HTI = '55140000'
+# FONE_HTI = '993127894'
 
 # PEGA O NOME DO ARQUIVO EM EXECUCAO
 nome_file = os.path.basename(__file__)
@@ -53,10 +53,10 @@ endereco_ip = socket.gethostbyname(nome_computador)
 # Crie a janela
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\main.ui")
+tela = uic.loadUi(f"{hti_global.c_ui}\\siscom.ui")
 icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
 tela.setWindowIcon(icon)
-tela.setWindowTitle(f'LOGIN         {SISTEMA}  Versao: {VERSAO}')
+tela.setWindowTitle(f'LOGIN         {hti_global.SISTEMA}  Versao: {hti_global.VERSAO}')
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
@@ -73,12 +73,13 @@ else:
 pixmap_redimensionado = imagem.scaled(180, 180)  # redimensiona a imagem para 100x100
 tela.lb_imagem.setPixmap(pixmap_redimensionado)
 
-logohti = QPixmap(f"{hti_global.c_imagem}\\LOGOhti.jpg")
-pixmap_redimensionado = logohti.scaled(180, 180)  # redimensiona a imagem para 100x100
+logohti = QPixmap(f"{hti_global.c_imagem}\\logoHTI.png")
+pixmap_redimensionado = logohti.scaled(150, 150)  # redimensiona a imagem para 100x100
+tela.logohti.setStyleSheet("background-color: rgb(190, 216, 255);border-width: 0px;border-radius: 0px;")
 tela.logohti.setPixmap(pixmap_redimensionado)
 
 lbl_nome_cliente = tela.findChild(QtWidgets.QLabel, "versao")
-lbl_nome_cliente.setText(f'Versao: {VERSAO}')
+lbl_nome_cliente.setText(f'Versao: {hti_global.VERSAO}')
 
 # tela.statusBar.showMessage("Mensagem de status")
 

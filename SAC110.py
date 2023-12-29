@@ -11,7 +11,6 @@ from datetime import date
 import hti_global
 
 titulo = "INCLUSÃO DE PRODUTOS" 
-
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hti_global.style_sheet)
 tela = uic.loadUi(f"{hti_global.c_ui}\\sac110.ui")

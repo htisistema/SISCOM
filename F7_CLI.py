@@ -46,8 +46,6 @@ tela.empresa.setPixmap(pixmap_redimensionado)
 
 
 def on_close_event(event):
-    # Esta função será chamada quando o usuário clicar no botão de fechar a janela
-    # print("Fechando a janela...")
     tela.close()
     event.accept()
 
@@ -168,6 +166,9 @@ def listar_cliente():
 
 tela.bt_inclusao.clicked.connect(f_incl_cliente)
 tela.pesquisa.textChanged.connect(listar_cliente)
+# tela.tableWidget.cellChanged.connect(lambda row, col: editar_item(row))
+# tela.tableWidget.cellChanged.connect(lambda item: editar_item(item.row()))
+tela.tableWidget.cellActivated.connect(lambda row, col: editar_item(row))
 tela.tableWidget.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
 
 # tela.pesquisa.returnPressed.connect(listar_cliente)

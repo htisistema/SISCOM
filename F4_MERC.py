@@ -4,8 +4,10 @@ import sys
 import os
 from PyQt6 import uic, QtWidgets, QtCore
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
-from PyQt6.QtWidgets import QButtonGroup, QApplication
+from PyQt6.QtWidgets import QButtonGroup, QApplication, QMainWindow
+from hti_funcoes import conexao_banco
 import hti_global
+
 
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hti_global.style_sheet)
@@ -175,15 +177,27 @@ def listar_produto():
 # tela.incl_produto.clicked.connect(f_incl_produto)
 # tela.consulta_produto.clicked.connect(botao_item)
 tela.pesquisa.textChanged.connect(listar_produto)
+tela.tableWidget.cellActivated.connect(lambda row, col: editar_item(row))
 tela.tableWidget.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
 
 # tela.pesquisa.returnPressed.connect(listar_produto)
 
 
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # locale.setlocale(locale.LC_NUMERIC, '')
+        # Executar a consulta
+        conexao_banco()
+        listar_produto()
+
+
 if __name__ == '__main__':
-    from hti_funcoes import conexao_banco
-    conexao_banco()
-    listar_produto()
+    # from hti_funcoes import conexao_banco
+    # conexao_banco()
+    # listar_produto()
+    MainWindow()
     hti_global.conexao_bd.close()
     hti_global.conexao_cursor.close()
     tela.close()

@@ -2,7 +2,7 @@
 
 import os
 from PyQt6 import uic, QtWidgets
-from PyQt6.QtGui import QIcon, QGuiApplication
+from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QButtonGroup
 from PyQt6.QtWidgets import QRadioButton, QMessageBox
 from PyQt6.QtCore import QDate, QDateTime, QTime
@@ -42,6 +42,13 @@ nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
+if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+else:
+    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+
+pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
+tela.empresa.setPixmap(pixmap_redimensionado)
 
 hti_global.conexao_cursor.execute(f"SELECT * FROM sacsetup")
 # Recupere o resultado

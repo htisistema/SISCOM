@@ -10,14 +10,13 @@ app.setStyleSheet(hti_global.style_sheet)
 tela = uic.loadUi(f"{hti_global.c_ui}\\venda_pdv.ui")
 icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
 tela.setWindowIcon(icon)
-tela.setWindowTitle(f'VENDA         {hti_global.SISTEMA}  Versao: {hti_global.VERSAO}')
+tela.setWindowTitle(f'PEDIDO DE VENDA         {hti_global.SISTEMA}  Versao: {hti_global.VERSAO}')
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_login = QIcon(f"{hti_global.c_imagem}\\login.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 # AJUSTAR A TELA EM RELACAO AO MONITOR

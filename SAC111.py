@@ -674,8 +674,11 @@ def alteracao_produto(codigo_produto):
     else:
         msaldo_haver = arq_saldo_haver[0]
 
+    # print(arq_prod[8])
     lbl_ap_produto = tela.findChild(QtWidgets.QLabel, "ap_produto")
-    lbl_ap_produto.setText(f"{str(codigo_produto)} - {arq_prod[8]}".strip())
+    mcodigo = str(codigo_produto)
+    print(f"'{mcodigo}' - '{arq_prod[8]}'")
+    lbl_ap_produto.setText(f"{mcodigo} - {arq_prod[8]}")
 
     tab_widget = tela.findChild(QtWidgets.QTabWidget, "tabWidget")
     tab_widget.setCurrentIndex(0)
@@ -782,6 +785,7 @@ def alteracao_produto(codigo_produto):
     else:
         tela.rb_saldo_neg_nao.setChecked(True)
 
+    print(arq_prod[17])
     tela.doubleSpinBox_10.setValue(float(arq_prod[27]))
     tela.doubleSpinBox_11.setValue(float(arq_prod[28]))
     tela.doubleSpinBox_12.setValue(float(arq_prod[73]))

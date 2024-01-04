@@ -70,11 +70,37 @@ lbl_operador.setText(f" Operador: {hti_global.geral_cod_usuario}")
 lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
 
 mnum_ped = ''
+tela.mquantidade.setValue(1)
+
+
+def verificar_produto():
+    # print(tela.mcodigo.text())
+    m_codigo = tela.mcodigo.text()
+    if m_codigo[0] == 'X':
+        tela.mquantidade.setValue(float(m_codigo[1:20]))
+        tela.mcodigo.setText('')
+        return
+        # mquantidade = m_codigo[1]
+    else:
+        if len(m_codigo) <= 5:
+            m_codigo = m_codigo.zfill(5)
+            hti_global.conexao_cursor.execute(f"SELECT cod_merc, merc, pr_venda FROM sacmerc "
+                                              f"WHERE cod_merc = '{m_codigo}'")
+        else:
+            hti_global.conexao_cursor.execute(f"SELECT cod_merc, merc, pr_venda FROM sacmerc "
+                                              f"WHERE cod_barr = '{m_codigo}'")
+        ver_produto = hti_global.conexao_cursor.fetchone()
+        hti_global.conexao_bd.commit()
+        if not ver_produto is None:
+            print(ver_produto)
+            tela.mcodigo.setText('')
+            #if not mnum_ped == '':
 
 
 def executar_consulta():
     # tela.mcodigo.textChanged.connect(pesquisa_produto)
-    tela.mcodigo.returnPressed.connect(pesquisa_produto)
+    # tela.mcodigo.returnPressed.connect(pesquisa_produto)
+    tela.mcodigo.returnPressed.connect(verificar_produto)
     lbl_numero_pedido.setText(f" Numero Pedido: {mnum_ped}")
 
     try:
@@ -138,6 +164,8 @@ def executar_consulta():
             # valor_sem_virgula = mtotal_g.replace(',', '')
             # valor_numerico = float(valor_sem_virgula)
             # lcd.display(float(valor_numerico))
+        # tela.tableWidget.cellActivated.connect(lambda row, col: editar_item(row))
+
         tela.show()
         app.exec()
 

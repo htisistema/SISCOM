@@ -56,6 +56,13 @@ lbl_nome_usuario.setText(f"Codigo: {hti_global.geral_cod_usuario} - {hti_global.
 
 lbl_versao = tela.findChild(QtWidgets.QLabel, "versao_menu")
 lbl_versao.setText(f'Versao: {hti_global.VERSAO}')
+tela.statusBar = QtWidgets.QStatusBar()
+tela.setStatusBar(tela.statusBar)
+
+nome_file_com = os.path.basename(__file__)
+nome_file, ext = os.path.splitext(nome_file_com)
+
+tela.statusBar.showMessage(f"<< {nome_file} >>")
 
 
 def on_close_event(event):

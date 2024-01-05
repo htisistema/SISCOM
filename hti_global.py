@@ -20,6 +20,7 @@ FONE_HTI = '993127894'
 
 geral_cod_usuario = '999'
 geral_nivel_usuario = '15 '
+mcodempresa = '001'
 VERSAO_ANTIGA = 'v23.04.13'
 m_autorizado = False
 config = configparser.ConfigParser()
@@ -32,6 +33,7 @@ c_ui = config.get('caminho_ui', 'caminho_ui')
 mtipo_temrinal = config.get('tipo_terminal', 'tipo_term')
 mtp_tela = config.get('tipo_tela', 'tp_tela')
 host = config.get('banco', 'host')
+nome_computador = config.get('terminal', 'nome_terminal')
 conexao_bd = ' '
 conexao_cursor = ' '
 estados = ['AC - ACRE', 'AL - ALAGOAS', 'AP - AMAPA', 'AM - AMAZONAS', 'BA - BAHIA', 'CE - CEARA',

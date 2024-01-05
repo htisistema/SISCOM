@@ -49,7 +49,7 @@ pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100
 tela.empresa.setPixmap(pixmap_redimensionado)
 
 logohti = QPixmap(f"{hti_global.c_imagem}\\LOGOhti.png")
-pixmap_redimensionado = logohti.scaled(150, 150)  # redimensiona a imagem para 100x100
+pixmap_redimensionado = logohti.scaled(85, 85)  # redimensiona a imagem para 100x100
 tela.logohti.setStyleSheet(
     "background-color: rgb(190, 216, 255);border-width: 0px;border-radius: 0px;"
 )
@@ -70,7 +70,7 @@ if os.path.exists(f"{hti_global.c_usuario}\\{hti_global.geral_cod_usuario}.jpg")
 
 else:
     usuario = QPixmap(f"{hti_global.c_usuario}\\htiusu.jpg")
-pixmap_redimensionado = usuario.scaled(185, 190)  # redimensiona a imagem para 100x100
+pixmap_redimensionado = usuario.scaled(125, 130)  # redimensiona a imagem para 100x100
 tela.usuario.setPixmap(pixmap_redimensionado)
 lbl_operador.setText(f" Operador: {hti_global.geral_cod_usuario}")
 lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
@@ -93,22 +93,20 @@ def verificar_produto():
         if len(m_codigo) <= 5:
             m_codigo = m_codigo.zfill(5)
             hti_global.conexao_cursor.execute(
-                f"SELECT cod_merc, merc, pr_venda, saldo_mer FROM sacmerc "
-                f"WHERE cod_merc = '{m_codigo}'"
+                f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'"
             )
         else:
             hti_global.conexao_cursor.execute(
-                f"SELECT cod_merc, merc, pr_venda, saldo_mer FROM sacmerc "
-                f"WHERE cod_barr = '{m_codigo}'"
+                f"SELECT * FROM sacmerc WHERE cod_barr = '{m_codigo}'"
             )
         ver_produto = hti_global.conexao_cursor.fetchone()
         hti_global.conexao_bd.commit()
 
         if ver_produto is not None:
             m_qtd = tela.mquantidade.value()
-            lbl_produto.setText(ver_produto[1])
-            m_codmerc = ver_produto[0]
-            m_saldo_ant = ver_produto[3]
+            lbl_produto.setText(ver_produto[8])
+            m_codmerc = ver_produto[7]
+            m_saldo_ant = ver_produto[54]
             m_saldo_pos = m_saldo_ant - m_qtd
             m_data_f = datetime.strptime(data_atual.text(), "%d/%m/%Y").date()
             data_formatada = m_data_f.strftime("%Y/%m/%d")
@@ -128,6 +126,8 @@ def verificar_produto():
                 "terminal, "
                 "processo, "
                 "ent_sai, "
+                "PRECO_V, "
+                "PRECO_C, "
                 "SR_DELETED) "
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
             )
@@ -143,9 +143,11 @@ def verificar_produto():
                     m_saldo_pos,
                     hti_global.geral_cod_usuario,
                     "VENDA",
-                    "TERMINAL",
+                    hti_global.nome_computador,
                     f"INCLUSAO PD: '{mnum_ped}'",
                     "S",
+                    ver_produto[45],
+                    ver_produto[43],
                     " ",
                 ),
             )
@@ -249,16 +251,22 @@ def verificar_produto():
             hti_global.conexao_cursor.execute(
                 sql,
                 (
+                    hti_global.mcodempresa,
+                    mnum_ped,
+                    hti_global.nome_computador,
                     data_formatada,
-                    data_formatada,
-                    mhora,
+                    ver_produto[6],
                     m_codmerc,
+                    ver_produto[8],
+                    ver_produto[13],
+                    ver_produto[15],
+                    " ",
+                    ver_produto[16],
+                    ver_produto[15],
+                    ver_produto[73],
                     m_qtd,
-                    m_saldo_ant,
-                    m_saldo_pos,
-                    hti_global.geral_cod_usuario,
-                    "VENDA",
-                    "TERMINAL",
+                    " ",
+                    " ",
                     f"INCLUSAO PD: '{mnum_ped}'",
                     "S",
                     " ",

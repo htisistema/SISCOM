@@ -6,6 +6,7 @@ from datetime import datetime
 from hti_funcoes import conexao_banco
 import hti_global
 import os
+from icecream import ic
 
 app = QApplication([])
 app.setStyleSheet(hti_global.style_sheet)
@@ -101,15 +102,21 @@ def verificar_produto():
             )
         ver_produto = hti_global.conexao_cursor.fetchone()
         hti_global.conexao_bd.commit()
-
-        if ver_produto is not None:
-            m_qtd = tela.mquantidade.value()
+        if ver_produto is None:
+            ic('Produto nao encontrado...')
+        else:
+            tela.mpreco_venda.setValue(float(ver_produto[45]))
+            m_quantidade = tela.mquantidade.value()
+            m_pre_venda = tela.mpreco_venda.value()
             lbl_produto.setText(ver_produto[8])
             m_codmerc = ver_produto[7]
-            m_saldo_ant = ver_produto[54]
-            m_saldo_pos = m_saldo_ant - m_qtd
-            m_data_f = datetime.strptime(data_atual.text(), "%d/%m/%Y").date()
+            m_saldo_ant = float(ver_produto[55])
+            m_saldo_pos = m_saldo_ant - m_quantidade
+            # m_data_f = datetime.strptime(data_atual.text(), "%d/%m/%Y").date()
+            m_data_f = data_atual.toPyDateTime().date()
             data_formatada = m_data_f.strftime("%Y/%m/%d")
+            # mhora = data_atual.toString("hh:mm:ss")
+
             mhora = datetime.now().strftime("%H:%M:%S")
 
             sql = (
@@ -129,16 +136,15 @@ def verificar_produto():
                 "PRECO_V, "
                 "PRECO_C, "
                 "SR_DELETED) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
             )
-            hti_global.conexao_cursor.execute(
-                sql,
-                (
+
+            hti_global.conexao_cursor.execute(sql, (
                     data_formatada,
                     data_formatada,
                     mhora,
                     m_codmerc,
-                    m_qtd,
+                    m_quantidade,
                     m_saldo_ant,
                     m_saldo_pos,
                     hti_global.geral_cod_usuario,
@@ -146,11 +152,10 @@ def verificar_produto():
                     hti_global.nome_computador,
                     f"INCLUSAO PD: '{mnum_ped}'",
                     "S",
-                    ver_produto[45],
-                    ver_produto[43],
-                    " ",
-                ),
-            )
+                    float(ver_produto[45]),
+                    float(ver_produto[43]),
+                    " "))
+            hti_global.conexao_bd.commit()
 
             sql = (
                 "INSERT INTO sacped_s ("
@@ -229,24 +234,85 @@ def verificar_produto():
                 "data_so,"
                 "convidado,"
                 "cod_pres,"
-                "tipo_ped"
-                "data_sis, "
-                "data, "
-                "hora, "
-                "cod_prod, "
-                "quantd, "
-                "saldo_ant, "
-                "saldo_pos, "
-                "cod_oper, "
-                "prog, "
-                "terminal, "
-                "processo, "
-                "ent_sai, "
+                "tipo_ped,"
                 "SR_DELETED) "
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
                 "?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, "
                 "?, ?, ?, ?, ?,?, ?, ?, ?) "
             )
+            # ic()
+            # # if ver_produto[22] <= 0:
+            # #     mp_venda = mvlr_fat
+            # ic(sql, (
+            #         hti_global.mcodempresa,
+            #         mnum_ped,
+            #         hti_global.nome_computador,
+            #         data_formatada,
+            #         ver_produto[6],
+            #         m_codmerc,
+            #         ver_produto[8],
+            #         ver_produto[13],
+            #         ver_produto[14],
+            #         '',
+            #         ver_produto[16],
+            #         ver_produto[15],
+            #         ver_produto[73],
+            #         m_quantidade,
+            #         0,
+            #         0,
+            #         m_pre_venda,
+            #         0,
+            #         m_pre_venda * 1,
+            #         m_pre_venda,
+            #         float(ver_produto[46]),
+            #         float(ver_produto[44]),
+            #         float(ver_produto[43]),
+            #         ver_produto[29],
+            #         ver_produto[30],
+            #         hti_global.geral_cod_usuario,
+            #         0,
+            #         0,
+            #         '',
+            #         ver_produto[20],
+            #         '000',
+            #         '000',
+            #         0,
+            #         0,
+            #         '',
+            #         mhora,
+            #         '',
+            #         0,
+            #         ver_produto[60],
+            #         float(ver_produto[22]),
+            #         '',
+            #         '',
+            #         0,
+            #         ver_produto[26],
+            #         float(ver_produto[74]),
+            #         float(ver_produto[61]),
+            #         float(ver_produto[64]),
+            #         '',
+            #         ver_produto[81],
+            #         '',
+            #         ver_produto[82],
+            #         '',
+            #         '',
+            #         '',
+            #         '',
+            #         ver_produto[72],
+            #         '',
+            #         '',
+            #         '',
+            #         '',
+            #         '',
+            #         '',
+            #         '',
+            #         '',
+            #         None,
+            #         '',
+            #         '',
+            #         1,
+            #         " "))
 
             hti_global.conexao_cursor.execute(
                 sql,
@@ -259,21 +325,70 @@ def verificar_produto():
                     m_codmerc,
                     ver_produto[8],
                     ver_produto[13],
-                    ver_produto[15],
-                    " ",
+                    ver_produto[14],
+                    '',
                     ver_produto[16],
                     ver_produto[15],
                     ver_produto[73],
-                    m_qtd,
-                    " ",
-                    " ",
-                    f"INCLUSAO PD: '{mnum_ped}'",
-                    "S",
-                    " ",
-                ),
-            )
+                    m_quantidade,
+                    0,
+                    0,
+                    m_pre_venda,
+                    0,
+                    m_pre_venda * 1,
+                    m_pre_venda,
+                    float(ver_produto[46]),
+                    float(ver_produto[44]),
+                    float(ver_produto[43]),
+                    ver_produto[29],
+                    ver_produto[30],
+                    hti_global.geral_cod_usuario,
+                    0,
+                    0,
+                    '',
+                    ver_produto[20],
+                    '000',
+                    '000',
+                    0,
+                    0,
+                    '',
+                    mhora,
+                    '',
+                    0,
+                    ver_produto[60],
+                    float(ver_produto[22]),
+                    '',
+                    '',
+                    0,
+                    ver_produto[26],
+                    float(ver_produto[74]),
+                    float(ver_produto[61]),
+                    float(ver_produto[64]),
+                    '',
+                    ver_produto[81],
+                    '',
+                    ver_produto[82],
+                    '',
+                    '',
+                    '',
+                    '',
+                    ver_produto[72],
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    None,
+                    '',
+                    '',
+                    1,
+                    " "))
             hti_global.conexao_bd.commit()
             tela.mcodigo.setText("")
+            tela.mpreco_venda.setValue(float(0))
             # if not mnum_ped == '':
 
 

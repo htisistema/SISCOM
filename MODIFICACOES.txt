@@ -17,6 +17,7 @@ update sacmerc set a_cust_rea = 0 where a_cust_rea IS NULL
 update sacmerc set promocao = 0 where promocao IS NULL
 update sacmerc set bebida = 0 where bebida IS NULL
 update sacmerc set ipi = 0 where ipi IS NULL
+update sacmerc set local = '' where local IS NULL
 
 apagar o SACUF e SACCID
 roda o sistema SISCOM HARBOUR para criar novamente e carregar dos DBF

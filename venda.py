@@ -245,7 +245,10 @@ def verificar_produto():
                 "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
                 "?, ?, ?, ?, ?, ?, ?) "
             )
-            ic(ver_produto[72][:2])
+
+            # mver = ver_produto[72]
+            # ic(mver)
+
             hti_global.conexao_cursor.execute(
                 sql,
                 (
@@ -336,6 +339,7 @@ def executar_consulta():
     # tela.mcodigo.textChanged.connect(pesquisa_produto)
     # tela.mcodigo.returnPressed.connect(pesquisa_produto)
     tela.mcodigo.returnPressed.connect(verificar_produto)
+    # tela.mcodigo.installEventFilter(verificar_produto)
     tela.mcodigo.setFocus()
 
     lbl_numero_pedido.setText(f" Numero Pedido: {mnum_ped}")

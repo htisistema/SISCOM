@@ -160,160 +160,92 @@ def verificar_produto():
             sql = (
                 "INSERT INTO sacped_s ("
                 "pempresa, "
-                "pnum_ped,"
-                "ptermina,"
-                "pdat_ped,"
-                "pgru_sub,"
-                "pcod_merc,"
-                "pmerc,"
-                "punidade,"
-                "pespecie,"
-                "penvelope,"
-                "ppeso,"
-                "ppeso_liq,"
-                "pgramatura,"
-                "pquantd,"
-                "ppacote,"
-                "ppecas,"
-                "ppre_dig,"
-                "pdesc,"
-                "pvlr_fat,"
-                "ppre_venda,"
-                "ppr_venda1,"
-                "pcust_real,"
-                "pcust_merc,"
-                "pcod_cli,"
-                "pcgc,"
-                "pcpf,"
-                "pplaca,"
-                "pcarro,"
-                "pmodelo,"
-                "pkm,"
-                "pcod_fab,"
-                "pfabrica,"
-                "pcod_oper,"
-                "pcomi_oper,"
-                "pcod_vend,"
-                "pvendedor,"
-                "palimento ,"
-                "pcod_fin  ,"
-                "pcod_tab  ,"
-                "pvlr_pres ,"
-                "pcond_veze,"
-                "pcond_inte,"
-                "phora     ,"
-                "ptp_vend  ,"
-                "pvlr_ent  ,"
-                "pisento   ,"
-                "ppromocao ,"
-                "pmontador ,"
-                "pmontador1,"
-                "pcomissao ,"
-                "pcom_mont ,"
-                "pprazo    ,"
-                "pbebida   ,"
-                "pipi      ,"
-                "pobs_prod ,"
-                "pind_icms ,"
-                "pstat_item,"
-                "psit_trib ,"
-                "pobs1,"
-                "pobs2,"
-                "pobs3,"
-                "pobs4,"
-                "plocal,"
-                "chassis,"
-                "descri1,"
-                "descri2,"
-                "descri3,"
-                "descri4,"
-                "descri5,"
-                "pproducao,"
-                "pcod_tran,"
-                "pos,"
-                "data_so,"
-                "convidado,"
-                "cod_pres,"
-                "tipo_ped,"
+                "pnum_ped, "
+                "ptermina, "
+                "pdat_ped, "
+                "pgru_sub, "
+                "pcod_merc, "
+                "pmerc, "
+                "punidade, "
+                "pespecie, "
+                "penvelope, "
+                "ppeso, "
+                "ppeso_liq, "
+                "pgramatura, "
+                "pquantd, "
+                "ppacote, "
+                "ppecas, "
+                "ppre_dig, "
+                "pdesc, "
+                "pvlr_fat, "
+                "ppre_venda, "
+                "ppr_venda1, "
+                "pcust_real, "
+                "pcust_merc, "
+                "pcod_cli, "
+                "pcgc, "
+                "pcpf, "
+                "pplaca, "
+                "pcarro, "
+                "pmodelo, "
+                "pkm, "
+                "pcod_fab, "
+                "pfabrica, "
+                "pcod_oper, "
+                "pcomi_oper, "
+                "pcod_vend, " 
+                "pvendedor, "
+                "palimento, "
+                "pcod_fin, "
+                "pcod_tab, "
+                "pvlr_pres, "
+                "pcond_veze, "
+                "pcond_inte, " 
+                "phora, "
+                "ptp_vend, "
+                "pvlr_ent, "
+                "pisento, "
+                "ppromocao, "
+                "pmontador, "
+                "pmontador1, "
+                "pcomissao, "
+                "pcom_mont, "
+                "pprazo, "
+                "pbebida, "
+                "pipi, "
+                "pobs_prod, "
+                "pind_icms, "
+                "pstat_item, "
+                "psit_trib, "
+                "pobs1, "
+                "pobs2, "
+                "pobs3, "
+                "pobs4, "
+                "plocal, "
+                "chassis, "
+                "descri1, "
+                "descri2, "
+                "descri3, "
+                "descri4, "
+                "descri5, "
+                "pproducao, "
+                "pcod_tran, "
+                "pos, "
+                "data_so, "
+                "convidado, "
+                "cod_pres, "
+                "tipo_ped, "
                 "SR_DELETED) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                "?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, "
-                "?, ?, ?, ?, ?,?, ?, ?, ?) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                "?, ?, ?, ?, ?, ?, ?) "
             )
-            # ic()
-            # # if ver_produto[22] <= 0:
-            # #     mp_venda = mvlr_fat
-            # ic(sql, (
-            #         hti_global.mcodempresa,
-            #         mnum_ped,
-            #         hti_global.nome_computador,
-            #         data_formatada,
-            #         ver_produto[6],
-            #         m_codmerc,
-            #         ver_produto[8],
-            #         ver_produto[13],
-            #         ver_produto[14],
-            #         '',
-            #         ver_produto[16],
-            #         ver_produto[15],
-            #         ver_produto[73],
-            #         m_quantidade,
-            #         0,
-            #         0,
-            #         m_pre_venda,
-            #         0,
-            #         m_pre_venda * 1,
-            #         m_pre_venda,
-            #         float(ver_produto[46]),
-            #         float(ver_produto[44]),
-            #         float(ver_produto[43]),
-            #         ver_produto[29],
-            #         ver_produto[30],
-            #         hti_global.geral_cod_usuario,
-            #         0,
-            #         0,
-            #         '',
-            #         ver_produto[20],
-            #         '000',
-            #         '000',
-            #         0,
-            #         0,
-            #         '',
-            #         mhora,
-            #         '',
-            #         0,
-            #         ver_produto[60],
-            #         float(ver_produto[22]),
-            #         '',
-            #         '',
-            #         0,
-            #         ver_produto[26],
-            #         float(ver_produto[74]),
-            #         float(ver_produto[61]),
-            #         float(ver_produto[64]),
-            #         '',
-            #         ver_produto[81],
-            #         '',
-            #         ver_produto[82],
-            #         '',
-            #         '',
-            #         '',
-            #         '',
-            #         ver_produto[72],
-            #         '',
-            #         '',
-            #         '',
-            #         '',
-            #         '',
-            #         '',
-            #         '',
-            #         '',
-            #         None,
-            #         '',
-            #         '',
-            #         1,
-            #         " "))
-
+            ic(ver_produto[72][:2])
             hti_global.conexao_cursor.execute(
                 sql,
                 (
@@ -340,6 +272,13 @@ def verificar_produto():
                     float(ver_produto[46]),
                     float(ver_produto[44]),
                     float(ver_produto[43]),
+                    0,
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
                     ver_produto[29],
                     ver_produto[30],
                     hti_global.geral_cod_usuario,
@@ -347,8 +286,8 @@ def verificar_produto():
                     0,
                     '',
                     ver_produto[20],
-                    '000',
-                    '000',
+                    '',
+                    '',
                     0,
                     0,
                     '',
@@ -372,7 +311,8 @@ def verificar_produto():
                     '',
                     '',
                     '',
-                    ver_produto[72],
+                    ver_produto[72][:2],
+                    '',
                     '',
                     '',
                     '',
@@ -396,6 +336,8 @@ def executar_consulta():
     # tela.mcodigo.textChanged.connect(pesquisa_produto)
     # tela.mcodigo.returnPressed.connect(pesquisa_produto)
     tela.mcodigo.returnPressed.connect(verificar_produto)
+    tela.mcodigo.setFocus()
+
     lbl_numero_pedido.setText(f" Numero Pedido: {mnum_ped}")
 
     try:

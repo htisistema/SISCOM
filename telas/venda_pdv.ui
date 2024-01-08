@@ -296,6 +296,13 @@ color: rgb(0, 0, 0);</string>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>mcodigo</tabstop>
+  <tabstop>mquantidade</tabstop>
+  <tabstop>mpreco_venda</tabstop>
+  <tabstop>bt_fecha</tabstop>
+  <tabstop>textBrowser</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

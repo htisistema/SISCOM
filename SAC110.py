@@ -599,9 +599,9 @@ def inclusao_produto():
     tela.doubleSpinBox_18.setEnabled(False)
 
     tela.bt_salvar.clicked.connect(salvar_produto)
+    tela.bt_salvar.setIcon(icon_salvar)
     tela.bt_sair.clicked.connect(fecha_tela)
     tela.bt_sair.setIcon(icon_sair)
-    tela.bt_salvar.setIcon(icon_salvar)
 
     # DESABILITAR ESSES OBJETO
     # tela.bt_contas_receber.setEnabled(False)

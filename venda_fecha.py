@@ -1,7 +1,8 @@
 from PyQt6 import uic, QtWidgets, QtGui
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QButtonGroup
-from PyQt6.QtCore import QDateTime
+from PyQt6.QtCore import QDateTime, Qt
+import keyboard
 from datetime import datetime
 from hti_funcoes import conexao_banco
 import hti_global
@@ -21,6 +22,7 @@ qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
+icon_salvar = QIcon(f"{hti_global.c_imagem}\\confirma.png")
 icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
@@ -88,7 +90,16 @@ hti_global.conexao_cursor.execute("SELECT * FROM sacsetup")
 m_set = hti_global.conexao_cursor.fetchone()
 hti_global.conexao_bd.commit()
 
-tela.cb_forma_pg.addItems(["1->Dinheiro", "2->PIX", "3->Cartao", "4->Duplicata", "5->Cheque", "6->Cheque Pre"])
+hti_global.conexao_cursor.execute(f"SELECT cod_cli, razao FROM saccli")
+arq_cli = hti_global.conexao_cursor.fetchall()
+hti_global.conexao_bd.commit()
+for ret_cli in arq_cli:
+    item = f'{ret_cli[0]} - {ret_cli[1]}'.strip('(),')
+    tela.cb_cliente.addItem(item)
+tela.cb_cliente.setCurrentIndex(0)
+
+
+tela.cb_forma_pg.addItems(["1->Dinheiro", "2->PIX", "3->Cartao", "4->Duplicata", "5->Cheque", "6->Financiamento"])
 tela.cb_forma_pg.setCurrentIndex(0)  # coloca o focus no index
 
 rb_tipo_desconto_group = QButtonGroup()
@@ -97,11 +108,28 @@ rb_tipo_desconto_group.addButton(tela.rb_valor, id=2)
 tela.rb_valor.setChecked(True)
 
 
+def fecha_tela():
+    tela.close()
+    # tela.closeEvent = on_close_event
+    return
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         conexao_banco()
         fechar_pedido(mnum_ped)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_F10:
+            self.minha_funcao()
+
+
+def minha_funcao():
+    ic("F10 Pressionado", "A tecla F10 foi pressionada!")
+
+
+# keyboard.add_hotkey('F10', minha_funcao) ativa a tecla F10
 
 
 def criar_tela(mnum_pedido):
@@ -121,12 +149,6 @@ def criar_tela(mnum_pedido):
         fonte.setFamily("Courier")
         fonte.setPointSize(9)
         tela.textBrowser.setFont(fonte)
-
-        # tela.textBrowser.append("Itens Codigo   Descricao                  ")
-        # tela.textBrowser.append('Quant.   Valor R$   Total R$')
-        # tela.textBrowser.append(
-        #     "--------------------------------------------------------"
-        # )
         mtotal_geral = 0
         i = 0
         # ic(resultados)
@@ -141,8 +163,8 @@ def criar_tela(mnum_pedido):
                 soma = pquantd * pvlr_fat
                 # ic(soma)
                 msoma = "{:12,.2f}".format(soma)
-                linha = f"  {i}   {pcod_merc}  {pmerc}"  # Formatar o campo valor como float com 2 casas decimais
-                linha1 = f"                   {mquantd} x {mvalor} = {msoma}"  # Formatar o campo valor como float com 2 casas decimais
+                linha = f"  {i}   {pcod_merc}  {pmerc}"
+                linha1 = f"                   {mquantd} x {mvalor} = {msoma}"
                 mtotal_geral += soma
                 # linha = ' '.join(map(str, resultado))
                 tela.textBrowser.append(linha)
@@ -156,7 +178,49 @@ def criar_tela(mnum_pedido):
         print(f"Erro ao executar a consulta: {e}")
 
 
+def salva_pedido():
+    ic()
+
+
 def fechar_pedido(mnum_pedido):
+    hti_global.conexao_cursor.execute(f"SELECT pcod_cli FROM sacped_s WHERE pnum_ped = '{mnum_pedido}'")
+    res_pedido = hti_global.conexao_cursor.fetchone()
+    hti_global.conexao_bd.commit()
+    # ic(res_pedido[0])
+    if res_pedido[0] == 0:
+        mcod_cli = m_set[83]
+    else:
+        mcod_cli = res_pedido[0]
+
+    for i in range(tela.cb_cliente.count()):
+        item_text = tela.cb_cliente.itemText(i)
+        if str(mcod_cli).strip() in item_text:
+            tela.cb_cliente.setCurrentIndex(i)
+            break
+
+    tela.ds_entrada.setEnabled(False)
+    tela.ds_qtd_dias.setEnabled(False)
+    tela.ds_dia1.setEnabled(False)
+    tela.ds_dia2.setEnabled(False)
+    tela.ds_dia3.setEnabled(False)
+    tela.ds_dia4.setEnabled(False)
+    tela.ds_dia5.setEnabled(False)
+    tela.ds_dia6.setEnabled(False)
+    tela.ds_dia7.setEnabled(False)
+    tela.ds_dia8.setEnabled(False)
+    tela.ds_dia9.setEnabled(False)
+    tela.ds_dia10.setEnabled(False)
+    tela.ds_dia11.setEnabled(False)
+    tela.ds_dia12.setEnabled(False)
+    tela.ds_dia13.setEnabled(False)
+    tela.ds_dia14.setEnabled(False)
+    tela.ds_dia15.setEnabled(False)
+
+    tela.bt_fecha.clicked.connect(salva_pedido)
+    tela.bt_fecha.setIcon(icon_salvar)
+    tela.bt_sair.clicked.connect(fecha_tela)
+    tela.bt_sair.setIcon(icon_sair)
+
     # tela.mcodigo.returnPressed.connect(verificar_produto)
     # tela.mcodigo.setFocus()
     # tela.textBrowser.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
@@ -166,10 +230,6 @@ def fechar_pedido(mnum_pedido):
 
 
 if __name__ == "__main__":
-    # from hti_funcoes import conexao_banco
-    # conexao_banco()
     mnum_ped = "145082"
     fechar_pedido(mnum_ped)
-    # tela.show()
-    # app.exec()
     hti_global.conexao_bd.close()

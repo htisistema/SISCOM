@@ -46,6 +46,7 @@ nome_file, ext = os.path.splitext(nome_file_com)
 tela.statusBar.showMessage(f"<< {nome_file} >>")
 
 conexao_banco()
+
 hti_global.conexao_cursor.execute(f"SELECT * FROM sacsetup")
 # Recupere o resultado
 m_set = hti_global.conexao_cursor.fetchone()
@@ -72,8 +73,6 @@ tela.comboBox.setCurrentIndex(0)
 # tela.comboBox_4.setCurrentIndex(0)
 
 hti_global.conexao_cursor.execute(f"SELECT cod_forn, razao FROM sacforn WHERE forn_desp = 'F'")
-# hti_global.conexao_cursor.execute(f"SELECT razao, cod_forn FROM sacforn WHERE forn_desp = 'F'")
-# Recupere o resultado
 arq_forn = hti_global.conexao_cursor.fetchall()
 hti_global.conexao_bd.commit()
 

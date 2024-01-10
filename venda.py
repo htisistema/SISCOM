@@ -3,6 +3,7 @@ from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PyQt6.QtCore import QDateTime
 from datetime import datetime
+import keyboard
 from hti_funcoes import conexao_banco
 import hti_global
 import os
@@ -29,6 +30,8 @@ qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
+icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hti_global.c_imagem}\\confirma.png")
 
 if hti_global.mtp_tela == "G":
     primary_screen = QGuiApplication.primaryScreen()
@@ -156,6 +159,11 @@ def criar_tela():
 
     except Exception as e:
         print(f"Erro ao executar a consulta: {e}")
+
+
+def fecha_tela():
+    tela.close()
+    return
 
 
 def verificar_produto():
@@ -416,13 +424,22 @@ def verificar_produto():
     criar_tela()
 
 
-def editar_item():
-    ic()
+def fecha_pedido():
+    from venda_fecha import fechar_pedido
+    fechar_pedido(mnum_ped)
+
+
+keyboard.add_hotkey('F10', fecha_pedido)
 
 
 def executar_consulta():
     tela.mcodigo.returnPressed.connect(verificar_produto)
     tela.mcodigo.setFocus()
+    tela.bt_fecha.clicked.connect(fecha_pedido)
+    tela.bt_fecha.setIcon(icon_salvar)
+    tela.bt_sair.clicked.connect(fecha_tela)
+    tela.bt_sair.setIcon(icon_sair)
+
     # tela.textBrowser.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
     criar_tela()
     tela.show()
@@ -455,7 +472,6 @@ def pesquisa_produto():
             tela, "Pesquisa de PRODUTO", "PRODUTO nao encontrado...!!!"
         )
         return
-
 
 # def venda():
 #     tela.mcodigo.textChanged.connect(pesquisa_produto)

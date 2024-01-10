@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1250</width>
+    <width>1076</width>
     <height>680</height>
    </rect>
   </property>
@@ -22,17 +22,20 @@
      <rect>
       <x>100</x>
       <y>10</y>
-      <width>1130</width>
+      <width>960</width>
       <height>70</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">font: 700 italic 35pt &quot;Courier&quot;;
+     <string notr="true">font: 700 italic 25pt &quot;Courier&quot;;
 background-color: rgb(253, 255, 216);
 color: rgb(0, 0, 0);</string>
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QLabel" name="empresa">
@@ -65,22 +68,6 @@ border-radius: 12px;</string>
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="foto_produto">
-    <property name="geometry">
-     <rect>
-      <x>730</x>
-      <y>90</y>
-      <width>500</width>
-      <height>470</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(221, 249, 255);</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
    <widget class="QTextBrowser" name="textBrowser">
     <property name="geometry">
      <rect>
@@ -98,8 +85,8 @@ color: rgb(0, 0, 0);</string>
    <widget class="QPushButton" name="bt_fecha">
     <property name="geometry">
      <rect>
-      <x>730</x>
-      <y>600</y>
+      <x>600</x>
+      <y>610</y>
       <width>170</width>
       <height>40</height>
      </rect>
@@ -108,30 +95,17 @@ color: rgb(0, 0, 0);</string>
      <string>&lt;F10&gt;FECHAMENTO</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="mcodigo">
-    <property name="geometry">
-     <rect>
-      <x>560</x>
-      <y>100</y>
-      <width>150</width>
-      <height>40</height>
-     </rect>
-    </property>
-    <property name="maxLength">
-     <number>13</number>
-    </property>
-   </widget>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
       <x>440</x>
       <y>100</y>
-      <width>110</width>
+      <width>150</width>
       <height>40</height>
      </rect>
     </property>
     <property name="text">
-     <string>Codigo:</string>
+     <string>Cliente:</string>
     </property>
    </widget>
    <widget class="QLabel" name="sub_total">
@@ -160,22 +134,6 @@ color: rgb(0, 0, 0);</string>
       <width>90</width>
       <height>90</height>
      </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="usuario">
-    <property name="geometry">
-     <rect>
-      <x>1100</x>
-      <y>90</y>
-      <width>130</width>
-      <height>120</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(197, 205, 255);</string>
     </property>
     <property name="text">
      <string/>
@@ -211,86 +169,30 @@ color: rgb(0, 0, 0);</string>
      <string/>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="mquantidade">
-    <property name="geometry">
-     <rect>
-      <x>560</x>
-      <y>220</y>
-      <width>90</width>
-      <height>40</height>
-     </rect>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-    </property>
-    <property name="decimals">
-     <number>3</number>
-    </property>
-    <property name="minimum">
-     <double>0.001000000000000</double>
-    </property>
-    <property name="maximum">
-     <double>99999.990000000005239</double>
-    </property>
-    <property name="stepType">
-     <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
-    </property>
-    <property name="value">
-     <double>1.000000000000000</double>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
       <x>440</x>
-      <y>220</y>
-      <width>110</width>
+      <y>200</y>
+      <width>150</width>
       <height>40</height>
      </rect>
     </property>
     <property name="text">
-     <string>Quantidade:</string>
+     <string>Tipo de Desconto:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
       <x>440</x>
-      <y>270</y>
-      <width>110</width>
+      <y>250</y>
+      <width>150</width>
       <height>40</height>
      </rect>
     </property>
     <property name="text">
-     <string>Preco Venda R$:</string>
-    </property>
-   </widget>
-   <widget class="QDoubleSpinBox" name="mpreco_venda">
-    <property name="geometry">
-     <rect>
-      <x>560</x>
-      <y>270</y>
-      <width>130</width>
-      <height>40</height>
-     </rect>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-    </property>
-    <property name="decimals">
-     <number>3</number>
-    </property>
-    <property name="minimum">
-     <double>0.000000000000000</double>
-    </property>
-    <property name="maximum">
-     <double>99999.990000000005239</double>
-    </property>
-    <property name="stepType">
-     <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
-    </property>
-    <property name="value">
-     <double>0.000000000000000</double>
+     <string>Desconto:</string>
     </property>
    </widget>
    <widget class="QLabel" name="cabecalho">
@@ -314,35 +216,154 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>440</x>
-      <y>160</y>
-      <width>110</width>
+      <y>150</y>
+      <width>150</width>
       <height>40</height>
      </rect>
     </property>
     <property name="text">
-     <string>Saldo:</string>
+     <string>Forma de Pagamento:</string>
     </property>
    </widget>
-   <widget class="QLabel" name="saldo">
+   <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>560</x>
-      <y>160</y>
-      <width>110</width>
+      <x>440</x>
+      <y>300</y>
+      <width>150</width>
       <height>40</height>
      </rect>
     </property>
     <property name="text">
+     <string>Previsao de Entraga:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>350</y>
+      <width>150</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Observacao:</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>200</y>
+      <width>220</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="title">
      <string/>
+    </property>
+    <widget class="QRadioButton" name="rb_percentual">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>110</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Percentual</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="rb_valor">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>10</y>
+       <width>90</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Valor R$</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QDoubleSpinBox" name="ds_desconto">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>250</y>
+      <width>90</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QDateEdit" name="data_previsao">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>300</y>
+      <width>110</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="date">
+     <date>
+      <year>1900</year>
+      <month>1</month>
+      <day>1</day>
+     </date>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="cb_forma_pg">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>150</y>
+      <width>210</width>
+      <height>40</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="cb_cliente">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>100</y>
+      <width>320</width>
+      <height>40</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="obs">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>350</y>
+      <width>460</width>
+      <height>40</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="obs1">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>390</y>
+      <width>460</width>
+      <height>40</height>
+     </rect>
     </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <tabstops>
-  <tabstop>mcodigo</tabstop>
-  <tabstop>mquantidade</tabstop>
-  <tabstop>mpreco_venda</tabstop>
   <tabstop>bt_fecha</tabstop>
   <tabstop>textBrowser</tabstop>
  </tabstops>

@@ -79,17 +79,93 @@ lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
 mnum_ped = ""
 tela.mquantidade.setValue(1)
 lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
+lbl_cabecalho = tela.findChild(QtWidgets.QLabel, "cabecalho")
+lbl_saldo = tela.findChild(QtWidgets.QLabel, "saldo")
 data_atual = QDateTime.currentDateTime()
+
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        conexao_banco()
+        executar_consulta()
+
+
+def criar_tela():
+    tela.textBrowser.clear()
+    lbl_numero_pedido.setText(f" Numero Pedido: {mnum_ped}")
+    lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
+    try:
+        hti_global.conexao_cursor.execute(
+            f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{mnum_ped}'"
+        )
+        # # 145082Recupere o resultado
+        resultados = hti_global.conexao_cursor.fetchall()
+        hti_global.conexao_bd.commit()
+
+        lbl_sub_total = tela.findChild(QtWidgets.QLabel, "sub_total")
+        # lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
+        fonte = QtGui.QFont()
+        fonte.setFamily("Courier")
+        fonte.setPointSize(9)
+        tela.textBrowser.setFont(fonte)
+
+        # tela.textBrowser.append("Itens Codigo   Descricao                  ")
+        # tela.textBrowser.append('Quant.   Valor R$   Total R$')
+        # tela.textBrowser.append(
+        #     "--------------------------------------------------------"
+        # )
+        mtotal_geral = 0
+        i = 0
+        # Exibir os resultados no QTextEdit
+        if len(resultados) > 0:
+            for resultado in resultados:
+                i += 1
+                pcod_merc, pmerc, pquantd, pvlr_fat = resultado
+                # pcod_merc
+                mquantd = "{:9,.3f}".format(pquantd)
+                mvalor = "{:10,.2f}".format(pvlr_fat)
+                soma = pquantd * pvlr_fat
+                # ic(soma)
+                msoma = "{:12,.2f}".format(soma)
+                linha = f"  {i}   {pcod_merc}  {pmerc}"  # Formatar o campo valor como float com 2 casas decimais
+                linha1 = f"                   {mquantd} x {mvalor} = {msoma}"  # Formatar o campo valor como float com 2 casas decimais
+                mtotal_geral += soma
+                # linha = ' '.join(map(str, resultado))
+                tela.textBrowser.append(linha)
+                tela.textBrowser.append(linha1)
+                # print(f"{hti_global.c_produto}\\{mcodigo}.jpg")
+            if os.path.exists(f"{hti_global.c_produto}\\{pcod_merc}.jpg"):
+                imagem1 = QPixmap(f"{hti_global.c_produto}\\{pcod_merc}.jpg")
+            else:
+                if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
+                    imagem1 = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+                else:
+                    imagem1 = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+
+            pixmap_redim = imagem1.scaled(
+                500, 350
+            )  # redimensiona a imagem para 100x100
+            tela.foto_produto.setPixmap(pixmap_redim)
+            mtotal_g = "{:12,.2f}".format(mtotal_geral)
+            linha1 = f"SUB-TOTAL: {mtotal_g}"
+            lbl_sub_total.setText(linha1)
+            lbl_produto.setText(pmerc)
+        else:
+            lbl_produto.setText("C A I X A   L I V R E ")
+
+    except Exception as e:
+        print(f"Erro ao executar a consulta: {e}")
 
 
 def verificar_produto():
     # print(tela.mcodigo.text())
+    # ic()
     m_codigo = tela.mcodigo.text()
     if m_codigo[0] == "X":
         tela.mquantidade.setValue(float(m_codigo[1:20]))
         tela.mcodigo.setText("")
         return
-        # mquantidade = m_codigo[1]
     else:
         if len(m_codigo) <= 5:
             m_codigo = m_codigo.zfill(5)
@@ -103,8 +179,11 @@ def verificar_produto():
         ver_produto = hti_global.conexao_cursor.fetchone()
         hti_global.conexao_bd.commit()
         if ver_produto is None:
-            ic('Produto nao encontrado...')
+            QMessageBox.critical(tela, "ATENCAO", 'Produto nao encontrado...')
         else:
+            # if mnum_ped == '':
+            lbl_saldo.setText(ver_produto[55])
+            ic(ver_produto[55])
             tela.mpreco_venda.setValue(float(ver_produto[45]))
             m_quantidade = tela.mquantidade.value()
             m_pre_venda = tela.mpreco_venda.value()
@@ -118,6 +197,10 @@ def verificar_produto():
             # mhora = data_atual.toString("hh:mm:ss")
 
             mhora = datetime.now().strftime("%H:%M:%S")
+            # ic(f"UPDATE sacmerc SET saldo_mer = {m_saldo_pos}, data_atu = '{data_formatada}' WHERE cod_merc = {m_codmerc}")
+            hti_global.conexao_cursor.execute(f"UPDATE sacmerc SET saldo_mer = {m_saldo_pos}, "
+                                              f"data_atu = '{data_formatada}' WHERE cod_merc = {m_codmerc}")
+            hti_global.conexao_bd.commit()
 
             sql = (
                 "INSERT INTO logproduto ("
@@ -246,9 +329,6 @@ def verificar_produto():
                 "?, ?, ?, ?, ?, ?, ?) "
             )
 
-            # mver = ver_produto[72]
-            # ic(mver)
-
             hti_global.conexao_cursor.execute(
                 sql,
                 (
@@ -330,94 +410,23 @@ def verificar_produto():
                     1,
                     " "))
             hti_global.conexao_bd.commit()
-            tela.mcodigo.setText("")
-            tela.mpreco_venda.setValue(float(0))
-            # if not mnum_ped == '':
+
+    tela.mcodigo.setText("")
+    tela.mpreco_venda.setValue(float(0))
+    criar_tela()
+
+
+def editar_item():
+    ic()
 
 
 def executar_consulta():
-    # tela.mcodigo.textChanged.connect(pesquisa_produto)
-    # tela.mcodigo.returnPressed.connect(pesquisa_produto)
     tela.mcodigo.returnPressed.connect(verificar_produto)
-    # tela.mcodigo.installEventFilter(verificar_produto)
     tela.mcodigo.setFocus()
-
-    lbl_numero_pedido.setText(f" Numero Pedido: {mnum_ped}")
-
-    try:
-        hti_global.conexao_cursor.execute(
-            f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat, "
-            f"sum(pquantd * pvlr_fat) as soma "
-            f"FROM sacped_s WHERE pnum_ped = '{mnum_ped}' group by 1,2,3,4"
-        )
-        # # 145082Recupere o resultado
-        resultados = hti_global.conexao_cursor.fetchall()
-        hti_global.conexao_bd.commit()
-
-        lbl_sub_total = tela.findChild(QtWidgets.QLabel, "sub_total")
-        # lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
-        fonte = QtGui.QFont()
-        fonte.setFamily("Courier")
-        fonte.setPointSize(9)
-        tela.textBrowser.setFont(fonte)
-
-        tela.textBrowser.append("Itens Codigo   Descricao                  ")
-        # tela.textBrowser.append('Quant.   Valor R$   Total R$')
-        tela.textBrowser.append(
-            "--------------------------------------------------------"
-        )
-        mtotal_geral = 0
-        i = 0
-        # Exibir os resultados no QTextEdit
-        if len(resultados) > 0:
-            for resultado in resultados:
-                i += 1
-                pcod_merc, pmerc, pquantd, pvlr_fat, soma = resultado
-                # pcod_merc
-                mquantd = "{:9,.3f}".format(pquantd)
-                mvalor = "{:10,.2f}".format(pvlr_fat)
-                msoma = "{:12,.2f}".format(soma)
-                linha = f"  {i}   {pcod_merc}  {pmerc}"  # Formatar o campo valor como float com 2 casas decimais
-                linha1 = f"                   {mquantd} x {mvalor} = {msoma}"  # Formatar o campo valor como float com 2 casas decimais
-                mtotal_geral += soma
-                # linha = ' '.join(map(str, resultado))
-                tela.textBrowser.append(linha)
-                tela.textBrowser.append(linha1)
-                # print(f"{hti_global.c_produto}\\{mcodigo}.jpg")
-            if os.path.exists(f"{hti_global.c_produto}\\{pcod_merc}.jpg"):
-                imagem1 = QPixmap(f"{hti_global.c_produto}\\{pcod_merc}.jpg")
-            else:
-                if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
-                    imagem1 = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
-                else:
-                    imagem1 = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
-
-            pixmap_redim = imagem1.scaled(
-                500, 350
-            )  # redimensiona a imagem para 100x100
-            tela.foto_produto.setPixmap(pixmap_redim)
-            mtotal_g = "{:12,.2f}".format(mtotal_geral)
-            linha1 = f"SUB-TOTAL: {mtotal_g}"
-            lbl_sub_total.setText(linha1)
-            lbl_produto.setText(pmerc)
-        else:
-            lbl_produto.setText("C A I X A   L I V R E ")
-
-            # mtotal_g = "{:12,.2f}".format(mtotal_geral)
-            # linha1 = f"SUB-TOTAL: {mtotal_g}"
-            # lbl_sub_total.setText(linha1)
-            # lbl_produto.setText(pmerc)
-            # lcd = tela.findChild(QtWidgets.QLCDNumber, "lcdNumber")
-            # valor_sem_virgula = mtotal_g.replace(',', '')
-            # valor_numerico = float(valor_sem_virgula)
-            # lcd.display(float(valor_numerico))
-        # tela.tableWidget.cellActivated.connect(lambda row, col: editar_item(row))
-
-        tela.show()
-        app.exec()
-
-    except Exception as e:
-        print(f"Erro ao executar a consulta: {e}")
+    # tela.textBrowser.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
+    criar_tela()
+    tela.show()
+    app.exec()
 
 
 def pesquisa_produto():
@@ -451,16 +460,6 @@ def pesquisa_produto():
 # def venda():
 #     tela.mcodigo.textChanged.connect(pesquisa_produto)
 #     return
-
-
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-
-        # locale.setlocale(locale.LC_NUMERIC, '')
-        # Executar a consulta
-        conexao_banco()
-        executar_consulta()
 
 
 if __name__ == "__main__":

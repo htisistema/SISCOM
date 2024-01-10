@@ -63,7 +63,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -131,7 +131,7 @@
       </property>
       <property name="dateTime">
        <datetime>
-        <hour>0</hour>
+        <hour>3</hour>
         <minute>0</minute>
         <second>0</second>
         <year>1900</year>
@@ -294,7 +294,7 @@
        <string notr="true"/>
       </property>
      </widget>
-     <widget class="QComboBox" name="comboBox_5">
+     <widget class="QComboBox" name="cb_unidade">
       <property name="geometry">
        <rect>
         <x>160</x>
@@ -1689,7 +1689,7 @@
       </property>
       <property name="dateTime">
        <datetime>
-        <hour>3</hour>
+        <hour>6</hour>
         <minute>0</minute>
         <second>0</second>
         <year>1900</year>
@@ -2559,7 +2559,7 @@ font: 700 14pt &quot;Arial&quot;;</string>
   <tabstop>mcod_barr</tabstop>
   <tabstop>comboBox</tabstop>
   <tabstop>comboBox_4</tabstop>
-  <tabstop>comboBox_5</tabstop>
+  <tabstop>cb_unidade</tabstop>
   <tabstop>doubleSpinBox_2</tabstop>
   <tabstop>comboBox_15</tabstop>
   <tabstop>doubleSpinBox</tabstop>

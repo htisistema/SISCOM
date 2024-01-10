@@ -131,7 +131,7 @@
       </property>
       <property name="dateTime">
        <datetime>
-        <hour>15</hour>
+        <hour>18</hour>
         <minute>0</minute>
         <second>0</second>
         <year>1900</year>
@@ -301,7 +301,7 @@
        <string notr="true"/>
       </property>
      </widget>
-     <widget class="QComboBox" name="comboBox_5">
+     <widget class="QComboBox" name="cb_unidade">
       <property name="geometry">
        <rect>
         <x>160</x>
@@ -1800,7 +1800,7 @@
       </property>
       <property name="dateTime">
        <datetime>
-        <hour>18</hour>
+        <hour>21</hour>
         <minute>0</minute>
         <second>0</second>
         <year>1900</year>
@@ -2708,7 +2708,7 @@ border-radius: 12px;</string>
   <tabstop>comboBox_4</tabstop>
   <tabstop>mcod_merc</tabstop>
   <tabstop>mmerc</tabstop>
-  <tabstop>comboBox_5</tabstop>
+  <tabstop>cb_unidade</tabstop>
   <tabstop>doubleSpinBox_2</tabstop>
   <tabstop>doubleSpinBox</tabstop>
   <tabstop>doubleSpinBox_3</tabstop>

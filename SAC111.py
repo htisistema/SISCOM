@@ -7,13 +7,14 @@ from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QRadioButton, QComboBox
 from PyQt6.QtCore import QDate, QDateTime, QTime, QObject
 from datetime import datetime
 from datetime import date
+from hti_funcoes import conexao_banco
 import hti_global
 
 titulo = "ALTERACAO DE PRODUTOS"
 
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\htiproduto.ui")
+tela = uic.loadUi(f"{hti_global.c_ui}\\sac110.ui")
 icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
 icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
 icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
@@ -44,6 +45,7 @@ nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
 
+conexao_banco()
 hti_global.conexao_cursor.execute(f"SELECT * FROM sacsetup")
 # Recupere o resultado
 m_set = hti_global.conexao_cursor.fetchone()
@@ -92,12 +94,12 @@ arq_usuario = hti_global.conexao_cursor.fetchall()
 hti_global.conexao_bd.commit()
 
 # COMBOX
-tela.comboBox_3.addItems(["1->Produto", "2->Matria Prima", "3->Isumos", "4->Consumo", "5->Outros"])
+tela.comboBox_3.addItems(["1->Produto", "2->Materia Prima", "3->Isumos", "4->Consumo", "5->Outros"])
 tela.comboBox_3.setCurrentIndex(0)  # coloca o focus no index
 
-tela.comboBox_5.addItems(["UN ->Unidade", "AR ->Arroba", "CX ->Caixa", "FD ->Fardo", "KG ->Kilo", "MT ->Metro",
+tela.cb_unidade.addItems(["UN ->Unidade", "AR ->Arroba", "CX ->Caixa", "FD ->Fardo", "KG ->Kilo", "MT ->Metro",
                           "TON->Tonelada"])
-tela.comboBox_5.setCurrentIndex(0)  # coloca o focus no index
+tela.cb_unidade.setCurrentIndex(0)  # coloca o focus no index
 
 hti_global.conexao_cursor.execute(f"SELECT cod_espe, descri FROM sacespe")
 arq_espe = hti_global.conexao_cursor.fetchall()
@@ -275,8 +277,8 @@ def salvar_produto():
     mop = tela.comboBox_4.itemText(index)
     m_sub_grupo = mop[0:5]
 
-    index = tela.comboBox_5.currentIndex()
-    mop = tela.comboBox_5.itemText(index)
+    index = tela.cb_unidade.currentIndex()
+    mop = tela.cb_unidade.itemText(index)
     m_unidade = mop[0:3]
 
     m_pr_venda = tela.doubleSpinBox_2.value()
@@ -725,10 +727,10 @@ def alteracao_produto(codigo_produto):
 
     tela.mmerc.setText(str(arq_prod[8]))
 
-    for i in range(tela.comboBox_5.count()):
-        item_text = tela.comboBox_5.itemText(i)
+    for i in range(tela.cb_unidade.count()):
+        item_text = tela.cb_unidade.itemText(i)
         if str(arq_prod[13]).strip() in item_text:
-            tela.comboBox_5.setCurrentIndex(i)
+            tela.cb_unidade.setCurrentIndex(i)
             break
 
     tela.doubleSpinBox_2.setValue(float(arq_prod[45]))

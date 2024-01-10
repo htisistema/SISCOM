@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QButtonGroup
 from PyQt6.QtCore import QDateTime, Qt
 import keyboard
 from datetime import datetime
-from hti_funcoes import conexao_banco
+from hti_funcoes import conexao_banco, gerar_numero_pedido
 import hti_global
 import os
 from icecream import ic
@@ -120,17 +120,6 @@ class MainWindow(QMainWindow):
         conexao_banco()
         fechar_pedido(mnum_ped)
 
-    def keyPressEvent(self, event):
-        if event.key() == Qt.Key.Key_F10:
-            self.minha_funcao()
-
-
-def minha_funcao():
-    ic("F10 Pressionado", "A tecla F10 foi pressionada!")
-
-
-# keyboard.add_hotkey('F10', minha_funcao) ativa a tecla F10
-
 
 def criar_tela(mnum_pedido):
     tela.textBrowser.clear()
@@ -164,7 +153,7 @@ def criar_tela(mnum_pedido):
                 # ic(soma)
                 msoma = "{:12,.2f}".format(soma)
                 linha = f"  {i}   {pcod_merc}  {pmerc}"
-                linha1 = f"                   {mquantd} x {mvalor} = {msoma}"
+                linha1 = f"              {mquantd} x {mvalor} = {msoma}"
                 mtotal_geral += soma
                 # linha = ' '.join(map(str, resultado))
                 tela.textBrowser.append(linha)
@@ -182,22 +171,24 @@ def salva_pedido():
     ic()
 
 
-def fechar_pedido(mnum_pedido):
-    hti_global.conexao_cursor.execute(f"SELECT pcod_cli FROM sacped_s WHERE pnum_ped = '{mnum_pedido}'")
-    res_pedido = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
-    # ic(res_pedido[0])
-    if res_pedido[0] == 0:
-        mcod_cli = m_set[83]
-    else:
-        mcod_cli = res_pedido[0]
+def verifica_condicao():
+    index = tela.cb_forma_pg.currentIndex()
+    mop = tela.cb_forma_pg.itemText(index)
+    m_tipo_pag = mop[0:1]
+    ic(m_tipo_pag)
+    if m_tipo_pag == '3' or m_tipo_pag == '4' or m_tipo_pag == '5':
+        tela.ds_entrada.setEnabled(True)
+        tela.ds_qtd_dias.setEnabled(True)
+        tela.ds_entrada.setFocus()
 
-    for i in range(tela.cb_cliente.count()):
-        item_text = tela.cb_cliente.itemText(i)
-        if str(mcod_cli).strip() in item_text:
-            tela.cb_cliente.setCurrentIndex(i)
-            break
+    return
 
+
+def liberar_campos():
+    tela.groupBox.setEnabled(False)
+    tela.ds_desconto.setEnabled(False)
+    tela.data_previsao.setEnabled(False)
+    tela.ds_vlr_entrada.setEnabled(False)
     tela.ds_entrada.setEnabled(False)
     tela.ds_qtd_dias.setEnabled(False)
     tela.ds_dia1.setEnabled(False)
@@ -215,6 +206,62 @@ def fechar_pedido(mnum_pedido):
     tela.ds_dia13.setEnabled(False)
     tela.ds_dia14.setEnabled(False)
     tela.ds_dia15.setEnabled(False)
+    mentrada = tela.ds_entrada.value()
+    mqtd_dias = tela.ds_qtd_dias.value()
+    if mentrada > 0:
+        tela.ds_vlr_entrada.setEnabled(True)
+
+    if mqtd_dias >= 1:
+        tela.ds_dia1.setEnabled(True)
+        tela.ds_dia1.setFocus()
+    if mqtd_dias >= 2:
+        tela.ds_dia2.setEnabled(True)
+    if mqtd_dias >= 3:
+        tela.ds_dia3.setEnabled(True)
+    if mqtd_dias >= 4:
+        tela.ds_dia4.setEnabled(True)
+    if mqtd_dias >= 5:
+        tela.ds_dia5.setEnabled(True)
+    if mqtd_dias >= 6:
+        tela.ds_dia6.setEnabled(True)
+    if mqtd_dias >= 7:
+        tela.ds_dia7.setEnabled(True)
+    if mqtd_dias >= 8:
+        tela.ds_dia8.setEnabled(True)
+    if mqtd_dias >= 9:
+        tela.ds_dia9.setEnabled(True)
+    if mqtd_dias >= 10:
+        tela.ds_dia10.setEnabled(True)
+    if mqtd_dias >= 11:
+        tela.ds_dia11.setEnabled(True)
+    if mqtd_dias >= 12:
+        tela.ds_dia12.setEnabled(True)
+    if mqtd_dias >= 13:
+        tela.ds_dia13.setEnabled(True)
+    if mqtd_dias >= 14:
+        tela.ds_dia14.setEnabled(True)
+    if mqtd_dias >= 15:
+        tela.ds_dia15.setEnabled(True)
+
+
+def fechar_pedido(mnum_pedido):
+    hti_global.conexao_cursor.execute(f"SELECT pcod_cli FROM sacped_s WHERE pnum_ped = '{mnum_pedido}'")
+    res_pedido = hti_global.conexao_cursor.fetchone()
+    hti_global.conexao_bd.commit()
+    # ic(res_pedido[0])
+    if res_pedido[0] == 0:
+        mcod_cli = m_set[83]
+    else:
+        mcod_cli = res_pedido[0]
+
+    for i in range(tela.cb_cliente.count()):
+        item_text = tela.cb_cliente.itemText(i)
+        if str(mcod_cli).strip() in item_text:
+            tela.cb_cliente.setCurrentIndex(i)
+            break
+    liberar_campos()
+    tela.cb_forma_pg.currentIndexChanged.connect(verifica_condicao)
+    tela.ds_qtd_dias.valueChanged.connect(liberar_campos)
 
     tela.bt_fecha.clicked.connect(salva_pedido)
     tela.bt_fecha.setIcon(icon_salvar)
@@ -233,3 +280,33 @@ if __name__ == "__main__":
     mnum_ped = "145082"
     fechar_pedido(mnum_ped)
     hti_global.conexao_bd.close()
+
+                # IF m_set[1,37] = 'S'
+                #         op_tela(10,35,13,75,' Dados do Carro ')
+                #         DEVPOS(00,00);DEVOUT('Placa No..:')
+                #         DEVPOS(01,00);DEVOUT('Marca.....:')
+                #         DEVPOS(02,00);DEVOUT('Modelo....:')
+                #         DEVPOS(03,00);DEVOUT('KM........:')
+                #         mensagem('Preencha os campos')
+                #         @ 00,12 GET mplaca PICT '@!'
+                #         READ
+                #         IF ! EMPTY(mplaca)
+                #                 m_envelope:={}
+                #                 sr_getconnection():exec("SELECT * FROM sacped_s WHERE sr_deleted = ' ' AND penvelope = "+sr_cdbvalue(mplaca),,.t.,@m_envelope)
+                #                 sr_getconnection():exec('COMMIT',,.f.)
+                #                 IF LEN(m_envelope) > 0
+                #                         mcarro  := m_envelope[1,27]
+                #                         mmodelo := m_envelope[1,28]
+                #                         mkm     := m_envelope[1,29]
+                #                 ENDIF
+                #         ENDIF
+                #         @ 01,12 GET mcarro PICT '@!'
+                #         @ 02,12 GET mmodelo PICT '@!'
+                #         @ 03,12 GET mkm PICT '@!'
+                #         READ
+                #         opcao := op_simnao('S','Confirma os dados digitados:')
+        		# fecha_tela()
+                #         IF LASTKEY() = 27 .OR. opcao = 'N'
+                #                 LOOP
+                #         ENDIF
+                # ENDIF

@@ -4,7 +4,7 @@ import hti_global
 
 def conexao_banco():
     # Conecte-se ao banco de dados
-    print('conexao')
+    # print('conexao')
     hti_global.conexao_bd = fdb.connect(dsn=hti_global.host, user='SYSDBA', password='masterkey')
     hti_global.conexao_cursor = hti_global.conexao_bd.cursor()
     return
@@ -25,7 +25,7 @@ def ver_nivel(mmodulo, mdescri, mnivel, mconf_nivel, mamb, mopera):
     # print(mmodulo)
     hti_global.conexao_cursor.execute(f"SELECT * FROM sacconf WHERE TRIM(modulo) = '{mmodulo.strip()}'")
     arq_conf = hti_global.conexao_cursor.fetchone()
-    # hti_global.conexao_db.commit()
+    hti_global.conexao_bd.commit()
 
     if arq_conf is not None and arq_conf[2][0] == '0':
         print('achou1')
@@ -89,8 +89,29 @@ def ver_nivel(mmodulo, mdescri, mnivel, mconf_nivel, mamb, mopera):
         print('achou5')
         sql = "INSERT INTO sacconf SET ( modulo, descri, nivel, SR_DELETED) VALUES (?, ?, ?, ?)"
         hti_global.conexao_cursor.execute(sql, (mmodulo, mdescri, mnivel, ' '))
-        hti_global.conexao_db.commit()
+        hti_global.conexao_bd.commit()
         return False
+
+
+def gerar_numero_pedido():
+    hti_global.conexao_cursor.execute("select COUNT(*) from sacnoped")
+    arq_noped = hti_global.conexao_cursor.fetchone()
+    hti_global.conexao_bd.commit()
+
+    if arq_noped[0] == 0:
+        hti_global.conexao_cursor.execute(f"INSERT INTO sacnoped (numero,SR_DELETED) VALUES ('000000',' ')")
+        hti_global.conexao_bd.commit()
+
+    hti_global.conexao_cursor.execute("select numero from sacnoped where sr_recno = 1")
+    arq_noped = hti_global.conexao_cursor.fetchone()
+    hti_global.conexao_bd.commit()
+    print(arq_noped[0])
+    mnum_ped = int(float(arq_noped[0]) + 1)
+    mnum_pedido = str(mnum_ped)
+    print(f"update sacnoped set numero = {mnum_ped} where sr_recno = 1")
+    hti_global.conexao_cursor.execute(f"update sacnoped set numero = '{mnum_pedido}' where sr_recno = 1")
+    hti_global.conexao_bd.commit()
+    return mnum_pedido
 
 
 def criar_tabelas():
@@ -110,7 +131,7 @@ def criar_tabelas():
             "app_imagem varchar(100), ref char(13), gru_sub char(5), cod_merc char(5) not null, "
             "merc char(40), tipo_merc char(1), balanca char(1), data_atu date, "
             "data_cad date, unidade char(3), especie char(4), peso_liq decimal(8, 3), peso  decimal(8, 3))")
-        hti_global.conexao_db.commit()
+        hti_global.conexao_bd.commit()
         print('A tabela criada com sucesso no banco de dados.')
         return True
 

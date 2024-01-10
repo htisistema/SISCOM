@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PyQt6.QtCore import QDateTime
 from datetime import datetime
 import keyboard
-from hti_funcoes import conexao_banco
+from hti_funcoes import conexao_banco, gerar_numero_pedido
 import hti_global
 import os
 from icecream import ic
@@ -79,7 +79,7 @@ tela.usuario.setPixmap(pixmap_redimensionado)
 lbl_operador.setText(f" Operador: {hti_global.geral_cod_usuario}")
 lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
 
-mnum_ped = ""
+mnum_ped = " "
 tela.mquantidade.setValue(1)
 lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
 lbl_cabecalho = tela.findChild(QtWidgets.QLabel, "cabecalho")
@@ -189,7 +189,9 @@ def verificar_produto():
         if ver_produto is None:
             QMessageBox.critical(tela, "ATENCAO", 'Produto nao encontrado...')
         else:
-            # if mnum_ped == '':
+            if mnum_ped == ' ':
+                mnum_ped = gerar_numero_pedido()
+
             lbl_saldo.setText(ver_produto[55])
             ic(ver_produto[55])
             tela.mpreco_venda.setValue(float(ver_produto[45]))

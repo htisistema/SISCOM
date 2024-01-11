@@ -2,9 +2,9 @@ from PyQt6 import uic, QtWidgets, QtGui
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QButtonGroup
 from PyQt6.QtCore import QDateTime, Qt
-import keyboard
-from datetime import datetime
-from hti_funcoes import conexao_banco, gerar_numero_pedido
+# import keyboard
+# from datetime import datetime
+from hti_funcoes import conexao_banco
 import hti_global
 import os
 from icecream import ic
@@ -172,14 +172,23 @@ def salva_pedido():
 
 
 def verifica_condicao():
+    tela.ds_vlr_entrada.setValue(float(0))
+    tela.ds_entrada.setValue(float(0))
+    tela.ds_qtd_dias.setValue(float(0))
+
     index = tela.cb_forma_pg.currentIndex()
     mop = tela.cb_forma_pg.itemText(index)
     m_tipo_pag = mop[0:1]
     ic(m_tipo_pag)
-    if m_tipo_pag == '3' or m_tipo_pag == '4' or m_tipo_pag == '5':
+    if m_tipo_pag == '3':
+        tela.ds_qtd_dias.setEnabled(True)
+        tela.ds_qtd_dias.setFocus()
+        tela.ds_qtd_dias.selectAll()
+    elif m_tipo_pag == '4' or m_tipo_pag == '5':
         tela.ds_entrada.setEnabled(True)
         tela.ds_qtd_dias.setEnabled(True)
         tela.ds_entrada.setFocus()
+        tela.ds_entrada.selectAll()
 
     return
 
@@ -206,42 +215,110 @@ def liberar_campos():
     tela.ds_dia13.setEnabled(False)
     tela.ds_dia14.setEnabled(False)
     tela.ds_dia15.setEnabled(False)
+
+    tela.ds_dia1.setValue(float(0))
+    tela.ds_dia2.setValue(float(0))
+    tela.ds_dia3.setValue(float(0))
+    tela.ds_dia4.setValue(float(0))
+    tela.ds_dia5.setValue(float(0))
+    tela.ds_dia6.setValue(float(0))
+    tela.ds_dia7.setValue(float(0))
+    tela.ds_dia8.setValue(float(0))
+    tela.ds_dia9.setValue(float(0))
+    tela.ds_dia10.setValue(float(0))
+    tela.ds_dia11.setValue(float(0))
+    tela.ds_dia12.setValue(float(0))
+    tela.ds_dia13.setValue(float(0))
+    tela.ds_dia14.setValue(float(0))
+    tela.ds_dia15.setValue(float(0))
+
+    index = tela.cb_forma_pg.currentIndex()
+    mop = tela.cb_forma_pg.itemText(index)
+    m_tipo_pag = mop[0:1]
     mentrada = tela.ds_entrada.value()
     mqtd_dias = tela.ds_qtd_dias.value()
     if mentrada > 0:
         tela.ds_vlr_entrada.setEnabled(True)
 
     if mqtd_dias >= 1:
-        tela.ds_dia1.setEnabled(True)
-        tela.ds_dia1.setFocus()
+        if m_tipo_pag == '3':
+            tela.ds_dia1.setValue(float(30))
+        else:
+            tela.ds_dia1.setEnabled(True)
+            tela.ds_dia1.setFocus()
+            tela.ds_dia1.selectAll()
+
     if mqtd_dias >= 2:
-        tela.ds_dia2.setEnabled(True)
+        if m_tipo_pag == '3':
+            tela.ds_dia2.setValue(float(60))
+        else:
+            tela.ds_dia2.setEnabled(True)
     if mqtd_dias >= 3:
-        tela.ds_dia3.setEnabled(True)
+        if m_tipo_pag == '3':
+            tela.ds_dia3.setValue(float(90))
+        else:
+            tela.ds_dia3.setEnabled(True)
     if mqtd_dias >= 4:
-        tela.ds_dia4.setEnabled(True)
+        if m_tipo_pag == '3':
+            tela.ds_dia4.setValue(float(120))
+        else:
+            tela.ds_dia4.setEnabled(True)
     if mqtd_dias >= 5:
-        tela.ds_dia5.setEnabled(True)
+        if m_tipo_pag == '3':
+            tela.ds_dia5.setValue(float(150))
+        else:
+            tela.ds_dia5.setEnabled(True)
     if mqtd_dias >= 6:
-        tela.ds_dia6.setEnabled(True)
+        if m_tipo_pag == '3':
+            tela.ds_dia6.setValue(float(180))
+        else:
+            tela.ds_dia6.setEnabled(True)
     if mqtd_dias >= 7:
-        tela.ds_dia7.setEnabled(True)
+        if m_tipo_pag == '3':
+            tela.ds_dia7.setValue(float(210))
+        else:
+            tela.ds_dia7.setEnabled(True)
     if mqtd_dias >= 8:
-        tela.ds_dia8.setEnabled(True)
+        if m_tipo_pag == '3':
+            tela.ds_dia8.setValue(float(240))
+        else:
+            tela.ds_dia8.setEnabled(True)
     if mqtd_dias >= 9:
-        tela.ds_dia9.setEnabled(True)
+        if m_tipo_pag == '3':
+            tela.ds_dia9.setValue(float(270))
+        else:
+            tela.ds_dia9.setEnabled(True)
     if mqtd_dias >= 10:
-        tela.ds_dia10.setEnabled(True)
+        if m_tipo_pag == '3':
+            tela.ds_dia10.setValue(float(300))
+        else:
+            tela.ds_dia10.setEnabled(True)
     if mqtd_dias >= 11:
-        tela.ds_dia11.setEnabled(True)
+        if m_tipo_pag == '3':
+            tela.ds_dia11.setValue(float(330))
+        else:
+            tela.ds_dia11.setEnabled(True)
     if mqtd_dias >= 12:
-        tela.ds_dia12.setEnabled(True)
+        if m_tipo_pag == '3':
+            tela.ds_dia12.setValue(float(360))
+        else:
+            tela.ds_dia12.setEnabled(True)
+
     if mqtd_dias >= 13:
-        tela.ds_dia13.setEnabled(True)
+        if m_tipo_pag == '3':
+            tela.ds_dia13.setValue(float(390))
+        else:
+            tela.ds_dia13.setEnabled(True)
     if mqtd_dias >= 14:
-        tela.ds_dia14.setEnabled(True)
+        if m_tipo_pag == '3':
+            tela.ds_dia14.setValue(float(420))
+        else:
+            tela.ds_dia14.setEnabled(True)
     if mqtd_dias >= 15:
-        tela.ds_dia15.setEnabled(True)
+        if m_tipo_pag == '3':
+            tela.ds_dia15.setValue(float(450))
+        else:
+            tela.ds_dia15.setEnabled(True)
 
 
 def fechar_pedido(mnum_pedido):

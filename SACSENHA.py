@@ -2,7 +2,7 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup
 import os
-import hti_global
+import hti_global as hg
 
 # PEGA O NOME DO ARQUIVO EM EXECUCAO
 nome_file_com = os.path.basename(__file__)
@@ -10,13 +10,13 @@ nome_file, ext = os.path.splitext(nome_file_com)
 
 titulo = 'USUARIO CADASTRADO'
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_usuario.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_usuario.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -24,7 +24,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -116,7 +116,7 @@ def editar_item(row):
 
 def pesquisa():
     nome_buscar = tela.pesquisa.text()
-    hti_global.conexao_cursor.execute(f"SELECT CAST(scod_op as char(5)) as cod_op,COALESCE(snome, ' ') as nome,"
+    hg.conexao_cursor.execute(f"SELECT CAST(scod_op as char(5)) as cod_op,COALESCE(snome, ' ') as nome,"
                                       f"COALESCE(stipo, ' ') as tipo,COALESCE(stipo_sis, ' ') as tiposis,"
                                       f"COALESCE(snivel, ' ') as nivel, "
                                       f"COALESCE(fone, ' ') as fone, cidade, uf, "
@@ -127,8 +127,8 @@ def pesquisa():
 
 def listar_usuario():
     pesquisa()
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tela.tableWidget.setRowCount(len(dados_lidos))
     # tela.tableWidget.setColumnWidth(0, 100)
     tela.tableWidget.setColumnCount(10)
@@ -167,4 +167,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_usuario()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

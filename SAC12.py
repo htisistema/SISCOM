@@ -4,24 +4,24 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QTableWidgetItem, QAbstractItemView
 import os
-import hti_global
+import hti_global as hg
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_transportadora.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_transportadora.ui")
 tela.setWindowTitle('TRANSPORTADORA CADASTRADO')
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -90,7 +90,7 @@ def f_incl_transportadora():
 
 
 def listar_transportadora():
-    hti_global.conexao_cursor.execute(f"SELECT CAST(cod_tran as char(5)),COALESCE(razao, ' '),"
+    hg.conexao_cursor.execute(f"SELECT CAST(cod_tran as char(5)),COALESCE(razao, ' '),"
                                       f"COALESCE(cgc, ' '),"
                                       f"COALESCE(cpf, ' '), "
                                       f"tel1, cidade,"
@@ -99,8 +99,8 @@ def listar_transportadora():
                                       f"uf_placa,  "
                                       f"antt  "
                                       f"FROM sactran")
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tabela.setRowCount(len(dados_lidos))
     tabela.setColumnCount(10)
     tabela.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -130,6 +130,6 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_transportadora()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()
     tela.close()
     app.quit()

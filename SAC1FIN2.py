@@ -5,25 +5,25 @@ from PyQt6 import QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox
 import os
-import hti_global
+import hti_global as hg
 from SAC1FIN import listar_financiamento
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\htifinanciamento.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\htifinanciamento.ui")
 tela.setWindowTitle('ALTERACAO de FINANCIAMENTO')
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -65,9 +65,9 @@ def salvar_financiamento():
     m_tipo_fin = ''.join(filter(str.isdigit, m_tipo_fin))
 
     # print(m_tipo_fin)
-    # hti_global.conexao_cursor.execute(f"SELECT * FROM sacfin WHERE cod_fin = {m_cod_fin} AND tipo_fin = {m_tipo_fin} ")
-    # arq_ver_cart = hti_global.conexao_cursor.fetchone()
-    # hti_global.conexao_bd.rollback()
+    # hg.conexao_cursor.execute(f"SELECT * FROM sacfin WHERE cod_fin = {m_cod_fin} AND tipo_fin = {m_tipo_fin} ")
+    # arq_ver_cart = hg.conexao_cursor.fetchone()
+    # hg.conexao_bd.rollback()
     #
     # if arq_ver_cart is not None:
     #     QMessageBox.information(tela, "alteracao de financiamento", "financiamento ja CADASTRADO !")
@@ -85,8 +85,8 @@ def salvar_financiamento():
 
     sql = "UPDATE sacfin SET desc_fin = ?, cobra_fin = ?, taxa_fin = ?, taxa_adm = ? WHERE cod_fin = ?"
 
-    hti_global.conexao_cursor.execute(sql, (m_desc_fin, m_cobra_fin, m_taxa_fin, m_taxa_adm, m_cod_fin))
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(sql, (m_desc_fin, m_cobra_fin, m_taxa_fin, m_taxa_adm, m_cod_fin))
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "alteracao de financiamento", "Cadastro feito com SUCESSO!")
     return
     # alteracao_financiamento()
@@ -94,8 +94,8 @@ def salvar_financiamento():
 
 def alteracao_financiamento(codigo_finan):
     # PEGAR O ULTIMO NUMERO DOS financiamento E ACRESCENTA 1
-    hti_global.conexao_cursor.execute(f"SELECT * FROM sacfin WHERE cod_fin = {codigo_finan}")
-    arq_finan = hti_global.conexao_cursor.fetchone()
+    hg.conexao_cursor.execute(f"SELECT * FROM sacfin WHERE cod_fin = {codigo_finan}")
+    arq_finan = hg.conexao_cursor.fetchone()
 
     tela.mcod_fin.setText((str(arq_finan[0]).zfill(3)))
     tela.mdesc_fin.setText(arq_finan[1])
@@ -134,4 +134,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     alteracao_financiamento('0001')
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

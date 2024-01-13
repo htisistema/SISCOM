@@ -6,26 +6,26 @@ from PyQt6.QtWidgets import QMessageBox
 from PyQt6.QtCore import QDateTime, QDate
 from datetime import datetime, date
 import os
-import hti_global
+import hti_global as hg
 
-hti_global.conexao_cursor.execute(f"SELECT * FROM sacsetup")
-# Recupere o resultado
-m_set = hti_global.conexao_cursor.fetchone()
-hti_global.conexao_bd.commit()
+# hg.conexao_cursor.execute(f"SELECT * FROM sacsetup")
+# # Recupere o resultado
+# m_set = hg.conexao_cursor.fetchone()
+# hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT cidade FROM saccid ORDER BY cidade")
-arq_cidade = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+hg.conexao_cursor.execute(f"SELECT cidade FROM saccid ORDER BY cidade")
+arq_cidade = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\empresa.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\empresa.ui")
 tela.setWindowTitle('CADASTRO DA EMPRESA')
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -47,7 +47,7 @@ tela.statusBar.showMessage(f"<< {nome_file} >>")
 
 data_vazia = date(1900, 1, 1)
 
-tela.comboBox.addItems(hti_global.estados)
+tela.comboBox.addItems(hg.estados)
 
 for ret_cidade in arq_cidade:
     item = f'{ret_cidade[0]}'.strip('(),')
@@ -127,8 +127,8 @@ def salvar_empresa():
               m_contato, m_cont_cpf, m_logradouro, m_cont_numer, m_cont_compl, m_cont_bairr, m_cont_tel,
               m_cod_acess, m_serie)
 
-    hti_global.conexao_cursor.execute(sql, values)
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(sql, values)
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Cadastro da EMPRESA", "Atualizacao feito com SUCESSO!")
 
     cadastro_empresa()
@@ -136,57 +136,57 @@ def salvar_empresa():
 
 def cadastro_empresa():
     # mdataini
-    if m_set[137] is None:
+    if hg.m_set[137] is None:
         data_hora = QDateTime(QDate(1900, 1, 1))
     else:
         tela.mdataini.setDisabled(True)
-        data_hora = QtCore.QDateTime(m_set[137])
+        data_hora = QtCore.QDateTime(hg.m_set[137])
     tela.mdataini.setDateTime(data_hora)
 
-    tela.mrazao.setText(str(m_set[128]).strip())
-    tela.mfantasia.setText(str(m_set[129]).strip())
+    tela.mrazao.setText(str(hg.m_set[128]).strip())
+    tela.mfantasia.setText(str(hg.m_set[129]).strip())
     # ENVIA PARA POCKET
     rb_app_group = QButtonGroup()
     rb_app_group.addButton(tela.rb_nome_cab_razao, id=1)
     rb_app_group.addButton(tela.rb_nome_cab_fantasia, id=2)
-    if m_set[130] == 'F':
+    if hg.m_set[130] == 'F':
         tela.rb_nome_cab_fantasia.setChecked(True)
     else:
         tela.rb_nome_cab_razao.setChecked(True)
-    mcnpj = str(m_set[122])
+    mcnpj = str(hg.m_set[122])
     mcnpj = mcnpj[:14]
     tela.mcgc.setText(mcnpj)    # .strip())
-    tela.minsc.setText(str(m_set[127]).strip())
-    tela.minsc_mun.setText(str(m_set[155]).strip())
-    tela.mcnae.setText(str(m_set[156]).strip())
-    tela.mend_firma.setText(str(m_set[131]).strip())
-    tela.mnumero.setText(str(m_set[160]).strip())
-    tela.mbairro.setText(str(m_set[132]).strip())
+    tela.minsc.setText(str(hg.m_set[127]).strip())
+    tela.minsc_mun.setText(str(hg.m_set[155]).strip())
+    tela.mcnae.setText(str(hg.m_set[156]).strip())
+    tela.mend_firma.setText(str(hg.m_set[131]).strip())
+    tela.mnumero.setText(str(hg.m_set[160]).strip())
+    tela.mbairro.setText(str(hg.m_set[132]).strip())
 
     for i in range(tela.comboBox_2.count()):
         item_text = tela.comboBox_2.itemText(i)
-        if str(m_set[133]).strip() in item_text:
+        if str(hg.m_set[133]).strip() in item_text:
             tela.comboBox_2.setCurrentIndex(i)
             break
 
     for i in range(tela.comboBox.count()):
         item_text = tela.comboBox.itemText(i)
-        if str(m_set[18]).strip() in item_text:
+        if str(hg.m_set[18]).strip() in item_text:
             tela.comboBox.setCurrentIndex(i)
             break
 
-    tela.mcep.setText(str(m_set[134]).strip())
-    tela.mfone.setText(str(m_set[135]).strip())
-    tela.memail.setText(str(m_set[136]).strip())
-    tela.mcontato.setText(str(m_set[143]).strip())
-    tela.mcont_cpf.setText(str(m_set[145]).strip())
-    tela.mlogradouro.setText(str(m_set[138]).strip())
-    tela.mcont_numer.setText(str(m_set[139]).strip())
-    tela.mcont_compl.setText(str(m_set[140]).strip())
-    tela.mcont_bairr.setText(str(m_set[141]).strip())
-    tela.mcont_tel.setText(str(m_set[144]).strip())
-    tela.mcod_acess.setText(str(m_set[179]).strip())
-    mserie_ = str(m_set[122])
+    tela.mcep.setText(str(hg.m_set[134]).strip())
+    tela.mfone.setText(str(hg.m_set[135]).strip())
+    tela.memail.setText(str(hg.m_set[136]).strip())
+    tela.mcontato.setText(str(hg.m_set[143]).strip())
+    tela.mcont_cpf.setText(str(hg.m_set[145]).strip())
+    tela.mlogradouro.setText(str(hg.m_set[138]).strip())
+    tela.mcont_numer.setText(str(hg.m_set[139]).strip())
+    tela.mcont_compl.setText(str(hg.m_set[140]).strip())
+    tela.mcont_bairr.setText(str(hg.m_set[141]).strip())
+    tela.mcont_tel.setText(str(hg.m_set[144]).strip())
+    tela.mcod_acess.setText(str(hg.m_set[179]).strip())
+    mserie_ = str(hg.m_set[122])
     mserie_ = mserie_[14:]
     tela.mserie.setText(mserie_)
 
@@ -246,4 +246,4 @@ def cadastro_empresa():
 if __name__ == '__main__':
     # listar_dados()
     cadastro_empresa()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

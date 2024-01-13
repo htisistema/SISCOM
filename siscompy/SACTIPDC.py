@@ -4,7 +4,7 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox
 import os
-import hti_global
+import hti_global as hg
 
 app = QtWidgets.QApplication([])
 tela = uic.loadUi("C:\BACKUP_HTI\TELASREMOTA(PYTHON)\lista_documento.ui")
@@ -17,7 +17,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -58,9 +58,9 @@ def f_incl_documento():
     m_descricao = tela.mdescricao.text().upper()
 
     sql = "INSERT INTO sactipdc (tipo_doc, descri, sr_deleted) VALUES (?, ?, ?) "
-    hti_global.conexao_cursor.execute(sql, (m_sigla, m_descricao, ' '))
+    hg.conexao_cursor.execute(sql, (m_sigla, m_descricao, ' '))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de TIPO DE DOCUMENTO", "Cadastro feito com SUCESSO!")
 
     tela.msigla.setEnabled(False)
@@ -134,10 +134,10 @@ def desabilitar_objeto():
 
 
 def listar_documento():
-    hti_global.conexao_cursor.execute(f"SELECT tipo_doc, descri FROM sactipdc order BY tipo_doc")
+    hg.conexao_cursor.execute(f"SELECT tipo_doc, descri FROM sactipdc order BY tipo_doc")
 
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tela.tableWidget.setRowCount(len(dados_lidos))
     tela.tableWidget.setColumnCount(2)
     for i, linha in enumerate(dados_lidos):
@@ -176,4 +176,4 @@ tela.tableWidget.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
 
 if __name__ == '__main__':
     listar_documento()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

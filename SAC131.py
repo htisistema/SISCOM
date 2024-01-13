@@ -7,17 +7,17 @@ from PyQt6.QtWidgets import QButtonGroup
 from PyQt6.QtWidgets import QRadioButton, QMessageBox
 from PyQt6.QtCore import QDate, QDateTime, QTime
 from datetime import datetime, date
-import hti_global
+import hti_global as hg
 
 titulo = "ALTERACAO DE CLIENTES"
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\sac130.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\sac130.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -25,7 +25,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -42,45 +42,45 @@ nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
-if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
 else:
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
 pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
 tela.empresa.setPixmap(pixmap_redimensionado)
 
-hti_global.conexao_cursor.execute(f"SELECT * FROM sacsetup")
+# hg.conexao_cursor.execute(f"SELECT * FROM sacsetup")
+# # Recupere o resultado
+# m_set = hg.conexao_cursor.fetchone()
+# hg.conexao_bd.commit()
+
+hg.conexao_cursor.execute(f"SELECT cidade FROM saccid ORDER BY cidade")
+arq_cidade = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
+
+hg.conexao_cursor.execute(f"SELECT cod_profi, profi FROM sacprofi")
 # Recupere o resultado
-m_set = hti_global.conexao_cursor.fetchone()
-hti_global.conexao_bd.commit()
+arq_profi = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT cidade FROM saccid ORDER BY cidade")
-arq_cidade = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
-
-hti_global.conexao_cursor.execute(f"SELECT cod_profi, profi FROM sacprofi")
+hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
 # Recupere o resultado
-arq_profi = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_usuario = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
+hg.conexao_cursor.execute(f"SELECT codigo, descri FROM sactabpg ORDER BY codigo")
 # Recupere o resultado
-arq_usuario = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_sactabpg = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT codigo, descri FROM sactabpg ORDER BY codigo")
-# Recupere o resultado
-arq_sactabpg = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+hg.conexao_cursor.execute(f"SELECT codigo, regiao FROM regiao")
+arq_regiao = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT codigo, regiao FROM regiao")
-arq_regiao = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
-
-hti_global.conexao_cursor.execute(f"SELECT uf, estado FROM sacuf ORDER BY uf")
-arq_estado = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+hg.conexao_cursor.execute(f"SELECT uf, estado FROM sacuf ORDER BY uf")
+arq_estado = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 for ret_estado in arq_estado:
     item = f'{ret_estado[0]} - {ret_estado[1]}'.strip('(),')
@@ -407,10 +407,10 @@ def salvar_cliente():
               m_codvend, m_codoper, m_naturalidade, m_regiao,
               m_cod_cli)
 
-    hti_global.conexao_cursor.execute(sql, values)
-    hti_global.conexao_bd.commit()
-    # hti_global.conexao_cursor.execute(sql)
-    # hti_global.conexao_cursorcommit()
+    hg.conexao_cursor.execute(sql, values)
+    hg.conexao_bd.commit()
+    # hg.conexao_cursor.execute(sql)
+    # hg.conexao_cursorcommit()
     QMessageBox.information(tela, "Altercao de CLIENTE", "Atualizacao feito com SUCESSO!")
 
     alteracao_cliente(m_cod_cli)
@@ -430,10 +430,10 @@ def desabilitar_objeto():
 
 def alteracao_cliente(codigo_cliente):
     # PEGAR O ULTIMO NUMERO DOS CLIENTE E ACRESCENTA 1
-    hti_global.conexao_cursor.execute(f"SELECT * FROM saccli WHERE cod_cli = {codigo_cliente} ")
+    hg.conexao_cursor.execute(f"SELECT * FROM saccli WHERE cod_cli = {codigo_cliente} ")
     # # Recupere o resultado
-    arq_cli = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    arq_cli = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     tab_widget = tela.findChild(QtWidgets.QTabWidget, "tabWidget")
     tab_widget.setCurrentIndex(0)
 
@@ -666,10 +666,10 @@ def alteracao_cliente(codigo_cliente):
     tela.doubleSpinBox_2.setValue(float(arq_cli[58]))
     tela.doubleSpinBox_3.setValue(float(arq_cli[67]))
 
-    tela.comboBox_4.addItems(hti_global.estados)
+    tela.comboBox_4.addItems(hg.estados)
     tela.comboBox_4.setCurrentIndex(16)    # coloca o focus no index
 
-    tela.comboBox_6.addItems(hti_global.estados)
+    tela.comboBox_6.addItems(hg.estados)
     tela.comboBox_6.setCurrentIndex(16)    # coloca o focus no index
     tela.mcod_cli.setDisabled(True)
     tela.mcgc.setFocus()
@@ -698,4 +698,4 @@ if __name__ == '__main__':
     conexao_banco()
     # listar_dados()
     alteracao_cliente(10)
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

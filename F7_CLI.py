@@ -4,17 +4,17 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QButtonGroup
 import os
-import hti_global
+import hti_global as hg
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\f7_cli.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\f7_cli.ui")
 tela.setWindowTitle('CLIENTES CADASTRADO')
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 # AJUSTAR A TELA EM RELACAO AO MONITOR
@@ -23,7 +23,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -33,10 +33,10 @@ if hti_global.mtp_tela == 'G':
 nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
 tela.statusBar.showMessage(f"<< {nome_file} >>")
-if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
 else:
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
 pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
 tela.empresa.setPixmap(pixmap_redimensionado)
@@ -114,14 +114,14 @@ def editar_item(row):
 #     chama_alteracao(item.text())
 #     return
 
-# hti_global.conexao_cursor.execute(f"SELECT CAST(cod_cli as char(5)) as cod_cli,COALESCE(razao, ' ') as razao,"
+# hg.conexao_cursor.execute(f"SELECT CAST(cod_cli as char(5)) as cod_cli,COALESCE(razao, ' ') as razao,"
 #                f"COALESCE(nome, ' ') as nome,COALESCE(cgc, ' ') as cgc,COALESCE(cpf, ' ') as cpf "
 #                f"FROM saccli ORDER BY razao")
 
 
 def pesquisa():
     nome_buscar = tela.pesquisa.text()
-    hti_global.conexao_cursor.execute(f"SELECT CAST(cod_cli as char(5)) as cod_cli,COALESCE(razao, ' ') as razao, "
+    hg.conexao_cursor.execute(f"SELECT CAST(cod_cli as char(5)) as cod_cli,COALESCE(razao, ' ') as razao, "
                                       f"COALESCE(nome, ' ') as nome,COALESCE(cgc, ' ') as cgc, "
                                       f"COALESCE(cpf, ' ') as cpf, tel1, cidade, "
                                       f"uf, REPLACE(CAST(limite AS DECIMAL(18,2)), '.', ',') as limite_formatado, "
@@ -136,8 +136,8 @@ def pesquisa():
 
 def listar_cliente():
     pesquisa()
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tela.tableWidget.setRowCount(len(dados_lidos))
     tela.tableWidget.setColumnCount(10)
     for i, linha in enumerate(dados_lidos):
@@ -178,4 +178,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_cliente()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

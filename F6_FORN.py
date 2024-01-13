@@ -3,18 +3,18 @@
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QGuiApplication, QPixmap, QIcon
 from PyQt6.QtWidgets import QButtonGroup
-import hti_global
+import hti_global as hg
 import os
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\f6_forn.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\f6_forn.ui")
 tela.setWindowTitle('FORNECEDOR CADASTRADO')
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -22,7 +22,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -34,10 +34,10 @@ nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
 nome_arquivo = os.path.basename(__file__)
-if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
 else:
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
 pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
 tela.empresa.setPixmap(pixmap_redimensionado)
@@ -121,7 +121,7 @@ def editar_item(row):
 
 def pesquisa():
     nome_buscar = tela.pesquisa.text()
-    hti_global.conexao_cursor.execute(f"SELECT CAST(cod_forn as char(5)) as cod_forn,"
+    hg.conexao_cursor.execute(f"SELECT CAST(cod_forn as char(5)) as cod_forn,"
                                       f"COALESCE(razao, ' ') as razao,"
                                       f"COALESCE(fantasia, ' ') as fantasia,"
                                       f"COALESCE(forn_desp, ' '), "
@@ -138,8 +138,8 @@ def pesquisa():
 
 def listar_fornecedor():
     pesquisa()
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    # hti_global.conexao_bd.commit()
+    dados_lidos = hg.conexao_cursor.fetchall()
+    # hg.conexao_bd.commit()
     tela.tableWidget.setRowCount(len(dados_lidos))
     tela.tableWidget.setColumnCount(10)
     for i, linha in enumerate(dados_lidos):
@@ -174,4 +174,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_fornecedor()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

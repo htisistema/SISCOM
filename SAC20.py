@@ -4,16 +4,16 @@ import os
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QAbstractItemView, QTableWidgetItem
-import hti_global
+import hti_global as hg
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_cond_pag.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_cond_pag.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -21,7 +21,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -117,11 +117,11 @@ def f_incl_cond_pag():
           "dia9, dia10, dia11, dia12, dia13, dia14, dia15, comi_tab, pocket, preco, " \
           "sr_deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
-    hti_global.conexao_cursor.execute(sql, (m_codigo, m_descri, m_percent, m_cond, m_dia1, m_dia2, m_dia3, m_dia4,
+    hg.conexao_cursor.execute(sql, (m_codigo, m_descri, m_percent, m_cond, m_dia1, m_dia2, m_dia3, m_dia4,
                                             m_dia5, m_dia6, m_dia7, m_dia8, m_dia9, m_dia10, m_dia11, m_dia12, m_dia13,
                                             m_dia14, m_dia15, m_comi_tab, m_pocket, m_preco, ' '))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de CONDICOES DE PAGAMENTOS", "Cadastro feito com SUCESSO!")
 
     tela.mcodigo.setEnabled(False)
@@ -223,11 +223,11 @@ def chama_alteracao(mcod_cli):
           f"dia5 = ?, dia6 = ?, dia7 = ?, dia8 = ?, dia9 = ?, dia10 = ?, dia11 = ?, dia12 = ?, dia13 = ?, dia14 = ?, " \
           f"dia15 = ?, comi_tab = ?, pocket = ?, preco = ? WHERE codigo = ?"
 
-    hti_global.conexao_cursor.execute(sql, (m_descri, m_percent, m_cond, m_dia1, m_dia2, m_dia3, m_dia4,
+    hg.conexao_cursor.execute(sql, (m_descri, m_percent, m_cond, m_dia1, m_dia2, m_dia3, m_dia4,
                                             m_dia5, m_dia6, m_dia7, m_dia8, m_dia9, m_dia10, m_dia11, m_dia12, m_dia13,
                                             m_dia14, m_dia15, m_comi_tab, m_pocket, m_preco, m_codigo))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "ALTERACAO de CONDICOES DE PAGAMENTOS", "Alteracao feito com SUCESSO!")
 
     tela.mcodigo.setEnabled(False)
@@ -290,12 +290,12 @@ def botao_item():
 
 def editar_item(row):
     codigo = str(tabela.item(row, 0).text())
-    hti_global.conexao_cursor.execute(f"SELECT dia1, dia2, dia3, dia4, dia5, dia6, dia7, dia8, dia9, dia10, dia11, "
+    hg.conexao_cursor.execute(f"SELECT dia1, dia2, dia3, dia4, dia5, dia6, dia7, dia8, dia9, dia10, dia11, "
                                       f"dia12, dia13, dia14, dia15 "
                                       f"FROM sactabpg WHERE codigo = {codigo}")
-    # hti_global.conexao_cursor.execute(f"SELECT * FROM sactabpg WHERE codigo = {codigo}")
-    ver_dias = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    # hg.conexao_cursor.execute(f"SELECT * FROM sactabpg WHERE codigo = {codigo}")
+    ver_dias = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     descri = tabela.item(row, 1).text()
     cond = tabela.item(row, 3).text()
     percent = tabela.item(row, 2).text()
@@ -372,8 +372,8 @@ def editar_item(row):
 
 
 def habilitar_objeto():
-    hti_global.conexao_cursor.execute(f"SELECT max(codigo) FROM sactabpg")
-    arq_cond_pag = hti_global.conexao_cursor.fetchone()
+    hg.conexao_cursor.execute(f"SELECT max(codigo) FROM sactabpg")
+    arq_cond_pag = hg.conexao_cursor.fetchone()
     if arq_cond_pag is None:
         codigo = 1
         tela.mcodigo.setText(str(codigo).zfill(3))
@@ -381,7 +381,7 @@ def habilitar_objeto():
         codigo = int(arq_cond_pag[0]) + 1
         tela.mcodigo.setText(str(codigo).zfill(3))
 
-    # hti_global.conexao_bd.commit()
+    # hg.conexao_bd.commit()
 
     tela.bt_salvar.clicked.connect(f_incl_cond_pag)
     tela.bt_retornar.clicked.connect(listar_cond_pag)
@@ -412,15 +412,15 @@ def habilitar_objeto():
 
 
 def listar_cond_pag():
-    hti_global.conexao_cursor.execute(f"SELECT codigo, descri, percent, cond, comi_tab, preco, dia1 || ' - ' || "
+    hg.conexao_cursor.execute(f"SELECT codigo, descri, percent, cond, comi_tab, preco, dia1 || ' - ' || "
                                       f"dia2 || ' - ' || dia3 || ' - ' || dia4 || ' - ' || dia5 || ' - ' || "
                                       f"dia6 || ' - ' || dia7 || ' - ' || dia8 || ' - ' || dia9 || ' - ' || "
                                       f"dia10 || ' - ' || dia11 || ' - ' || dia12 || ' - ' || dia13 || ' - ' || "
                                       f"dia14 || ' - ' || dia15, iif(pocket = 'S', 'Sim', 'Nao')  "
                                       f"FROM sactabpg order BY codigo")
 
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tabela.setRowCount(len(dados_lidos))
     tabela.setColumnCount(8)
     tabela.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -481,4 +481,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_cond_pag()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

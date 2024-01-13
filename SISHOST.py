@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import QMessageBox
 # from icecream import ic
 import socket
 from hti_funcoes import criar_tabelas
-import hti_global
+import hti_global as hg
 
 from hti_funcoes import conexao_banco, verificar_conexao
 conexao_banco()
@@ -58,9 +58,9 @@ endereco_ip = socket.gethostbyname(nome_computador)
 
 # Crie a janela
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\sishost.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\sishost.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
 tela.setWindowIcon(icon)
 tela.setWindowTitle(f"LOGIN         {SISTEMA}  Versao: {VERSAO}")
 # Centraliza a janela na tela
@@ -68,31 +68,31 @@ qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_login = QIcon(f"{hti_global.c_imagem}\\login.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_login = QIcon(f"{hg.c_imagem}\\login.png")
 
-if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
 else:
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
 pixmap_redimensionado = imagem.scaled(180, 180)  # redimensiona a imagem para 100x100
 tela.lb_imagem.setPixmap(pixmap_redimensionado)
 
-logohti = QPixmap(f"{hti_global.c_imagem}\\logoHTI.png")
+logohti = QPixmap(f"{hg.c_imagem}\\logoHTI.png")
 pixmap_redimensionado = logohti.scaled(120, 120)  # redimensiona a imagem para 100x100
 tela.logohti.setPixmap(pixmap_redimensionado)
 
 lbl_nome_cliente = tela.findChild(QtWidgets.QLabel, "versao")
 lbl_nome_cliente.setText(f"Versao: {VERSAO}")
 
-if hti_global.mtipo_temrinal == "S":
+if hg.mtipo_temrinal == "S":
     criar_tabelas()
 
 # PEGAR O ULTIMO NUMERO DOS CLIENTE E ACRESCENTA 1
-hti_global.conexao_cursor.execute(f"SELECT scod_op,snome FROM insopera")
-arq_insopera = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+hg.conexao_cursor.execute(f"SELECT scod_op,snome FROM insopera")
+arq_insopera = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 for ret_insopera in arq_insopera:
     item = f"{ret_insopera[0]} - {ret_insopera[1]}".strip("(),")
@@ -124,8 +124,8 @@ def on_close_event(event):
 def fecha_tela():
     tela.close()
     tela.closeEvent = on_close_event
-    hti_global.conexao_cursor.close()
-    hti_global.conexao_bd.close()
+    hg.conexao_cursor.close()
+    hg.conexao_bd.close()
     app.quit()
 
 
@@ -157,17 +157,17 @@ def fecha_tela():
 #         mop = tela.comboBox.itemText(index)
 #         mcod_op = mop[0:3]
 #         entry_senha_editado = str(tela.inp_senha.text().upper().strip())
-#         hti_global.conexao_cursor.execute(
+#         hg.conexao_cursor.execute(
 #             f"SELECT * FROM insopera WHERE scod_op = '{mcod_op}' "
 #             f"and plug = '{entry_senha_editado}'"
 #         )
 #         # Recupere o resultado
-#         arq_senha = hti_global.conexao_cursor.fetchone()
+#         arq_senha = hg.conexao_cursor.fetchone()
 #         ic(arq_senha)
-#         hti_global.conexao_bd.commit()
+#         hg.conexao_bd.commit()
 #         if arq_senha is not None:
-#             hti_global.geral_cod_usuario = arq_senha[0]
-#             hti_global.geral_nivel_usuario = arq_senha[12]
+#             hg.geral_cod_usuario = arq_senha[0]
+#             hg.geral_nivel_usuario = arq_senha[12]
 #             from MENU import criar_menu
 #             tela.close()
 #             criar_menu()
@@ -197,19 +197,19 @@ def verificar_senha():
     mop = tela.comboBox.itemText(index)
     mcod_op = mop[0:3]
 
-    hti_global.conexao_cursor.execute(
+    hg.conexao_cursor.execute(
         f"SELECT * FROM insopera WHERE scod_op = '{mcod_op}' "
         f"and plug = '{entry_senha_editado}'"
     )
 
     # Recupere o resultado
-    arq_senha = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    arq_senha = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
 
     if arq_senha is not None:
         # Se a senha estiver correta, continue o fluxo do programa
-        hti_global.geral_cod_usuario = arq_senha[0]
-        hti_global.geral_nivel_usuario = arq_senha[12]
+        hg.geral_cod_usuario = arq_senha[0]
+        hg.geral_nivel_usuario = arq_senha[12]
         from MENU import criar_menu
         tela.close()
         criar_menu()
@@ -244,6 +244,6 @@ if __name__ == "__main__":
     dados_login()
     # Feche a conexão
     tela.close()
-    hti_global.conexao_cursor.close()
-    hti_global.conexao_bd.close()
+    hg.conexao_cursor.close()
+    hg.conexao_bd.close()
     app.quit()

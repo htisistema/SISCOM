@@ -16,6 +16,7 @@ CIDADE_HTI = 'Tacaimbo'
 UF_HTI = 'PE'
 CEP_HTI = '55140000'
 FONE_HTI = '993127894'
+m_set = []
 
 
 geral_cod_usuario = '999'

@@ -4,17 +4,17 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QAbstractItemView, QTableWidgetItem
 import os
-import hti_global
+import hti_global as hg
 
 titulo = 'ESPECIE DO PRODUTO'
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_especie.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_especie.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -22,7 +22,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -63,9 +63,9 @@ def chama_alteracao():
     m_descri = tela.mdescri.text().upper()
 
     sql = "UPDATE sacespe SET descri = ? WHERE cod_espe = ?"
-    hti_global.conexao_cursor.execute(sql, (m_descri, m_cod_espe))
+    hg.conexao_cursor.execute(sql, (m_descri, m_cod_espe))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "ALTERACAO DA ESPECIE DE PRODUTO ", "Alteracao feita com SUCESSO!")
     listar_especie()
 
@@ -96,8 +96,8 @@ def f_incl_especie():
     m_cod_espe = tela.mcod_espe.text().upper()
     m_descri = tela.mdescri.text().upper()
     sql = "INSERT INTO sacespe (cod_espe, descri, sr_deleted) VALUES (?, ?, ?)"
-    hti_global.conexao_cursor.execute(sql, (m_cod_espe, m_descri, ' '))
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(sql, (m_cod_espe, m_descri, ' '))
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de ESPECIE DE PRODUTO", "Cadastro feito com SUCESSO!")
     listar_especie()
 
@@ -105,9 +105,9 @@ def f_incl_especie():
 def habilitar_objeto():
     tela.mcod_espe.clear()
     tela.mdescri.clear()
-    hti_global.conexao_cursor.execute(f"SELECT max(cod_espe) FROM sacespe")
-    arq_especie = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT max(cod_espe) FROM sacespe")
+    arq_especie = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_especie is None:
         codigo = 1
         tela.mcod_espe.setText(str(codigo).zfill(4))
@@ -124,9 +124,9 @@ def habilitar_objeto():
 
 
 def listar_especie():
-    hti_global.conexao_cursor.execute(f"SELECT CAST(cod_espe as char(4)), descri FROM sacespe order BY cod_espe")
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT CAST(cod_espe as char(4)), descri FROM sacespe order BY cod_espe")
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tabela.setRowCount(len(dados_lidos))
     tabela.setColumnCount(2)
     tabela.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -168,4 +168,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_especie()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

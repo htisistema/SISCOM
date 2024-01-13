@@ -6,24 +6,24 @@ from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup
 from PyQt6.QtWidgets import QMessageBox
 import os
-import hti_global
+import hti_global as hg
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\htifinanciamento.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\htifinanciamento.ui")
 tela.setWindowTitle('INCLUSAO de ALIQUOTA FINANCIAMENTO')
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -64,9 +64,9 @@ def salvar_aliquota():
     m_tipo_fin = ''.join(filter(str.isdigit, m_tipo_fin))
 
     # print(m_tipo_fin)
-    hti_global.conexao_cursor.execute(f"SELECT * FROM sacfin WHERE cod_fin = {m_cod_fin} AND tipo_fin = {m_tipo_fin} ")
-    arq_ver_cart = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.rollback()
+    hg.conexao_cursor.execute(f"SELECT * FROM sacfin WHERE cod_fin = {m_cod_fin} AND tipo_fin = {m_tipo_fin} ")
+    arq_ver_cart = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.rollback()
 
     if arq_ver_cart is not None:
         QMessageBox.information(tela, "alteracao de aliquota", "aliquota ja CADASTRADO !")
@@ -85,10 +85,10 @@ def salvar_aliquota():
     sql = "INSERT INTO sacfin (cod_fin, desc_fin, cobra_fin, taxa_fin, taxa_adm, aliq_fin, tipo_fin, " \
           "sr_deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 
-    hti_global.conexao_cursor.execute(sql, (m_cod_fin, m_desc_fin, m_cobra_fin, m_taxa_fin, m_taxa_adm, m_aliq_fin,
+    hg.conexao_cursor.execute(sql, (m_cod_fin, m_desc_fin, m_cobra_fin, m_taxa_fin, m_taxa_adm, m_aliq_fin,
                                             m_tipo_fin, ' '))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de aliquota", "Cadastro feito com SUCESSO!")
 
     return
@@ -96,8 +96,8 @@ def salvar_aliquota():
 
 
 def inclusao_aliquota(codigo_aliq):
-    hti_global.conexao_cursor.execute(f"SELECT * FROM sacfin WHERE cod_fin = {codigo_aliq}")
-    arq_finan = hti_global.conexao_cursor.fetchone()
+    hg.conexao_cursor.execute(f"SELECT * FROM sacfin WHERE cod_fin = {codigo_aliq}")
+    arq_finan = hg.conexao_cursor.fetchone()
     tela.mcod_fin.setText((str(arq_finan[0]).zfill(3)))
     tela.mdesc_fin.setText(arq_finan[1])
     tela.doubleSpinBox_3.setValue(float(arq_finan[3]))
@@ -137,4 +137,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     inclusao_aliquota('001')
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

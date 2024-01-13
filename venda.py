@@ -1,28 +1,28 @@
 from PyQt6 import uic, QtWidgets, QtGui
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QLineEdit
+from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox  # , QLineEdit
 from PyQt6.QtCore import QDateTime
 from datetime import datetime
 import keyboard
 from hti_funcoes import conexao_banco, gerar_numero_pedido
-import hti_global
+import hti_global as hg
 import os
-from icecream import ic
+# from icecream import ic
 
 app = QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\venda_pdv.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\venda_pdv.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
 tela.setWindowIcon(icon)
 tela.setWindowTitle(
-    f"PEDIDO DE VENDA         {hti_global.SISTEMA}  Versao: {hti_global.VERSAO}"
+    f"PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}"
 )
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 # AJUSTAR A TELA EM RELACAO AO MONITOR
@@ -30,10 +30,10 @@ qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\confirma.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\confirma.png")
 
-if hti_global.mtp_tela == "G":
+if hg.mtp_tela == "G":
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -44,39 +44,39 @@ nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
 tela.statusbar.showMessage(f"<< {nome_file} >>")
 
-if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
 else:
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
 pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
 tela.empresa.setPixmap(pixmap_redimensionado)
 
-logohti = QPixmap(f"{hti_global.c_imagem}\\LOGOhti.png")
+logohti = QPixmap(f"{hg.c_imagem}\\LOGOhti.png")
 pixmap_redimensionado = logohti.scaled(85, 85)  # redimensiona a imagem para 100x100
 tela.logohti.setStyleSheet(
     "background-color: rgb(190, 216, 255);border-width: 0px;border-radius: 0px;"
 )
 tela.logohti.setPixmap(pixmap_redimensionado)
 
-if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
 else:
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
 pixmap_redimensionado = imagem.scaled(450, 350)  # redimensiona a imagem para 100x100
 tela.foto_produto.setPixmap(pixmap_redimensionado)
-# print(f"{hti_global.c_usuario}\\{hti_global.geral_cod_usuario}.jpg")
+# print(f"{hg.c_usuario}\\{hg.geral_cod_usuario}.jpg")
 
 lbl_operador = tela.findChild(QtWidgets.QLabel, "operador")
-if os.path.exists(f"{hti_global.c_usuario}\\{hti_global.geral_cod_usuario}.jpg"):
-    usuario = QPixmap(f"{hti_global.c_usuario}\\{hti_global.geral_cod_usuario}.jpg")
+if os.path.exists(f"{hg.c_usuario}\\{hg.geral_cod_usuario}.jpg"):
+    usuario = QPixmap(f"{hg.c_usuario}\\{hg.geral_cod_usuario}.jpg")
 
 else:
-    usuario = QPixmap(f"{hti_global.c_usuario}\\htiusu.jpg")
+    usuario = QPixmap(f"{hg.c_usuario}\\htiusu.jpg")
 pixmap_redimensionado = usuario.scaled(125, 130)  # redimensiona a imagem para 100x100
 tela.usuario.setPixmap(pixmap_redimensionado)
-lbl_operador.setText(f" Operador: {hti_global.geral_cod_usuario}")
+lbl_operador.setText(f" Operador: {hg.geral_cod_usuario}")
 lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
 
 mnum_ped = ''
@@ -99,12 +99,12 @@ def criar_tela():
     lbl_numero_pedido.setText(f" Numero Pedido: {mnum_ped}")
     lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
     try:
-        hti_global.conexao_cursor.execute(
+        hg.conexao_cursor.execute(
             f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{mnum_ped}'"
         )
         # # 145082Recupere o resultado
-        resultados = hti_global.conexao_cursor.fetchall()
-        hti_global.conexao_bd.commit()
+        resultados = hg.conexao_cursor.fetchall()
+        hg.conexao_bd.commit()
 
         lbl_sub_total = tela.findChild(QtWidgets.QLabel, "sub_total")
         # lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
@@ -137,14 +137,14 @@ def criar_tela():
                 # linha = ' '.join(map(str, resultado))
                 tela.textBrowser.append(linha)
                 tela.textBrowser.append(linha1)
-                # print(f"{hti_global.c_produto}\\{mcodigo}.jpg")
-            if os.path.exists(f"{hti_global.c_produto}\\{pcod_merc}.jpg"):
-                imagem1 = QPixmap(f"{hti_global.c_produto}\\{pcod_merc}.jpg")
+                # print(f"{hg.c_produto}\\{mcodigo}.jpg")
+            if os.path.exists(f"{hg.c_produto}\\{pcod_merc}.jpg"):
+                imagem1 = QPixmap(f"{hg.c_produto}\\{pcod_merc}.jpg")
             else:
-                if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
-                    imagem1 = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+                if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+                    imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
                 else:
-                    imagem1 = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+                    imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
             pixmap_redim = imagem1.scaled(
                 500, 350
@@ -178,15 +178,15 @@ def verificar_produto():
     else:
         if len(m_codigo) <= 5:
             m_codigo = m_codigo.zfill(5)
-            hti_global.conexao_cursor.execute(
+            hg.conexao_cursor.execute(
                 f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'"
             )
         else:
-            hti_global.conexao_cursor.execute(
+            hg.conexao_cursor.execute(
                 f"SELECT * FROM sacmerc WHERE cod_barr = '{m_codigo}'"
             )
-        ver_produto = hti_global.conexao_cursor.fetchone()
-        hti_global.conexao_bd.commit()
+        ver_produto = hg.conexao_cursor.fetchone()
+        hg.conexao_bd.commit()
         if ver_produto is None:
             QMessageBox.critical(tela, "ATENCAO", 'Produto nao encontrado...')
         else:
@@ -209,9 +209,9 @@ def verificar_produto():
             # mhora = data_atual.toString("hh:mm:ss")
 
             mhora = datetime.now().strftime("%H:%M:%S")
-            hti_global.conexao_cursor.execute(f"UPDATE sacmerc SET saldo_mer = {m_saldo_pos}, "
+            hg.conexao_cursor.execute(f"UPDATE sacmerc SET saldo_mer = {m_saldo_pos}, "
                                               f"data_atu = '{data_formatada}' WHERE cod_merc = {m_codmerc}")
-            hti_global.conexao_bd.commit()
+            hg.conexao_bd.commit()
 
             sql = (
                 "INSERT INTO logproduto ("
@@ -233,7 +233,7 @@ def verificar_produto():
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
             )
 
-            hti_global.conexao_cursor.execute(sql, (
+            hg.conexao_cursor.execute(sql, (
                     data_formatada,
                     data_formatada,
                     mhora,
@@ -241,15 +241,15 @@ def verificar_produto():
                     m_quantidade,
                     m_saldo_ant,
                     m_saldo_pos,
-                    hti_global.geral_cod_usuario,
+                    hg.geral_cod_usuario,
                     "VENDA",
-                    hti_global.nome_computador,
+                    hg.nome_computador,
                     f"INCLUSAO PD: '{mnum_ped}'",
                     "S",
                     float(ver_produto[45]),
                     float(ver_produto[43]),
                     " "))
-            hti_global.conexao_bd.commit()
+            hg.conexao_bd.commit()
 
             sql = (
                 "INSERT INTO sacped_s ("
@@ -340,12 +340,12 @@ def verificar_produto():
                 "?, ?, ?, ?, ?, ?, ?) "
             )
 
-            hti_global.conexao_cursor.execute(
+            hg.conexao_cursor.execute(
                 sql,
                 (
-                    hti_global.mcodempresa,
+                    hg.mcodempresa,
                     mnum_ped,
-                    hti_global.nome_computador,
+                    hg.nome_computador,
                     data_formatada,
                     ver_produto[6],
                     m_codmerc,
@@ -375,7 +375,7 @@ def verificar_produto():
                     '',
                     ver_produto[29],
                     ver_produto[30],
-                    hti_global.geral_cod_usuario,
+                    hg.geral_cod_usuario,
                     0,
                     0,
                     '',
@@ -420,7 +420,7 @@ def verificar_produto():
                     '',
                     1,
                     " "))
-            hti_global.conexao_bd.commit()
+            hg.conexao_bd.commit()
 
     tela.mcodigo.setText("")
     tela.mpreco_venda.setValue(float(0))
@@ -455,17 +455,17 @@ def executar_consulta():
 def pesquisa_produto():
     nome_buscar = tela.mcodigo.text()
     if len(nome_buscar) <= 5:
-        hti_global.conexao_cursor.execute(
+        hg.conexao_cursor.execute(
             f"select cod_merc, merc, pr_venda FROM sacmerc "
             f"WHERE cod_merc = '{nome_buscar}'"
         )
     else:
-        hti_global.conexao_cursor.execute(
+        hg.conexao_cursor.execute(
             f"select cod_merc, merc, pr_venda FROM sacmerc "
             f"WHERE cod_barr = '{nome_buscar}'"
         )
-    resutado_prod = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    resutado_prod = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if resutado_prod is not None:
         QMessageBox.information(
             tela, "Pesquisa de PRODUTO", f"PRODUTO: '{resutado_prod[0]}'"
@@ -491,4 +491,4 @@ if __name__ == "__main__":
     MainWindow()
     # tela.show()
     # app.exec()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

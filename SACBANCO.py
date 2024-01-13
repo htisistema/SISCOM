@@ -4,17 +4,17 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup
 import os
-import hti_global
+import hti_global as hg
 
 titulo = 'BANCOS CADASTRADAS'
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_banco.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_banco.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -22,7 +22,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -86,13 +86,13 @@ def editar_item(row):
 
 
 def listar_banco():
-    hti_global.conexao_cursor.execute(f"SELECT cod_banco, num_banco, nome_banco, agencia, dv_ag, c_c, dv_cc, "
+    hg.conexao_cursor.execute(f"SELECT cod_banco, num_banco, nome_banco, agencia, dv_ag, c_c, dv_cc, "
                                       f"dig_ag_cc, modalidade, n_conv, cod_cedente, carteira, cod_trans, diasprot, "
                                       f"REPLACE(CAST(despesa AS DECIMAL(18,2)), '.', ','), local_pg  FROM sacbanco "
                                       f"order BY cod_banco")
 
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tela.tableWidget.setRowCount(len(dados_lidos))
     tela.tableWidget.setColumnCount(16)
     for i, linha in enumerate(dados_lidos):
@@ -123,4 +123,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_banco()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

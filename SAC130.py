@@ -5,15 +5,15 @@ from PyQt6 import uic, QtWidgets, QtCore
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QButtonGroup, QRadioButton, QMessageBox
 from datetime import datetime, date
-import hti_global
+import hti_global as hg
 
 titulo = "INCLUSÃO DE CLIENTES"
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\SAC130.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\SAC130.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -21,7 +21,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -36,47 +36,47 @@ nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
-if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
 else:
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
 pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
 tela.empresa.setPixmap(pixmap_redimensionado)
 
 
-hti_global.conexao_cursor.execute(f"SELECT * FROM sacsetup")
+# hg.conexao_cursor.execute(f"SELECT * FROM sacsetup")
+# # Recupere o resultado
+# m_set = hg.conexao_cursor.fetchone()
+# hg.conexao_bd.commit()
+
+hg.conexao_cursor.execute(f"SELECT cidade FROM saccid ORDER BY cidade")
 # Recupere o resultado
-m_set = hti_global.conexao_cursor.fetchone()
-hti_global.conexao_bd.commit()
+arq_cidade = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT cidade FROM saccid ORDER BY cidade")
+hg.conexao_cursor.execute(f"SELECT cod_profi, profi FROM sacprofi")
 # Recupere o resultado
-arq_cidade = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_profi = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT cod_profi, profi FROM sacprofi")
+hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
 # Recupere o resultado
-arq_profi = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_usuario = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
+hg.conexao_cursor.execute(f"SELECT codigo, descri FROM sactabpg ORDER BY codigo")
 # Recupere o resultado
-arq_usuario = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_sactabpg = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT codigo, descri FROM sactabpg ORDER BY codigo")
-# Recupere o resultado
-arq_sactabpg = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+hg.conexao_cursor.execute(f"SELECT codigo, regiao FROM regiao")
+arq_regiao = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT codigo, regiao FROM regiao")
-arq_regiao = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
-
-hti_global.conexao_cursor.execute(f"SELECT uf, estado FROM sacuf ORDER BY uf")
-arq_estado = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+hg.conexao_cursor.execute(f"SELECT uf, estado FROM sacuf ORDER BY uf")
+arq_estado = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 # COMBOX
 tela.comboBox.addItems(["C->Cliente", "R->Revenda", "P->Potencial", "F->Filial", "U->Funcionarios", "A->Associado",
@@ -92,7 +92,7 @@ for ret_cidade in arq_cidade:
 for i in range(tela.comboBox_3.count()):
     item_text = tela.comboBox_3.itemText(i)
     # Verifica se o texto de busca está contido no item
-    if str(m_set[133]).strip() in item_text:
+    if str(hg.m_set[133]).strip() in item_text:
         # Seleciona o item encontrado
         tela.comboBox_3.setCurrentIndex(i)
         tela.comboBox_7.setCurrentIndex(i)
@@ -188,10 +188,10 @@ def on_close_event(event):
 
 def salvar_cliente():
     m_cod_cli = int(tela.mcod_cli.text())
-    hti_global.conexao_cursor.execute(f"SELECT * FROM saccli WHERE cod_cli = {m_cod_cli} ")
+    hg.conexao_cursor.execute(f"SELECT * FROM saccli WHERE cod_cli = {m_cod_cli} ")
     # # Recupere o resultado
-    arq_ver_cli = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    arq_ver_cli = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_ver_cli is not None:
         QMessageBox.information(tela, "alteracao de fornecedor", "Cliente ja CADASTRADO !")
         return
@@ -476,7 +476,7 @@ def salvar_cliente():
           "?, ?, ?, ?, "\
           "?, ?, ?, ?, ?) "
 
-    hti_global.conexao_cursor.execute(sql, (m_cod_cli, m_razao, m_nome,  m_data_cad, cb_mtipo, m_data_nas,
+    hg.conexao_cursor.execute(sql, (m_cod_cli, m_razao, m_nome,  m_data_cad, cb_mtipo, m_data_nas,
                                             m_endereco, m_numero, m_complemento, m_bairro, cb_mcidade, cb_muf, m_cep,
                                             m_email, m_rota, m_rota1, m_tel1, m_tel2, m_fax,
                                             m_cgc, m_insc, m_cpf, m_rg, m_orgao, m_dat_emi,
@@ -497,7 +497,7 @@ def salvar_cliente():
 
     # m_banco1_, m_ag1_, m_conta1_, m_banco2_, m_ag2_, m_conta2_,
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de CLIENTE", "Cadastro feito com SUCESSO!")
 
     inclusao_cliente()
@@ -515,9 +515,9 @@ def desabilitar_objeto():
 
 def inclusao_cliente():
     # PEGAR O ULTIMO NUMERO DOS CLIENTE E ACRESCENTA 1
-    hti_global.conexao_cursor.execute(f"SELECT max(cod_cli) FROM saccli ")
-    arq_cli = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT max(cod_cli) FROM saccli ")
+    arq_cli = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     tab_widget = tela.findChild(QtWidgets.QTabWidget, "tabWidget")
     tab_widget.setCurrentIndex(0)
     tela.mcgc.setText('')
@@ -546,7 +546,7 @@ def inclusao_cliente():
     tela.mnumero.setText('')
     tela.mcomplemento.setText('')
     tela.mbairro.setText('')
-    tela.mcep.setText(str(m_set[134]))
+    tela.mcep.setText(str(hg.m_set[134]))
 
     tela.mprazo_pag.setText('')
     tela.marea.setText('')
@@ -651,4 +651,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     inclusao_cliente()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

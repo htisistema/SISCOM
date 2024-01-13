@@ -6,16 +6,16 @@ from PyQt6 import uic, QtWidgets, QtCore
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QButtonGroup, QApplication, QMainWindow
 from hti_funcoes import conexao_banco
-import hti_global
+import hti_global as hg
 
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\f4_merc.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\f4_merc.ui")
 tela.setWindowTitle('PRODUTOS CADASTRADO')
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 
 # PEGA O NOME DO ARQUIVO EM EXECUCAO
@@ -27,17 +27,17 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 # tela.move(15, 10)
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
         tela.setGeometry(screen_geometry)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
-if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
 else:
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
 pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
 tela.empresa.setPixmap(pixmap_redimensionado)
@@ -120,13 +120,13 @@ def editar_item(row):
 
 def pesquisa():
 
-    if hti_global.mtipo_temrinal == 'L':
+    if hg.mtipo_temrinal == 'L':
         valor_aprazo_calculado = 'pr_venda * ((varejo / 100) + 1)'
     else:
         valor_aprazo_calculado = 'iif(pr_venda1 > 0, pr_venda1, pr_venda * ((varejo / 100) + 1))'
 
     nome_buscar = tela.pesquisa.text()
-    hti_global.conexao_cursor.execute(f"SELECT CAST(cod_merc as char(5)) as cod_merc, COALESCE(merc, ' ') as merc, "
+    hg.conexao_cursor.execute(f"SELECT CAST(cod_merc as char(5)) as cod_merc, COALESCE(merc, ' ') as merc, "
                                       f"REPLACE(CAST(saldo_mer AS DECIMAL(12, 2)), '.', ',') as saldomer, "
                                       f"REPLACE(CAST(pr_venda AS DECIMAL(12, 2)), '.', ',') as prvenda, "
                                       f"REPLACE(CAST({valor_aprazo_calculado} AS DECIMAL(12, 2)), '.', ','), "
@@ -144,8 +144,8 @@ def incluir_produto():
 
 def listar_produto():
     pesquisa()
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tela.tableWidget.setRowCount(len(dados_lidos))
     tela.tableWidget.setColumnCount(8)
     for i, linha in enumerate(dados_lidos):
@@ -198,6 +198,6 @@ if __name__ == '__main__':
     # conexao_banco()
     # listar_produto()
     MainWindow()
-    hti_global.conexao_bd.close()
-    hti_global.conexao_cursor.close()
+    hg.conexao_bd.close()
+    hg.conexao_cursor.close()
     tela.close()

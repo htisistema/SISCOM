@@ -6,18 +6,18 @@ from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox
 from datetime import datetime, date
 from hti_funcoes import ver_nivel, conexao_banco, verificar_conexao
-import hti_global
+import hti_global as hg
 
 
 titulo = "INCLUSÃO DE FORNECEDOR"
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\sac140.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\sac140.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 print('ok')
 # Centraliza a janela na tela
@@ -26,7 +26,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -44,38 +44,36 @@ nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
-if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
 else:
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
 pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
 tela.empresa.setPixmap(pixmap_redimensionado)
 
 
 data_vazia = date(1900, 1, 1)
-m_set = []
 
 
 def sac140():
-    global m_set
-    hti_global.conexao_cursor.execute("SELECT * FROM sacsetup")
-    # Recupere o resultado
-    m_set = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    # hg.conexao_cursor.execute("SELECT * FROM sacsetup")
+    # # Recupere o resultado
+    # m_set = hg.conexao_cursor.fetchone()
+    # hg.conexao_bd.commit()
 
-    hti_global.conexao_cursor.execute("SELECT cidade, uf, cep FROM saccid ORDER BY cidade")
+    hg.conexao_cursor.execute("SELECT cidade, uf, cep FROM saccid ORDER BY cidade")
     # Recupere o resultado
-    arq_cidade = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    arq_cidade = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
 
-    hti_global.conexao_cursor.execute("SELECT codigo, desc1 FROM sacdesp ORDER BY codigo")
+    hg.conexao_cursor.execute("SELECT codigo, desc1 FROM sacdesp ORDER BY codigo")
     # Recupere o resultado
-    arq_desp = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    arq_desp = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
 
     # COMBOX
-    tela.comboBox_3.addItems(hti_global.estados)
+    tela.comboBox_3.addItems(hg.estados)
     tela.comboBox_3.setCurrentIndex(16)  # coloca o focus no index
 
     tela.comboBox.addItem('0000 - DEFAULT')
@@ -94,7 +92,7 @@ def sac140():
 def on_close_event(event):
     tela.close()
     event.accept()
-    # hti_global.conexao_cursor.close()
+    # hg.conexao_cursor.close()
     tela.closeEvent = on_close_event
 
 
@@ -106,10 +104,10 @@ def fecha_tela():
 
 def salvar_fornecedor():
     m_cod_forn = tela.mcod_forn.text().strip()
-    hti_global.conexao_cursor.execute(f"SELECT * FROM sacforn WHERE cod_forn = {m_cod_forn} ")
+    hg.conexao_cursor.execute(f"SELECT * FROM sacforn WHERE cod_forn = {m_cod_forn} ")
     # # Recupere o resultado
-    arq_ver_forn = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    arq_ver_forn = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_ver_forn is not None:
         QMessageBox.information(tela, "alteracao de fornecedor", "Fornecedor ja CADASTRADO !")
         return
@@ -202,7 +200,7 @@ def salvar_fornecedor():
           "?, ?, ?, " \
           "?, ?, ?) "
 
-    hti_global.conexao_cursor.execute(sql, (m_data_cad, m_cod_forn, m_razao,
+    hg.conexao_cursor.execute(sql, (m_data_cad, m_cod_forn, m_razao,
                                             m_fantasia, m_tipo, m_cgc,
                                             m_cpf, m_insc, m_endereco,
                                             m_bairro, m_mcidade, m_muf,
@@ -214,7 +212,7 @@ def salvar_fornecedor():
                                             m_obs2, m_obs3, m_obs4,
                                             m_obs5, m_forn_desp, ' '))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de fornecedor", "Cadastro feito com SUCESSO!")
 
     inclusao_fornecedor()
@@ -223,17 +221,17 @@ def salvar_fornecedor():
 def inclusao_fornecedor():
     # global mprg
     # mprg = 'SAC140'
-    # nivel_acess = hti_global.geral_nivel_usuario
+    # nivel_acess = hg.geral_nivel_usuario
     # if not ver_nivel(nome_file, 'INCLUSAO DE FORNECEDOR/CONTA APAGAR', '15', nivel_acess, 'AMBIE', '  '):
     #     tela.close()
     #     tela.closeEvent = on_close_event
     #     return
 
     # PEGAR O ULTIMO NUMERO DOS fornecedor E ACRESCENTA 1
-    hti_global.conexao_cursor.execute("SELECT max(cod_forn) FROM sacforn")
+    hg.conexao_cursor.execute("SELECT max(cod_forn) FROM sacforn")
     # # Recupere o resultado
-    arq_forn = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    arq_forn = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     tab_widget = tela.findChild(QtWidgets.QTabWidget, "tabWidget")
     tab_widget.setCurrentIndex(0)
     # ORDENAR OS CAMPOS
@@ -261,7 +259,7 @@ def inclusao_fornecedor():
 
     tela.mendereco.setText('')
     tela.mbairro.setText('')
-    tela.mcep.setText(str(m_set[134]))
+    tela.mcep.setText(str(hg.m_set[134]))
 
     tela.mprazo_pag.setText('')
 
@@ -294,4 +292,4 @@ if __name__ == '__main__':
     conexao_banco()
     verificar_conexao()
     sac140()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

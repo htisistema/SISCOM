@@ -4,18 +4,18 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QTableWidgetItem, QAbstractItemView
 import os
-import hti_global
+import hti_global as hg
 
 titulo = 'NCM CADASTRADO'
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_ncm.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_ncm.ui")
 tela.setWindowTitle(titulo)
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 tabela = tela.tableWidget
 # Centraliza a janela na tela
@@ -24,7 +24,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 # tela.setGeometry(0, 0, 400, 200)  # Defina um tamanho inicial para a janela
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -59,9 +59,9 @@ def ajustar_colunas_tabela(tabela1):
 def f_incl_ncm():
     tela.bt_salvar.clicked.disconnect()
     m_codigo = tela.mcodigo.text().upper()
-    hti_global.conexao_cursor.execute(f"SELECT codigo FROM sacncm WHERE codigo = '{m_codigo}'")
-    arq_profi = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT codigo FROM sacncm WHERE codigo = '{m_codigo}'")
+    arq_profi = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_profi is not None:
         QMessageBox.information(tela, "Inclusao de NCM", "NCM ja CADASTRADO!")
         return
@@ -73,8 +73,8 @@ def f_incl_ncm():
 
     sql = "INSERT INTO sacncm (codigo, cest, descri, aliqnac, aliqimp) VALUES (?, ?, ?, ?, ?) "
     print(sql, (m_codigo, m_cest, m_descri, m_aliqnac, m_aliqimp))
-    hti_global.conexao_cursor.execute(sql, (m_codigo, m_cest, m_descri, m_aliqnac, m_aliqimp))
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(sql, (m_codigo, m_cest, m_descri, m_aliqnac, m_aliqimp))
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de NCM", "Cadastro feito com SUCESSO!")
 
     # tela.mcodigo.setText('')
@@ -86,9 +86,9 @@ def f_incl_ncm():
 def chama_alteracao():
     tela.bt_salvar.clicked.disconnect()
     m_codigo = tela.mcodigo.text().upper()
-    hti_global.conexao_cursor.execute(f"SELECT codigo FROM sacncm WHERE codigo = '{m_codigo}'")
-    arq_profi = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT codigo FROM sacncm WHERE codigo = '{m_codigo}'")
+    arq_profi = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_profi is None:
         QMessageBox.information(tela, "Alteracao de NCM", "NCM nao CADASTRADO!")
         return
@@ -100,8 +100,8 @@ def chama_alteracao():
 
     sql = "UPDATE sacncm SET cest = ?, descri = ?, aliqnac = ?, aliqimp = ? WHERE codigo = ?"
     print(sql, (m_cest, m_descri, m_aliqnac, m_aliqimp, m_codigo))
-    hti_global.conexao_cursor.execute(sql, (m_cest, m_descri, m_aliqnac, m_aliqimp, m_codigo))
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(sql, (m_cest, m_descri, m_aliqnac, m_aliqimp, m_codigo))
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "ALTERACAO DE NCM", "Alteracao feita com SUCESSO!")
     listar_ncm()
 
@@ -157,10 +157,10 @@ def habilitar_objeto():
 
 
 def listar_ncm():
-    hti_global.conexao_cursor.execute("SELECT codigo, cest, descri, REPLACE(CAST(aliqnac AS DECIMAL(12, 2)), '.', ',')"
+    hg.conexao_cursor.execute("SELECT codigo, cest, descri, REPLACE(CAST(aliqnac AS DECIMAL(12, 2)), '.', ',')"
                                       ", REPLACE(CAST(aliqimp AS DECIMAL(12, 2)), '.', ',') FROM sacncm")
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tabela.setRowCount(len(dados_lidos))
     tabela.setColumnCount(5)
     tabela.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -204,4 +204,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_ncm()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

@@ -4,18 +4,18 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QAbstractItemView, QTableWidgetItem
 import os
-import hti_global
+import hti_global as hg
 
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_despesa.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_despesa.ui")
 tela.setWindowTitle('DESPESAS CADASTRADAS')
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 tabela = tela.tableWidget
 # Centraliza a janela na tela
@@ -23,7 +23,7 @@ qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -65,9 +65,9 @@ def chama_alteracao(mcod_cli):
     m_desc2 = tela.mdesc2.text().upper()
 
     sql = "UPDATE saccadde SET desc1 = ?, desc2 = ? WHERE codigo = ?"
-    hti_global.conexao_cursor.execute(sql, (m_desc1, m_desc2, m_codigo))
+    hg.conexao_cursor.execute(sql, (m_desc1, m_desc2, m_codigo))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "ALTERACAO DE DESPESA", "Alteracao feita com SUCESSO!")
     listar_despesa()
 
@@ -103,8 +103,8 @@ def f_incl_despesa():
     m_desc1 = tela.mdesc1.text().upper()
     m_desc2 = tela.mdesc2.text().upper()
     sql = "INSERT INTO saccadde (codigo, desc1, desc2, sr_deleted) VALUES (?, ?, ?, ?)"
-    hti_global.conexao_cursor.execute(sql, (m_codigo, m_desc1, m_desc2, ' '))
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(sql, (m_codigo, m_desc1, m_desc2, ' '))
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de CONDICOES DE PAGAMENTOS", "Cadastro feito com SUCESSO!")
     listar_despesa()
 
@@ -113,9 +113,9 @@ def habilitar_objeto():
     tela.mcodigo.clear()
     tela.mdesc1.clear()
     tela.mdesc2.clear()
-    hti_global.conexao_cursor.execute(f"SELECT max(codigo) FROM saccadde")
-    arq_despesa = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT max(codigo) FROM saccadde")
+    arq_despesa = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_despesa is None:
         codigo = 1
         tela.mcodigo.setText(str(codigo).zfill(3))
@@ -133,9 +133,9 @@ def habilitar_objeto():
 
 
 def listar_despesa():
-    hti_global.conexao_cursor.execute(f"SELECT CAST(codigo as char(3)), desc1, desc2  FROM saccadde order BY codigo")
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT CAST(codigo as char(3)), desc1, desc2  FROM saccadde order BY codigo")
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tabela.setRowCount(len(dados_lidos))
     tabela.setColumnCount(3)
     tabela.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -180,4 +180,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_despesa()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

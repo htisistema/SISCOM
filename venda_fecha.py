@@ -4,26 +4,26 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QButtonGroup
 from PyQt6.QtCore import QDateTime, Qt
 # import keyboard
 # from datetime import datetime
-from hti_funcoes import conexao_banco
-import hti_global
+from hti_funcoes import conexao_banco, ver_serie
+import hti_global as hg
 import os
 from icecream import ic
 
 app = QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\venda_fecha.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\venda_fecha.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
 tela.setWindowIcon(icon)
 tela.setWindowTitle(
-    f"FECHAMENTO DO PEDIDO DE VENDA         {hti_global.SISTEMA}  Versao: {hti_global.VERSAO}"
+    f"FECHAMENTO DO PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}"
 )
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\confirma.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\confirma.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 # AJUSTAR A TELA EM RELACAO AO MONITOR
@@ -32,7 +32,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == "G":
+if hg.mtp_tela == "G":
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -43,39 +43,39 @@ nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
 tela.statusbar.showMessage(f"<< {nome_file} >>")
 
-if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
 else:
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
 pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
 tela.empresa.setPixmap(pixmap_redimensionado)
 
-# logohti = QPixmap(f"{hti_global.c_imagem}\\LOGOhti.png")
+# logohti = QPixmap(f"{hg.c_imagem}\\LOGOhti.png")
 # pixmap_redimensionado = logohti.scaled(85, 85)  # redimensiona a imagem para 100x100
 # tela.logohti.setStyleSheet(
 #     "background-color: rgb(190, 216, 255);border-width: 0px;border-radius: 0px;"
 # )
 # tela.logohti.setPixmap(pixmap_redimensionado)
 
-# if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
-#     imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+# if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+#     imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
 # else:
-#     imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+#     imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 #
 # pixmap_redimensionado = imagem.scaled(450, 350)  # redimensiona a imagem para 100x100
 # tela.foto_produto.setPixmap(pixmap_redimensionado)
-# print(f"{hti_global.c_usuario}\\{hti_global.geral_cod_usuario}.jpg")
+# print(f"{hg.c_usuario}\\{hg.geral_cod_usuario}.jpg")
 
 # lbl_operador = tela.findChild(QtWidgets.QLabel, "operador")
-# if os.path.exists(f"{hti_global.c_usuario}\\{hti_global.geral_cod_usuario}.jpg"):
-#     usuario = QPixmap(f"{hti_global.c_usuario}\\{hti_global.geral_cod_usuario}.jpg")
+# if os.path.exists(f"{hg.c_usuario}\\{hg.geral_cod_usuario}.jpg"):
+#     usuario = QPixmap(f"{hg.c_usuario}\\{hg.geral_cod_usuario}.jpg")
 #
 # else:
-#     usuario = QPixmap(f"{hti_global.c_usuario}\\htiusu.jpg")
+#     usuario = QPixmap(f"{hg.c_usuario}\\htiusu.jpg")
 # pixmap_redimensionado = usuario.scaled(125, 130)  # redimensiona a imagem para 100x100
 # tela.usuario.setPixmap(pixmap_redimensionado)
-# lbl_operador.setText(f" Operador: {hti_global.geral_cod_usuario}")
+# lbl_operador.setText(f" Operador: {hg.geral_cod_usuario}")
 lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
 
 mnum_ped = ""
@@ -85,19 +85,20 @@ lbl_cabecalho = tela.findChild(QtWidgets.QLabel, "cabecalho")
 data_atual = QDateTime.currentDateTime()
 
 conexao_banco()
-hti_global.conexao_cursor.execute("SELECT * FROM sacsetup")
-# # 145082Recupere o resultado
-m_set = hti_global.conexao_cursor.fetchone()
-hti_global.conexao_bd.commit()
+# hg.conexao_cursor.execute("SELECT * FROM sacsetup")
+# # # 145082Recupere o resultado
+# m_set = hg.conexao_cursor.fetchone()
+# hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT cod_cli, razao FROM saccli")
-arq_cli = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+hg.conexao_cursor.execute(f"SELECT cod_cli, razao FROM saccli")
+arq_cli = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 for ret_cli in arq_cli:
-    item = f'{ret_cli[0]} - {ret_cli[1]}'.strip('(),')
+    item = f'{str(ret_cli[0]).zfill(5)} - {ret_cli[1]}'.strip('(),')
     tela.cb_cliente.addItem(item)
 tela.cb_cliente.setCurrentIndex(0)
 
+mcli_aux = 0
 
 tela.cb_forma_pg.addItems(["1->Dinheiro", "2->PIX", "3->Cartao", "4->Duplicata", "5->Cheque", "6->Financiamento"])
 tela.cb_forma_pg.setCurrentIndex(0)  # coloca o focus no index
@@ -126,12 +127,12 @@ def criar_tela(mnum_pedido):
     lbl_numero_pedido.setText(f" Numero Pedido: {mnum_pedido}")
     lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
     try:
-        hti_global.conexao_cursor.execute(
+        hg.conexao_cursor.execute(
             f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{mnum_pedido}'"
         )
         # # 145082Recupere o resultado
-        resultados = hti_global.conexao_cursor.fetchall()
-        hti_global.conexao_bd.commit()
+        resultados = hg.conexao_cursor.fetchall()
+        hg.conexao_bd.commit()
 
         lbl_sub_total = tela.findChild(QtWidgets.QLabel, "sub_total")
         fonte = QtGui.QFont()
@@ -158,7 +159,7 @@ def criar_tela(mnum_pedido):
                 # linha = ' '.join(map(str, resultado))
                 tela.textBrowser.append(linha)
                 tela.textBrowser.append(linha1)
-                # print(f"{hti_global.c_produto}\\{mcodigo}.jpg")
+                # print(f"{hg.c_produto}\\{mcodigo}.jpg")
             mtotal_g = "{:12,.2f}".format(mtotal_geral)
             linha1 = f"SUB-TOTAL: {mtotal_g}"
             lbl_sub_total.setText(linha1)
@@ -172,14 +173,18 @@ def salva_pedido():
 
 
 def verifica_condicao():
+
     tela.ds_vlr_entrada.setValue(float(0))
     tela.ds_entrada.setValue(float(0))
     tela.ds_qtd_dias.setValue(float(0))
 
+    index = tela.cb_cliente.currentIndex()
+    mop = tela.cb_cliente.itemText(index)
+    mcod_cli = mop[0:5]
     index = tela.cb_forma_pg.currentIndex()
     mop = tela.cb_forma_pg.itemText(index)
     m_tipo_pag = mop[0:1]
-    ic(m_tipo_pag)
+    # ic(m_tipo_pag)
     if m_tipo_pag == '3':
         tela.ds_qtd_dias.setEnabled(True)
         tela.ds_qtd_dias.setFocus()
@@ -189,6 +194,22 @@ def verifica_condicao():
         tela.ds_qtd_dias.setEnabled(True)
         tela.ds_entrada.setFocus()
         tela.ds_entrada.selectAll()
+    if not mcli_aux == mcod_cli and not m_tipo_pag == '3':
+        hg.conexao_cursor.execute(
+            f"SELECT * FROM saccli WHERE cod_cli = {mcod_cli}"
+        )
+        # # 145082Recupere o resultado
+        # ic(mcod_cli, mcli_aux)
+        cons_cli = hg.conexao_cursor.fetchone()
+        hg.conexao_bd.commit()
+        if len(cons_cli) > 0 and cons_cli[58] > 0:
+            mdesc = cons_cli[58]/100
+            print(f"ESTE CLIENTE: {cons_cli[1]} - {cons_cli[2]} TERA UM DESCONTO DE: {cons_cli[58]}")
+
+    elif (m_tipo_pag == '1' or m_tipo_pag == '2' or hg.m_set[34] == 'S' and hg.m_set[104] == 'S'
+          and m_tipo_pag == '5' and ver_serie() == '141416'):
+        tela.groupBox.setEnabled(True)
+        tela.ds_desconto.setEnabled(True)
 
     return
 
@@ -239,97 +260,102 @@ def liberar_campos():
     mqtd_dias = tela.ds_qtd_dias.value()
     if mentrada > 0:
         tela.ds_vlr_entrada.setEnabled(True)
+    if m_tipo_pag == '2':
+        tela.ds_dia1.setValue(float(1))
+    else:
+        if mqtd_dias >= 1:
+            if m_tipo_pag == '3':
+                tela.ds_dia1.setValue(float(30))
+            else:
+                tela.ds_dia1.setEnabled(True)
+                tela.ds_dia1.setFocus()
+                tela.ds_dia1.selectAll()
 
-    if mqtd_dias >= 1:
-        if m_tipo_pag == '3':
-            tela.ds_dia1.setValue(float(30))
-        else:
-            tela.ds_dia1.setEnabled(True)
-            tela.ds_dia1.setFocus()
-            tela.ds_dia1.selectAll()
+        if mqtd_dias >= 2:
+            if m_tipo_pag == '3':
+                tela.ds_dia2.setValue(float(60))
+            else:
+                tela.ds_dia2.setEnabled(True)
+        if mqtd_dias >= 3:
+            if m_tipo_pag == '3':
+                tela.ds_dia3.setValue(float(90))
+            else:
+                tela.ds_dia3.setEnabled(True)
+        if mqtd_dias >= 4:
+            if m_tipo_pag == '3':
+                tela.ds_dia4.setValue(float(120))
+            else:
+                tela.ds_dia4.setEnabled(True)
+        if mqtd_dias >= 5:
+            if m_tipo_pag == '3':
+                tela.ds_dia5.setValue(float(150))
+            else:
+                tela.ds_dia5.setEnabled(True)
+        if mqtd_dias >= 6:
+            if m_tipo_pag == '3':
+                tela.ds_dia6.setValue(float(180))
+            else:
+                tela.ds_dia6.setEnabled(True)
+        if mqtd_dias >= 7:
+            if m_tipo_pag == '3':
+                tela.ds_dia7.setValue(float(210))
+            else:
+                tela.ds_dia7.setEnabled(True)
+        if mqtd_dias >= 8:
+            if m_tipo_pag == '3':
+                tela.ds_dia8.setValue(float(240))
+            else:
+                tela.ds_dia8.setEnabled(True)
+        if mqtd_dias >= 9:
+            if m_tipo_pag == '3':
+                tela.ds_dia9.setValue(float(270))
+            else:
+                tela.ds_dia9.setEnabled(True)
+        if mqtd_dias >= 10:
+            if m_tipo_pag == '3':
+                tela.ds_dia10.setValue(float(300))
+            else:
+                tela.ds_dia10.setEnabled(True)
+        if mqtd_dias >= 11:
+            if m_tipo_pag == '3':
+                tela.ds_dia11.setValue(float(330))
+            else:
+                tela.ds_dia11.setEnabled(True)
+        if mqtd_dias >= 12:
+            if m_tipo_pag == '3':
+                tela.ds_dia12.setValue(float(360))
+            else:
+                tela.ds_dia12.setEnabled(True)
 
-    if mqtd_dias >= 2:
-        if m_tipo_pag == '3':
-            tela.ds_dia2.setValue(float(60))
-        else:
-            tela.ds_dia2.setEnabled(True)
-    if mqtd_dias >= 3:
-        if m_tipo_pag == '3':
-            tela.ds_dia3.setValue(float(90))
-        else:
-            tela.ds_dia3.setEnabled(True)
-    if mqtd_dias >= 4:
-        if m_tipo_pag == '3':
-            tela.ds_dia4.setValue(float(120))
-        else:
-            tela.ds_dia4.setEnabled(True)
-    if mqtd_dias >= 5:
-        if m_tipo_pag == '3':
-            tela.ds_dia5.setValue(float(150))
-        else:
-            tela.ds_dia5.setEnabled(True)
-    if mqtd_dias >= 6:
-        if m_tipo_pag == '3':
-            tela.ds_dia6.setValue(float(180))
-        else:
-            tela.ds_dia6.setEnabled(True)
-    if mqtd_dias >= 7:
-        if m_tipo_pag == '3':
-            tela.ds_dia7.setValue(float(210))
-        else:
-            tela.ds_dia7.setEnabled(True)
-    if mqtd_dias >= 8:
-        if m_tipo_pag == '3':
-            tela.ds_dia8.setValue(float(240))
-        else:
-            tela.ds_dia8.setEnabled(True)
-    if mqtd_dias >= 9:
-        if m_tipo_pag == '3':
-            tela.ds_dia9.setValue(float(270))
-        else:
-            tela.ds_dia9.setEnabled(True)
-    if mqtd_dias >= 10:
-        if m_tipo_pag == '3':
-            tela.ds_dia10.setValue(float(300))
-        else:
-            tela.ds_dia10.setEnabled(True)
-    if mqtd_dias >= 11:
-        if m_tipo_pag == '3':
-            tela.ds_dia11.setValue(float(330))
-        else:
-            tela.ds_dia11.setEnabled(True)
-    if mqtd_dias >= 12:
-        if m_tipo_pag == '3':
-            tela.ds_dia12.setValue(float(360))
-        else:
-            tela.ds_dia12.setEnabled(True)
-
-    if mqtd_dias >= 13:
-        if m_tipo_pag == '3':
-            tela.ds_dia13.setValue(float(390))
-        else:
-            tela.ds_dia13.setEnabled(True)
-    if mqtd_dias >= 14:
-        if m_tipo_pag == '3':
-            tela.ds_dia14.setValue(float(420))
-        else:
-            tela.ds_dia14.setEnabled(True)
-    if mqtd_dias >= 15:
-        if m_tipo_pag == '3':
-            tela.ds_dia15.setValue(float(450))
-        else:
-            tela.ds_dia15.setEnabled(True)
+        if mqtd_dias >= 13:
+            if m_tipo_pag == '3':
+                tela.ds_dia13.setValue(float(390))
+            else:
+                tela.ds_dia13.setEnabled(True)
+        if mqtd_dias >= 14:
+            if m_tipo_pag == '3':
+                tela.ds_dia14.setValue(float(420))
+            else:
+                tela.ds_dia14.setEnabled(True)
+        if mqtd_dias >= 15:
+            if m_tipo_pag == '3':
+                tela.ds_dia15.setValue(float(450))
+            else:
+                tela.ds_dia15.setEnabled(True)
 
 
 def fechar_pedido(mnum_pedido):
-    hti_global.conexao_cursor.execute(f"SELECT pcod_cli FROM sacped_s WHERE pnum_ped = '{mnum_pedido}'")
-    res_pedido = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    global mcli_aux
+    hg.conexao_cursor.execute(f"SELECT pcod_cli FROM sacped_s WHERE pnum_ped = '{mnum_pedido}'")
+    res_pedido = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     # ic(res_pedido[0])
     if res_pedido[0] == 0:
-        mcod_cli = m_set[83]
+        mcod_cli = hg.m_set[83]
+        mcli_aux = 0
     else:
         mcod_cli = res_pedido[0]
+        mcli_aux = res_pedido[0]
 
     for i in range(tela.cb_cliente.count()):
         item_text = tela.cb_cliente.itemText(i)
@@ -356,9 +382,9 @@ def fechar_pedido(mnum_pedido):
 if __name__ == "__main__":
     mnum_ped = "145082"
     fechar_pedido(mnum_ped)
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()
 
-                # IF m_set[1,37] = 'S'
+                # IF hg.m_set[1,37] = 'S'
                 #         op_tela(10,35,13,75,' Dados do Carro ')
                 #         DEVPOS(00,00);DEVOUT('Placa No..:')
                 #         DEVPOS(01,00);DEVOUT('Marca.....:')

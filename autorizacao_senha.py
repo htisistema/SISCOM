@@ -3,18 +3,18 @@ from PyQt6.QtGui import QIcon, QGuiApplication
 import keyboard
 from SISCOM import SISTEMA, VERSAO
 from hti_funcoes import ver_nivel, dcripto
-import hti_global
+import hti_global as hg
 import time
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\hti_autorizacao_senha.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\hti_autorizacao_senha.ui")
 tela.setWindowTitle('Consulta de fornecedor')
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -39,26 +39,26 @@ def solicita_autorizacao(sope, scli, sprod, smen, samb):
     lb_status = tela.findChild(QtWidgets.QLabel, "mensagem_status")
 
     if not scli == '':
-        hti_global.conexao_cursor.execute(f"UPDATE insopera SET sstatus = 'S',sope = {sope}, scliente = {scli}, "
+        hg.conexao_cursor.execute(f"UPDATE insopera SET sstatus = 'S',sope = {sope}, scliente = {scli}, "
                                           f"smensagem = {smen} WHERE scod_op = {mcod_op}")
-        hti_global.conexao_cursor.commit()
+        hg.conexao_cursor.commit()
 
     elif not sprod == '':
-        hti_global.conexao_cursor.execute(f"UPDATE insopera SET sstatus = 'S',sope = {sope}, sproduto = {sprod}, "
+        hg.conexao_cursor.execute(f"UPDATE insopera SET sstatus = 'S',sope = {sope}, sproduto = {sprod}, "
                                           f"smensagem = {smen} WHERE scod_op = {mcod_op}")
-        hti_global.conexao_cursor.commit()
+        hg.conexao_cursor.commit()
 
     elif not samb == '':
-        hti_global.conexao_cursor.execute(f"UPDATE insopera SET sstatus = 'S',sope = {sope}, sambiente = {samb}, "
+        hg.conexao_cursor.execute(f"UPDATE insopera SET sstatus = 'S',sope = {sope}, sambiente = {samb}, "
                                           f"smensagem = {smen} WHERE scod_op = {mcod_op}")
-        hti_global.conexao_cursor.commit()
+        hg.conexao_cursor.commit()
 
     tela.statusBar().showMessage('SOLICITANTO AUTORIZACAO')
 
     while True:
-        hti_global.conexao_cursor.execute(f"SELECT sstatus,scod_aut FROM insopera WHERE scod_op =  {mcod_op}")
-        arq_usu = hti_global.conexao_cursor.fetchone()
-        # hti_global.conexao_cursor.commit()
+        hg.conexao_cursor.execute(f"SELECT sstatus,scod_aut FROM insopera WHERE scod_op =  {mcod_op}")
+        arq_usu = hg.conexao_cursor.fetchone()
+        # hg.conexao_cursor.commit()
         # print(arq_usu[0])
 
         if arq_usu is None:
@@ -107,11 +107,11 @@ def autorizar_senha():
     index = tela.comboBox.currentIndex()
     mop = tela.comboBox.itemText(index)
     mcod_op = mop[0:3]
-    hti_global.conexao_cursor.execute(f"SELECT * FROM sacconf WHERE TRIM(modulo) = '{mmodulo.strip()}'")
-    arq_conf = hti_global.conexao_cursor.fetchone()
+    hg.conexao_cursor.execute(f"SELECT * FROM sacconf WHERE TRIM(modulo) = '{mmodulo.strip()}'")
+    arq_conf = hg.conexao_cursor.fetchone()
 
-    hti_global.conexao_cursor.execute(f"SELECT scod_aut,ssenha,snivel FROM insopera WHERE scod_op = '{mcod_op}'")
-    arq_usu = hti_global.conexao_cursor.fetchone()
+    hg.conexao_cursor.execute(f"SELECT scod_aut,ssenha,snivel FROM insopera WHERE scod_op = '{mcod_op}'")
+    arq_usu = hg.conexao_cursor.fetchone()
     maut_oper = mcod_op
     m_aut_senha = tela.maut_senha.text()
 
@@ -135,9 +135,9 @@ def autorizar_senha():
         print(f'presente1 {presente1}')
         print(f'presente2 {presente2}')
 
-        if presente1 or presente2 or hti_global.geral_cod_usuario == '999':
-            print("if not presente1 and not presente2 or hti_global.geral_cod_usuario == '999'")
-            hti_global.m_autorizado = True
+        if presente1 or presente2 or hg.geral_cod_usuario == '999':
+            print("if not presente1 and not presente2 or hg.geral_cod_usuario == '999'")
+            hg.m_autorizado = True
             tela.close()
             return True
 
@@ -394,8 +394,8 @@ def aut_sen(mensagem, mdl, mnum_cli, mnum_prod, mamb, mnum_pedido):
     mmodulo = mdl
     # tela.setWindowFlag(Qt.WindowCloseButtonHint, False)
     tela.setWindowTitle(f'MODULO DE LIBERACAO P/SENHA <<Modulo: {mdl} >>         {SISTEMA}  Versao: {VERSAO}')
-    hti_global.conexao_cursor.execute(f"SELECT * FROM sacconf WHERE TRIM(modulo) = '{mdl.strip()}'")
-    arq_nivel = hti_global.conexao_cursor.fetchone()
+    hg.conexao_cursor.execute(f"SELECT * FROM sacconf WHERE TRIM(modulo) = '{mdl.strip()}'")
+    arq_nivel = hg.conexao_cursor.fetchone()
     tela.statusBar().showMessage('Digite a SENHA ou SOLICITAR AUTORIZACAO')
     # print(f'Autorizado: {m_autorizado}')
     tela.maut_senha.setFocus()
@@ -411,9 +411,9 @@ def aut_sen(mensagem, mdl, mnum_cli, mnum_prod, mamb, mnum_pedido):
     if arq_nivel is not None and arq_nivel[2][0] == '0':
         return True
 
-    hti_global.conexao_cursor.execute(f"SELECT scod_op,snome FROM insopera")
-    arq_insopera = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT scod_op,snome FROM insopera")
+    arq_insopera = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
 
     for ret_insopera in arq_insopera:
         item = f'{ret_insopera[0]} - {ret_insopera[1]}'.strip('(),')
@@ -436,10 +436,10 @@ def aut_sen(mensagem, mdl, mnum_cli, mnum_prod, mamb, mnum_pedido):
 if tela.solicitacao_sim.isChecked():
     if solicita_autorizacao(mcod_op, '', '', '', ambiente):
         print('Aut: True')
-        hti_global.m_autorizado = True
+        hg.m_autorizado = True
     else:
         print('Aut: False')
-        hti_global.m_autorizado = False
+        hg.m_autorizado = False
 
     tela.solicitacao_nao.setChecked(True)
     tela.maut_senha.setFocus()
@@ -448,7 +448,7 @@ if tela.solicitacao_sim.isChecked():
 
 
 if __name__ == '__main__':
-    nivel_acess = hti_global.geral_nivel_usuario
+    nivel_acess = hg.geral_nivel_usuario
     # resposta = aut_sen('INCLUSAO DE FORNECEDOR/CONTA APAGAR', 'SAC140', '', '', '', '')
     # print(resposta)
     # if resposta:
@@ -459,11 +459,11 @@ if __name__ == '__main__':
     # presente1 = False
     # presente2 = False
     # if presente1 or presente2:
-    #     print("if not presente1 and not presente2 or hti_global.geral_cod_usuario == '999'")
+    #     print("if not presente1 and not presente2 or hg.geral_cod_usuario == '999'")
 
     aut_sen('INCLUSAO DE FORNECEDOR/CONTA APAGAR', 'SAC140', '', '', '', '')
-    print(f'Autorizado: {hti_global.m_autorizado}')
-    if hti_global.m_autorizado:
+    print(f'Autorizado: {hg.m_autorizado}')
+    if hg.m_autorizado:
         print('LIBEROU')
     else:
         print('NEGATIVO')

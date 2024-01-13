@@ -4,16 +4,16 @@ from PyQt6 import uic, QtWidgets, QtCore
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QTableWidgetItem, QTableWidget, QStatusBar, QAbstractItemView
 import os
-import hti_global
+import hti_global as hg
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_financiamento.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_financiamento.ui")
 tela.setWindowTitle('FINANCIAMENTO CADASTRADO')
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -115,7 +115,7 @@ def editar_item(row):
 
 
 def chama_arquivo():
-    hti_global.conexao_cursor.execute(f"SELECT CAST(cod_fin as char(5)), CAST(desc_fin as char(25)), "
+    hg.conexao_cursor.execute(f"SELECT CAST(cod_fin as char(5)), CAST(desc_fin as char(25)), "
                                       f"REPLACE(CAST(taxa_fin AS DECIMAL(18,2)), '.', ','), "
                                       f"REPLACE(CAST(taxa_adm AS DECIMAL(18,2)), '.', ','), "
                                       f"iif(cobra_fin = 'S','Sim','Nao')  "
@@ -125,8 +125,8 @@ def chama_arquivo():
 
 def listar_financiamento():
     chama_arquivo()
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tela.tableWidget.setRowCount(len(dados_lidos))
     tela.tableWidget.setColumnCount(5)
     for i, linha in enumerate(dados_lidos):
@@ -162,4 +162,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_financiamento()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

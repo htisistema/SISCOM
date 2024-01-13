@@ -5,18 +5,18 @@ from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QTableWidgetItem, QTableWidget, QStatusBar, QAbstractItemView
 from PyQt6.QtWidgets import QGroupBox
 import os
-import hti_global
+import hti_global as hg
 
 titulo = 'REGIAO CADASTRADO'
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_regiao.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_regiao.ui")
 tela.setWindowTitle(titulo)
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 tabela = tela.tableWidget
 # Centraliza a janela na tela
@@ -25,7 +25,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 # tela.setGeometry(0, 0, 400, 200)  # Defina um tamanho inicial para a janela
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -61,9 +61,9 @@ def f_incl_regiao():
     tela.groupBox.setTitle("INCLUSAO")
     tela.bt_salvar.clicked.disconnect()
     m_codigo = tela.mcodigo.text().upper()
-    hti_global.conexao_cursor.execute(f"SELECT codigo FROM regiao WHERE codigo = {m_codigo}")
-    arq_regiao = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT codigo FROM regiao WHERE codigo = {m_codigo}")
+    arq_regiao = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_regiao is not None:
         QMessageBox.information(tela, "Inclusao de REGIAO", "REGIAO ja CADASTRADO!")
         return
@@ -75,8 +75,8 @@ def f_incl_regiao():
     m_codvend = mop[0:3]
 
     sql = "INSERT INTO regiao (codigo, regiao, codvend, sr_deleted) VALUES (?, ?, ?, ?) "
-    hti_global.conexao_cursor.execute(sql, (m_codigo, m_regiao, m_codvend, ' '))
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(sql, (m_codigo, m_regiao, m_codvend, ' '))
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de REGIAO", "Cadastro feito com SUCESSO!")
 
     listar_regiao()
@@ -85,9 +85,9 @@ def f_incl_regiao():
 def chama_alteracao(mcod_cli):
     tela.bt_salvar.clicked.disconnect()
     m_codigo = tela.mcodigo.text().upper()
-    hti_global.conexao_cursor.execute(f"SELECT codigo FROM regiao WHERE codigo = {m_codigo}")
-    arq_profi = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT codigo FROM regiao WHERE codigo = {m_codigo}")
+    arq_profi = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     print('ok')
     if arq_profi is None:
         QMessageBox.information(tela, "Inclusao de REGIAO", "REGIAO nao CADASTRADO!")
@@ -99,8 +99,8 @@ def chama_alteracao(mcod_cli):
     mop = tela.comboBox.itemText(index)
     m_codvend = mop[0:3]
     sql = "UPDATE regiao SET regiao = ?, codvend = ? WHERE codigo = ?"
-    hti_global.conexao_cursor.execute(sql, (m_regiao, m_codvend, m_codigo))
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(sql, (m_regiao, m_codvend, m_codigo))
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "ALTERACAO de REGIAO", "Alteracao feita com SUCESSO!")
 
     listar_regiao()
@@ -143,9 +143,9 @@ def habilitar_objeto():
     tela.mcodigo.clear()
     tela.mregiao.clear()
     tela.mcodigo.setEnabled(False)
-    hti_global.conexao_cursor.execute(f"SELECT max(codigo) FROM regiao")
-    max_regiao = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT max(codigo) FROM regiao")
+    max_regiao = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if max_regiao is None:
         codigo = 1
         tela.mcodigo.setText(str(codigo).zfill(2))
@@ -165,17 +165,17 @@ def habilitar_objeto():
 
 def listar_regiao():
     tela.groupBox.setTitle("INCLUSAO/ALTERACAO")
-    hti_global.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera order BY snome")
-    ver_vendedor = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera order BY snome")
+    ver_vendedor = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     for ret_vendedor in ver_vendedor:
         item = f'{ret_vendedor[0]} - {ret_vendedor[1]}'.strip('(),')
         tela.comboBox.addItem(item)
     tela.comboBox.setCurrentIndex(0)
 
-    hti_global.conexao_cursor.execute(f"SELECT codigo, regiao, codvend FROM regiao order BY regiao")
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT codigo, regiao, codvend FROM regiao order BY regiao")
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tabela.setRowCount(len(dados_lidos))
     tabela.setColumnCount(3)
     tabela.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -216,4 +216,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_regiao()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

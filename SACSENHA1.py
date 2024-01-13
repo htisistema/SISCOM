@@ -7,17 +7,17 @@ from PyQt6.QtWidgets import QButtonGroup, QMessageBox
 from datetime import datetime, date
 from hti_funcoes import cripto
 import os
-import hti_global
+import hti_global as hg
 
 titulo = "INCLUSÃO DE USUARIOS"
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\htiusuario.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\htiusuario.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -25,7 +25,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -44,16 +44,16 @@ nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
 
-hti_global.conexao_cursor.execute("SELECT * FROM sacsetup")
-m_set = hti_global.conexao_cursor.fetchone()
-# hti_global.conexao_db.commit()
+# hg.conexao_cursor.execute("SELECT * FROM sacsetup")
+# m_set = hg.conexao_cursor.fetchone()
+# # hg.conexao_db.commit()
 
-hti_global.conexao_cursor.execute("SELECT cidade, uf, cep FROM saccid ORDER BY cidade")
-arq_cidade = hti_global.conexao_cursor.fetchall()
-# hti_global.conexao_cursor.commit()
+hg.conexao_cursor.execute("SELECT cidade, uf, cep FROM saccid ORDER BY cidade")
+arq_cidade = hg.conexao_cursor.fetchall()
+# hg.conexao_cursor.commit()
 
 # COMBOX
-tela.comboBox_2.addItems(hti_global.estados)
+tela.comboBox_2.addItems(hg.estados)
 tela.comboBox_2.setCurrentIndex(16)  # coloca o focus no index
 
 for ret_cidade in arq_cidade:
@@ -77,22 +77,22 @@ data_vazia = date(1900, 1, 1)
 
 def fecha_tela():
     tela.close()
-    # hti_global.conexao_cursor.close()
+    # hg.conexao_cursor.close()
     tela.closeEvent = on_close_event
 
 
 def on_close_event(event):
     tela.close()
     event.accept()
-    # hti_global.conexao_cursor.close()
+    # hg.conexao_cursor.close()
     tela.closeEvent = on_close_event
 
 
 def salvar_usuario():
     m_scod_op = tela.mscod_op.text()
-    hti_global.conexao_cursor.execute(f"SELECT * FROM insopera WHERE scod_op = {m_scod_op}")
-    arq_ver_usu = hti_global.conexao_cursor.fetchone()
-    # hti_global.conexao_db.rollback()
+    hg.conexao_cursor.execute(f"SELECT * FROM insopera WHERE scod_op = {m_scod_op}")
+    arq_ver_usu = hg.conexao_cursor.fetchone()
+    # hg.conexao_db.rollback()
     if arq_ver_usu is not None:
         QMessageBox.information(tela, "INCLUSAO DE USUARIO", "Usuario ja CADASTRADO !")
         return
@@ -216,7 +216,7 @@ def salvar_usuario():
           "?, ?) "
 
     mnivel = m_snivel + m_snivel1
-    hti_global.conexao_cursor.execute(sql, (m_sdata_cad, m_scod_op, m_snome, m_stipo,
+    hg.conexao_cursor.execute(sql, (m_sdata_cad, m_scod_op, m_snome, m_stipo,
                                             m_stipo_sis, mnivel, senha, m_scomissao,
                                             m_scom_praz, m_scom_oper, m_scota, m_sexpira_,
                                             m_doc_apagar, m_estoq_min, m_estoq_med, m_dat_aniv,
@@ -225,7 +225,7 @@ def salvar_usuario():
                                             m_fone, m_cpf, m_rg, m_preco_perc,
                                             m_desc_max, ' '))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de usuario", "Cadastro feito com SUCESSO!")
 
     inclusao_usuario()
@@ -233,8 +233,8 @@ def salvar_usuario():
 
 def inclusao_usuario():
     # PEGAR O ULTIMO NUMERO DOS usuario E ACRESCENTA 1
-    hti_global.conexao_cursor.execute(f"SELECT max(scod_op) FROM insopera WHERE NOT scod_op = '999'")
-    arq_usu = hti_global.conexao_cursor.fetchone()
+    hg.conexao_cursor.execute(f"SELECT max(scod_op) FROM insopera WHERE NOT scod_op = '999'")
+    arq_usu = hg.conexao_cursor.fetchone()
     tab_widget = tela.findChild(QtWidgets.QTabWidget, "tabWidget")
     tab_widget.setCurrentIndex(0)
 
@@ -293,4 +293,4 @@ def inclusao_usuario():
 
 if __name__ == '__main__':
     inclusao_usuario()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

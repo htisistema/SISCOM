@@ -7,7 +7,7 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtGui import QGuiApplication
 from SISCOM import nome_computador, endereco_ip
-import hti_global
+import hti_global as hg
 
 # PEGA O NOME DO ARQUIVO EM EXECUCAO
 nome_file_com = os.path.basename(__file__)
@@ -15,13 +15,13 @@ nome_file, ext = os.path.splitext(nome_file_com)
 
 app = QtWidgets.QApplication([])
 # Defina a folha de estilo global
-app.setStyleSheet(hti_global.style_sheet)
+app.setStyleSheet(hg.style_sheet)
 
-tela = uic.loadUi(f"{hti_global.c_ui}\\menu.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
+tela = uic.loadUi(f"{hg.c_ui}\\menu.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
 # tela.move(15, 10)
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -29,33 +29,33 @@ if hti_global.mtp_tela == 'G':
 
 tela.setWindowIcon(icon)
 
-tela.statusBar().showMessage(f"Nome do Computador: {nome_computador} - Caminho do Servidor BD: {hti_global.host} - "
+tela.statusBar().showMessage(f"Nome do Computador: {nome_computador} - Caminho do Servidor BD: {hg.host} - "
                              f"IP: {endereco_ip} - << {nome_file} >>")
 
 
-imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 pixmap_redimensionado = imagem.scaled(450, 250)  # redimensiona a imagem para 100x100
 tela.imagem_menu.setPixmap(pixmap_redimensionado)
 # tela.showMaximized()
 
-logohti = QPixmap(f"{hti_global.c_imagem}\\logoHTI.png")
+logohti = QPixmap(f"{hg.c_imagem}\\logoHTI.png")
 pixmap_redimensionado = logohti.scaled(195, 190)  # redimensiona a imagem para 100x100
 tela.logohti.setPixmap(pixmap_redimensionado)
 
 
-if os.path.exists(f"{hti_global.c_imagem}\\{hti_global.geral_cod_usuario}.jpg"):
-    usuario = QPixmap(f"{hti_global.c_imagem}\\{hti_global.geral_cod_usuario}.jpg")
+if os.path.exists(f"{hg.c_imagem}\\{hg.geral_cod_usuario}.jpg"):
+    usuario = QPixmap(f"{hg.c_imagem}\\{hg.geral_cod_usuario}.jpg")
 else:
-    usuario = QPixmap(f"{hti_global.c_imagem}\\htiusu.jpg")
+    usuario = QPixmap(f"{hg.c_imagem}\\htiusu.jpg")
 
 pixmap_redimensionado = usuario.scaled(120, 110)  # redimensiona a imagem para 100x100
 tela.usuario.setPixmap(pixmap_redimensionado)
 
 lbl_nome_usuario = tela.findChild(QtWidgets.QLabel, "nome_usuario")
-lbl_nome_usuario.setText(f"Codigo: {hti_global.geral_cod_usuario} - {hti_global.geral_nivel_usuario}")
+lbl_nome_usuario.setText(f"Codigo: {hg.geral_cod_usuario} - {hg.geral_nivel_usuario}")
 
 lbl_versao = tela.findChild(QtWidgets.QLabel, "versao_menu")
-lbl_versao.setText(f'Versao: {hti_global.VERSAO}')
+lbl_versao.setText(f'Versao: {hg.VERSAO}')
 tela.statusBar = QtWidgets.QStatusBar()
 tela.setStatusBar(tela.statusBar)
 
@@ -68,8 +68,8 @@ tela.statusBar.showMessage(f"<< {nome_file} >>")
 def on_close_event(event):
     # Esta função será chamada quando o usuário clicar no botão de fechar a janela
     # print("Fechando a janela...")
-    hti_global.conexao_bd.close()
-    hti_global.conexao_cursor.close()
+    hg.conexao_bd.close()
+    hg.conexao_cursor.close()
     tela.close()
     event.accept()
     tela.quit()
@@ -79,8 +79,8 @@ def on_close_event(event):
 
 def sair():
     # print('sair')
-    hti_global.conexao_bd.close()
-    hti_global.conexao_cursor.close()
+    hg.conexao_bd.close()
+    hg.conexao_cursor.close()
     tela.close()
     app_menu.quit()
 
@@ -201,14 +201,14 @@ def m_regiao():
 
 
 def criar_menu():
-    hti_global.conexao_cursor.execute(f"SELECT * FROM sacsetup")
-    m_set = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
-    empresa = str(m_set[128])
+    # hg.conexao_cursor.execute(f"SELECT * FROM sacsetup")
+    # m_set = hg.conexao_cursor.fetchone()
+    # hg.conexao_bd.commit()
+    empresa = str(hg.m_set[128])
     empresa = empresa.strip()
-    cnpj = str(m_set[122])
+    cnpj = str(hg.m_set[122])
     cnpj = cnpj[:14]
-    tela.setWindowTitle(f'{empresa} - CNPJ: {cnpj}                    {hti_global.SISTEMA}   Versao: {hti_global.VERSAO}')
+    tela.setWindowTitle(f'{empresa} - CNPJ: {cnpj}                    {hg.SISTEMA}   Versao: {hg.VERSAO}')
     tela.actionProduto.triggered.connect(m_produto)
     tela.actionCliente.triggered.connect(m_cadcli)
     tela.actionUsuarios.triggered.connect(m_usuario)
@@ -245,7 +245,7 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     criar_menu()
-    hti_global.conexao_cursor.close()
+    hg.conexao_cursor.close()
     tela.close()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()
     app_menu.quit()

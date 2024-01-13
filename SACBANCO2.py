@@ -6,17 +6,17 @@ from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QMessageBox
 from hti_funcoes import ver_nivel
 from hti_funcoes import conexao_banco, verificar_conexao
-import hti_global
+import hti_global as hg
 
 titulo = "ALTERACAO DE BANCO"
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\htibanco.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\htibanco.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -24,7 +24,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -48,7 +48,7 @@ tela.statusBar.showMessage(f"<< {nome_file} >>")
 def on_close_event(event):
     tela.close()
     event.accept()
-    # hti_global.conexao_cursor.close()
+    # hg.conexao_cursor.close()
     tela.closeEvent = on_close_event
 
 
@@ -60,10 +60,10 @@ def fecha_tela():
 
 def salvar_banco():
     m_cod_banco = tela.mcod_banco.text()
-    hti_global.conexao_cursor.execute(f"SELECT cod_banco FROM sacbanco WHERE cod_banco = {m_cod_banco} ")
+    hg.conexao_cursor.execute(f"SELECT cod_banco FROM sacbanco WHERE cod_banco = {m_cod_banco} ")
     # # Recupere o resultado
-    arq_ver_banco = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    arq_ver_banco = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_ver_banco is None:
         QMessageBox.information(tela, "alteracao de banco", "banco ja CADASTRADO !")
         return
@@ -95,25 +95,25 @@ def salvar_banco():
               m_cod_cedente, m_carteira, m_cod_trans,
               m_local_pg, m_diasprot, m_despesa, m_cod_banco)
 
-    hti_global.conexao_cursor.execute(sql, values)
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(sql, values)
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "alteracao de banco", "ALTERACAO feito com SUCESSO!")
 
     alteracao_banco(m_cod_banco)
 
 
 def alteracao_banco(mcodigo):
-    # nivel_acess = hti_global.geral_nivel_usuario
+    # nivel_acess = hg.geral_nivel_usuario
     # if not ver_nivel(nome_file, 'CADASTRO DE BANCOS ', '15', nivel_acess, 'AMBIE', '  '):
     #     tela.close()
     #     tela.closeEvent = on_close_event
     #     return
 
     # PEGAR O ULTIMO NUMERO DOS banco E ACRESCENTA 1
-    hti_global.conexao_cursor.execute(f"SELECT * FROM sacbanco WHERE cod_banco = {mcodigo}")
+    hg.conexao_cursor.execute(f"SELECT * FROM sacbanco WHERE cod_banco = {mcodigo}")
     # # Recupere o resultado
-    arq_banco = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    arq_banco = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_banco is None:
         QMessageBox.information(tela, "alteracao de BANCO", "Banco nao CADASTRADO !")
         return
@@ -149,4 +149,4 @@ if __name__ == '__main__':
     conexao_banco()
     verificar_conexao()
     alteracao_banco('002')
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

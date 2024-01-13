@@ -6,18 +6,18 @@ from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox
 from datetime import datetime, date
 from hti_funcoes import ver_nivel
-import hti_global
+import hti_global as hg
 
 titulo = "ALTERACAO DE TRANSPORTADORA"
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\htitransportadora.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\htitransportadora.ui")
 tela.setWindowTitle(titulo)
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -25,7 +25,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -49,16 +49,16 @@ data_vazia = date(1900, 1, 1)
 def on_close_event(event):
     tela.close()
     event.accept()
-    # hti_global.conexao_cursor.close()
+    # hg.conexao_cursor.close()
     tela.closeEvent = on_close_event
 
 
 def salvar_transportadora():
     m_cod_tran = tela.mcod_tran.text().strip()
-    hti_global.conexao_cursor.execute(f"SELECT * FROM sactran WHERE cod_tran = {m_cod_tran} ")
+    hg.conexao_cursor.execute(f"SELECT * FROM sactran WHERE cod_tran = {m_cod_tran} ")
     # # Recupere o resultado
-    arq_ver_forn = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    arq_ver_forn = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_ver_forn is None:
         QMessageBox.information(tela, "alteracao de transportadora", "transportadora ja CADASTRADO !")
         return
@@ -126,7 +126,7 @@ def salvar_transportadora():
           "ct_gerente = ?, ct_fatura = ?, ct_cobran = ?, ct_vendedo = ? " \
           " WHERE cod_tran = ?"
 
-    hti_global.conexao_cursor.execute(sql, (m_data_cad, m_razao,
+    hg.conexao_cursor.execute(sql, (m_data_cad, m_razao,
                                             m_cgc, m_cpf, m_insc, m_obs,
                                             m_placa, m_uf_placa, m_antt, m_apolice,
                                             m_endereco, m_bairro, m_mcidade, m_muf,
@@ -135,37 +135,37 @@ def salvar_transportadora():
                                             m_ct_gerente, m_ct_fatura, m_ct_cobran, m_ct_vendedo,
                                             m_cod_tran))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "alteracao de transportadora", "ALTERACAO feita com SUCESSO!")
     fecha_tela()
 
 
 def alteracao_transportadora(codigo_transp):
-    hti_global.conexao_cursor.execute("SELECT cidade, uf, cep FROM saccid ORDER BY cidade")
+    hg.conexao_cursor.execute("SELECT cidade, uf, cep FROM saccid ORDER BY cidade")
     # Recupere o resultado
-    arq_cidade = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    arq_cidade = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
 
     # COMBOX
-    tela.comboBox.addItems(hti_global.estados)
+    tela.comboBox.addItems(hg.estados)
     tela.comboBox.setCurrentIndex(16)  # coloca o focus no index
 
-    tela.comboBox_3.addItems(hti_global.estados)
+    tela.comboBox_3.addItems(hg.estados)
     tela.comboBox_3.setCurrentIndex(16)  # coloca o focus no index
 
     for ret_cidade in arq_cidade:
         item = f'{ret_cidade[0]} - {ret_cidade[1]}'.strip('(),')
         tela.comboBox_2.addItem(item)
-    nivel_acess = hti_global.geral_nivel_usuario
+    nivel_acess = hg.geral_nivel_usuario
     if not ver_nivel(nome_file, 'ALTERACAO DE TRANSPORTADORA', '15', nivel_acess, 'AMBIE', '  '):
         tela.close()
         tela.closeEvent = on_close_event
         return
 
     # PEGAR O ULTIMO NUMERO DOS transportadora E ACRESCENTA 1
-    hti_global.conexao_cursor.execute(f"SELECT * FROM sactran WHERE cod_tran = {codigo_transp}")
-    arq_tran = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT * FROM sactran WHERE cod_tran = {codigo_transp}")
+    arq_tran = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_tran is None:
         QMessageBox.information(tela, "alteracao de transportadora", "PRODUTO NAO CADASTRADO!")
         return
@@ -237,4 +237,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     alteracao_transportadora('0001')
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

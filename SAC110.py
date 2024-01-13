@@ -8,18 +8,18 @@ from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QRadioButton
 from PyQt6.QtGui import QGuiApplication
 from datetime import datetime
 from datetime import date
-import hti_global
+import hti_global as hg
 
 titulo = "INCLUSÃO DE PRODUTOS" 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\sac110.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\sac110.ui")
 tela.setWindowTitle(titulo)
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -27,7 +27,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -43,53 +43,53 @@ nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
-if os.path.exists(f"{hti_global.c_imagem}\\htifirma.jpg"):
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma.jpg")
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
 else:
-    imagem = QPixmap(f"{hti_global.c_imagem}\\htifirma1.jpg")
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
 pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
 tela.empresa.setPixmap(pixmap_redimensionado)
 
-hti_global.conexao_cursor.execute(f"SELECT * FROM sacsetup")
-# Recupere o resultado
-m_set = hti_global.conexao_cursor.fetchone()
-hti_global.conexao_bd.commit()
+# hg.conexao_cursor.execute(f"SELECT * FROM sacsetup")
+# # Recupere o resultado
+# m_set = hg.conexao_cursor.fetchone()
+# hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT gru_sub, merc FROM sacgrupo WHERE CHAR_LENGTH(trim(gru_sub)) = 3")
+hg.conexao_cursor.execute(f"SELECT gru_sub, merc FROM sacgrupo WHERE CHAR_LENGTH(trim(gru_sub)) = 3")
 # Recupere o resultado
-arq_grupo = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_grupo = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 for ret_grupo in arq_grupo:
     item = f'{ret_grupo[0]} - {ret_grupo[1]}'.strip('(),')
     tela.comboBox.addItem(item)
 tela.comboBox.setCurrentIndex(0)
 
-hti_global.conexao_cursor.execute(f"select gru_sub, merc from sacgrupo where gru_sub like '001%'"
+hg.conexao_cursor.execute(f"select gru_sub, merc from sacgrupo where gru_sub like '001%'"
                                   f"and CHAR_LENGTH(trim(gru_sub)) = 5")
-arq_sub_grupo = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_sub_grupo = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 for ret_sub_grupo in arq_sub_grupo:
     item = f'{ret_sub_grupo[0]} - {ret_sub_grupo[1]}'.strip('(),')
     tela.comboBox_4.addItem(item)
 tela.comboBox_4.setCurrentIndex(0)
 
-hti_global.conexao_cursor.execute(f"SELECT cod_forn, razao FROM sacforn WHERE forn_desp = 'F'")
+hg.conexao_cursor.execute(f"SELECT cod_forn, razao FROM sacforn WHERE forn_desp = 'F'")
 # Recupere o resultado
-arq_forn = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_forn = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 for ret_forn in arq_forn:
     item = f'{ret_forn[0]} - {ret_forn[1]}'.strip('(),')
     tela.comboBox_2.addItem(item)
 tela.comboBox_2.setCurrentIndex(0)
 
-hti_global.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
+hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
 # Recupere o resultado
-arq_usuario = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_usuario = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 # COMBOX
 tela.comboBox_3.addItems(["1->Produto", "2->Matria Prima", "3->Isumos", "4->Consumo", "5->Outros"])
@@ -99,24 +99,24 @@ tela.comboBox_5.addItems(["UN ->Unidade", "AR ->Arroba", "CX ->Caixa", "FD ->Far
                           "TON->Tonelada"])
 tela.comboBox_5.setCurrentIndex(0)  # coloca o focus no index
 
-hti_global.conexao_cursor.execute(f"SELECT cod_espe, descri FROM sacespe")
-arq_espe = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+hg.conexao_cursor.execute(f"SELECT cod_espe, descri FROM sacespe")
+arq_espe = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 for ret_espe in arq_espe:
     item = f'{ret_espe[0]} - {ret_espe[1]}'.strip('(),')
     tela.comboBox_6.addItem(item)
 tela.comboBox_6.setCurrentIndex(0)
 
-hti_global.conexao_cursor.execute(f"SELECT CAST(cst as char(4)), CAST(descri as char(120)), "
+hg.conexao_cursor.execute(f"SELECT CAST(cst as char(4)), CAST(descri as char(120)), "
                                   f"iif(sittrib = 'I', 'I - Inseto', "
                                   f"iif(sittrib = 'T', 'T - Tributada', "
                                   f"iif(sittrib = 'N', 'N - Nao tributada', "
                                   f"iif(sittrib = 'F', 'F - Substituicao tributaria', 'S - Servicos')))) "
                                   f"FROM saccst")
 
-arq_cst = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_cst = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 for ret_cst in arq_cst:
     item = f'{ret_cst[0]} - {ret_cst[1]} - {ret_cst[2]}'.strip('(),')
@@ -128,9 +128,9 @@ tela.comboBox_10.setCurrentIndex(0)
 tela.comboBox_11.setCurrentIndex(0)
 
 # , substring(descri from 1 for 50)
-hti_global.conexao_cursor.execute(f"SELECT codigo FROM sacncm")
-arq_ncm = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+hg.conexao_cursor.execute(f"SELECT codigo FROM sacncm")
+arq_ncm = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 for ret_ncm in arq_ncm:
     # item = f'{ret_ncm[0]} - {ret_ncm[1]}'.strip('(),')
@@ -138,16 +138,16 @@ for ret_ncm in arq_ncm:
     tela.comboBox_8.addItem(item)
 tela.comboBox_8.setCurrentIndex(0)
 
-hti_global.conexao_cursor.execute(f"SELECT cod_obs, obs FROM sacobs")
-arq_obs = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+hg.conexao_cursor.execute(f"SELECT cod_obs, obs FROM sacobs")
+arq_obs = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 for ret_obs in arq_obs:
     item = f'{ret_obs[0]} - {ret_obs[1]}'.strip('(),')
     tela.comboBox_9.addItem(item)
 tela.comboBox_9.setCurrentIndex(0)
 
-hti_global.conexao_cursor.execute(f"SELECT CAST(operacao as char(5)), "
+hg.conexao_cursor.execute(f"SELECT CAST(operacao as char(5)), "
                                   f"CAST(descr_op as char(40)), "
                                   f"iif(credito = 'S','Debito ou Credito','Sem Movimentacao'), "
                                   f"iif(sai_ent = 'S', 'Nota de Saida', 'Nota de Entrada'), "
@@ -155,14 +155,14 @@ hti_global.conexao_cursor.execute(f"SELECT CAST(operacao as char(5)), "
                                   f"iif(tipo = '3', '3 - NFe AJUSTE', '4 - DEVOLUCAO/RETORNO')))  "
                                   f" FROM sacop WHERE operacao like '5%' ORDER BY operacao")
 
-arq_cfop = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_cfop = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 for ret_cfop in arq_cfop:
     item = f'{ret_cfop[0]} - {ret_cfop[1]} - {ret_cfop[2]} - {ret_cfop[3]} - {ret_cfop[4]}'.strip('(),')
     tela.comboBox_12.addItem(item)
 tela.comboBox_12.setCurrentIndex(0)
-hti_global.conexao_cursor.execute(f"SELECT CAST(operacao as char(5)), "
+hg.conexao_cursor.execute(f"SELECT CAST(operacao as char(5)), "
                                   f"CAST(descr_op as char(40)), "
                                   f"iif(credito = 'S','Debito ou Credito','Sem Movimentacao'), "
                                   f"iif(sai_ent = 'S', 'Nota de Saida', 'Nota de Entrada'), "
@@ -170,10 +170,10 @@ hti_global.conexao_cursor.execute(f"SELECT CAST(operacao as char(5)), "
                                   f"iif(tipo = '3', '3 - NFe AJUSTE', '4 - DEVOLUCAO/RETORNO')))  "
                                   f" FROM sacop WHERE operacao like '6%' ORDER BY operacao")
 
-# hti_global.conexao_cursor.execute("SELECT operacao, descr_op, sai_ent, tipo FROM sacop WHERE operacao like '6%' or "
+# hg.conexao_cursor.execute("SELECT operacao, descr_op, sai_ent, tipo FROM sacop WHERE operacao like '6%' or "
 #                                   "operacao like '2%'")
-arq_cfop = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_cfop = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 for ret_cfop in arq_cfop:
     # item = f'{ret_cfop[0]} - {ret_cfop[1]} - {ret_cfop[2]} - {ret_cfop[3]} - {ret_cfop[4]}'.strip('(),')
@@ -182,9 +182,9 @@ for ret_cfop in arq_cfop:
 
 tela.comboBox_13.setCurrentIndex(0)
 
-hti_global.conexao_cursor.execute(f"SELECT codemp, razao FROM sacemp")
-arq_emp = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+hg.conexao_cursor.execute(f"SELECT codemp, razao FROM sacemp")
+arq_emp = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 for ret_emp in arq_emp:
     item = f'{ret_emp[0]} - {ret_emp[1]}'.strip('(),')
@@ -243,10 +243,10 @@ def on_close_event(event):
 
 def salvar_produto():
     m_cod_merc = tela.mcod_merc.text()
-    hti_global.conexao_cursor.execute(f"SELECT cod_merc FROM sacmerc WHERE cod_merc = {m_cod_merc} ")
+    hg.conexao_cursor.execute(f"SELECT cod_merc FROM sacmerc WHERE cod_merc = {m_cod_merc} ")
     # # Recupere o resultado
-    arq_ver_merc = hti_global.conexao_cursor.fetchone()
-    # hti_global.conexao_bd.commit()
+    arq_ver_merc = hg.conexao_cursor.fetchone()
+    # hg.conexao_bd.commit()
     if arq_ver_merc is not None:
         QMessageBox.information(tela, "INCLUSAO de produto", "produto ja CADASTRADO !")
         return
@@ -450,7 +450,7 @@ def salvar_produto():
           "?, ?, ?, " \
           "?, ?, ?) "
 
-    hti_global.conexao_cursor.execute(sql, (m_empresa, m_data_cad, m_cod_barr,
+    hg.conexao_cursor.execute(sql, (m_empresa, m_data_cad, m_cod_barr,
                                             m_sub_grupo, m_cod_merc, m_merc,
                                             m_unidade, m_pr_venda, m_comissao,
                                             m_com_mont, m_prazo, m_p_lucro,
@@ -470,7 +470,7 @@ def salvar_produto():
                                             m_cst_conf, m_confis, m_cfop_dent,
                                             m_cfop_fora, m_volume, ' '))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de produto", "Cadastro feito com SUCESSO!")
 
     m_merc = tela.mmerc.text().upper()
@@ -483,10 +483,10 @@ def carregar_combobox_2():
     mop = tela.comboBox.itemText(index)
     m_grupo = mop[0:3]
     tela.comboBox_4.clear()
-    hti_global.conexao_cursor.execute(f"select gru_sub, merc from sacgrupo where gru_sub like upper('{m_grupo}%') "
+    hg.conexao_cursor.execute(f"select gru_sub, merc from sacgrupo where gru_sub like upper('{m_grupo}%') "
                                       f"and CHAR_LENGTH(trim(gru_sub)) = 5")
-    arq_sub_g = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    arq_sub_g = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
 
     for ret_sub_g in arq_sub_g:
         items = f'{ret_sub_g[0]} - {ret_sub_g[1]}'.strip('(),')
@@ -508,7 +508,7 @@ def desabilitar_objeto():
 
 def inclusao_produto():
     # PEGAR O NUMERO QUE FALTA NA SEQUENCIA OU O ULTIMO NUMERO
-    hti_global.conexao_cursor.execute(f"select first 1 t.id_ant + 1 "
+    hg.conexao_cursor.execute(f"select first 1 t.id_ant + 1 "
                                       f"from (select (select first 1 cast(a1.cod_merc as int) from sacmerc a1 "
                                       f"where cast(a1.cod_merc as int) < cast(a.cod_merc as int) "
                                       f"order by cast(a1.cod_merc as int) desc) as id_ant, "
@@ -516,14 +516,14 @@ def inclusao_produto():
                                       f"cast(a.cod_merc as int)) t "
                                       f"where coalesce(t.id_ant,0) <> cast(t.cod_merc as int) - 1 ")
     # # Recupere o resultado
-    arq_prod = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    arq_prod = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
 
     if arq_prod is None:
-        hti_global.conexao_cursor.execute(f"select cast(max(cod_merc) as int) + 1 from sacmerc ")
+        hg.conexao_cursor.execute(f"select cast(max(cod_merc) as int) + 1 from sacmerc ")
         # # Recupere o resultado
-        arq_prod = hti_global.conexao_cursor.fetchone()
-        hti_global.conexao_bd.commit()
+        arq_prod = hg.conexao_cursor.fetchone()
+        hg.conexao_bd.commit()
         # arq_prod[0] = (arq_prod[0]) + 1
     # string_numero = str(arq_prod[0]).zfill(5)
     tela.mcod_merc.setText(str(arq_prod[0]).zfill(5))
@@ -624,4 +624,4 @@ def fecha_tela():
 
 if __name__ == '__main__':
     inclusao_produto()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

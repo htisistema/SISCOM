@@ -4,17 +4,17 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QAbstractItemView, QTableWidgetItem
 import os
-import hti_global
+import hti_global as hg
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_estados.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_estados.ui")
 tela.setWindowTitle('ESTADOS CADASTRADO')
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 tabela = tela.tableWidget
 # Centraliza a janela na tela
@@ -22,7 +22,7 @@ qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -62,17 +62,17 @@ def f_incl_estados():
     m_uf = tela.muf.text().upper().strip()
     m_estado = tela.mestado.text().upper()
     m_percent = tela.doubleSpinBox.value()
-    hti_global.conexao_cursor.execute(f"SELECT uf FROM sacuf WHERE uf = '{m_uf}'")
-    arq_uf = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT uf FROM sacuf WHERE uf = '{m_uf}'")
+    arq_uf = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_uf is not None:
         QMessageBox.information(tela, "INCLUSAO ESTADOS ", "Estado ja CADASTRADO !")
         tela.muf.setFocus()
         return
 
     sql = "INSERT INTO sacuf (uf, estado, percent) VALUES (?, ?, ?)"
-    hti_global.conexao_cursor.execute(sql, (m_uf, m_estado, m_percent))
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(sql, (m_uf, m_estado, m_percent))
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de ESTADO", "Cadastro feito com SUCESSO!")
     listar_estados()
 
@@ -81,17 +81,17 @@ def chama_alteracao(mcod_cli):
     m_uf = tela.muf.text().upper().strip()
     m_estado = tela.mestado.text().upper()
     m_percent = tela.doubleSpinBox.value()
-    hti_global.conexao_cursor.execute(f"SELECT uf FROM sacuf WHERE uf = '{m_uf}'")
-    arq_uf = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT uf FROM sacuf WHERE uf = '{m_uf}'")
+    arq_uf = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_uf is None:
         QMessageBox.information(tela, "INCLUSAO ESTADOS ", "Estado nao CADASTRADO !")
         tela.muf.setFocus()
 
     sql = "UPDATE sacuf SET estado = ?, percent = ? WHERE uf = ?"
-    hti_global.conexao_cursor.execute(sql, (m_estado, m_percent, m_uf))
+    hg.conexao_cursor.execute(sql, (m_estado, m_percent, m_uf))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "ALTERACAO DE ESTADOS", "Alteracao feita com SUCESSO!")
     listar_estados()
 
@@ -136,12 +136,12 @@ def habilitar_objeto():
 
 
 def listar_estados():
-    hti_global.conexao_cursor.execute(f"SELECT CAST(uf as char(2)), "
+    hg.conexao_cursor.execute(f"SELECT CAST(uf as char(2)), "
                                       f"CAST(estado as char(20)), "
                                       f"REPLACE(CAST(percent AS DECIMAL(18,2)), '.', ',') FROM sacuf ORDER BY estado")
 
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tabela.setRowCount(len(dados_lidos))
     tabela.setColumnCount(3)
     tabela.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -182,4 +182,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_estados()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

@@ -1,19 +1,28 @@
 import fdb
-import hti_global
+import hti_global as hg
+
+
+# VER NUMERO DA SERIE
+def ver_serie():
+    return hg.hg.m_set[122][15:6]
 
 
 def conexao_banco():
     # Conecte-se ao banco de dados
     # print('conexao')
-    hti_global.conexao_bd = fdb.connect(dsn=hti_global.host, user='SYSDBA', password='masterkey')
-    hti_global.conexao_cursor = hti_global.conexao_bd.cursor()
+    hg.conexao_bd = fdb.connect(dsn=hg.host, user='SYSDBA', password='masterkey')
+    hg.conexao_cursor = hg.conexao_bd.cursor()
+    hg.conexao_cursor.execute("SELECT * FROM sacsetup")
+    hg.m_set = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
+
     return
 
 
 def verificar_conexao():
     conexao_banco()
-    hti_global.conexao_cursor.execute("SELECT rdb$get_context('SYSTEM', 'ENGINE_VERSION') FROM rdb$database;")
-    resultado = hti_global.conexao_cursor.fetchone()
+    hg.conexao_cursor.execute("SELECT rdb$get_context('SYSTEM', 'ENGINE_VERSION') FROM rdb$database;")
+    resultado = hg.conexao_cursor.fetchone()
     if resultado:
         print(f"Conexão estabelecida com sucesso! Versão do Firebird: {resultado[0]}")
     else:
@@ -23,9 +32,9 @@ def verificar_conexao():
 def ver_nivel(mmodulo, mdescri, mnivel, mconf_nivel, mamb, mopera):
     from autorizacao_senha import aut_sen
     # print(mmodulo)
-    hti_global.conexao_cursor.execute(f"SELECT * FROM sacconf WHERE TRIM(modulo) = '{mmodulo.strip()}'")
-    arq_conf = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT * FROM sacconf WHERE TRIM(modulo) = '{mmodulo.strip()}'")
+    arq_conf = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
 
     if arq_conf is not None and arq_conf[2][0] == '0':
         print('achou1')
@@ -33,10 +42,10 @@ def ver_nivel(mmodulo, mdescri, mnivel, mconf_nivel, mamb, mopera):
     if arq_conf is not None:
         sql = "UPDATE sacconf SET descri = ? WHERE modulo = ?"
         values = (mdescri, mmodulo)
-        hti_global.conexao_cursor.execute(sql, values)
-        hti_global.conexao_bd.commit()
-        print(f'opera: {mopera} - global: {hti_global.geral_cod_usuario}')
-        if mopera == '999' or hti_global.geral_cod_usuario == '999':
+        hg.conexao_cursor.execute(sql, values)
+        hg.conexao_bd.commit()
+        print(f'opera: {mopera} - global: {hg.geral_cod_usuario}')
+        if mopera == '999' or hg.geral_cod_usuario == '999':
             print('achou2')
             return True
 
@@ -61,7 +70,7 @@ def ver_nivel(mmodulo, mdescri, mnivel, mconf_nivel, mamb, mopera):
                 print(f'{mdescri}  - ACESSO NAO AUTORIZADO PARA ESTE AMBIENTE - NIVEL: {mconf_nivel}')
                 # return False
                 aut_sen(f'{mdescri} - Senha de Liberacao do Ambiente:', 'LIB_AMB', '', '', '', 'AMBIE')
-                if hti_global.m_autorizado:
+                if hg.m_autorizado:
                     print('LIBEROU AMB')
                     return True
                 else:
@@ -69,9 +78,9 @@ def ver_nivel(mmodulo, mdescri, mnivel, mconf_nivel, mamb, mopera):
                     return False
             else:
                 aut_sen(f'{mdescri} - Senha de Liberacao do Ambiente:', 'LIB_AMB', '', '', '', 'AMBIE')
-                if hti_global.m_autorizado:
+                if hg.m_autorizado:
                     print('LIBEROU')
-                    hti_global.m_autorizado = False
+                    hg.m_autorizado = False
                     return True
                 else:
                     print('NEGATIVO')
@@ -88,29 +97,29 @@ def ver_nivel(mmodulo, mdescri, mnivel, mconf_nivel, mamb, mopera):
     else:
         print('achou5')
         sql = "INSERT INTO sacconf SET ( modulo, descri, nivel, SR_DELETED) VALUES (?, ?, ?, ?)"
-        hti_global.conexao_cursor.execute(sql, (mmodulo, mdescri, mnivel, ' '))
-        hti_global.conexao_bd.commit()
+        hg.conexao_cursor.execute(sql, (mmodulo, mdescri, mnivel, ' '))
+        hg.conexao_bd.commit()
         return False
 
 
 def gerar_numero_pedido():
-    hti_global.conexao_cursor.execute("select COUNT(*) from sacnoped")
-    arq_noped = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute("select COUNT(*) from sacnoped")
+    arq_noped = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
 
     if arq_noped[0] == 0:
-        hti_global.conexao_cursor.execute(f"INSERT INTO sacnoped (numero,SR_DELETED) VALUES ('000000',' ')")
-        hti_global.conexao_bd.commit()
+        hg.conexao_cursor.execute(f"INSERT INTO sacnoped (numero,SR_DELETED) VALUES ('000000',' ')")
+        hg.conexao_bd.commit()
 
-    hti_global.conexao_cursor.execute("select numero from sacnoped where sr_recno = 1")
-    arq_noped = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute("select numero from sacnoped where sr_recno = 1")
+    arq_noped = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     print(arq_noped[0])
     mnum_ped = int(float(arq_noped[0]) + 1)
     mnum_pedido = str(mnum_ped)
     print(f"update sacnoped set numero = {mnum_ped} where sr_recno = 1")
-    hti_global.conexao_cursor.execute(f"update sacnoped set numero = '{mnum_pedido}' where sr_recno = 1")
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"update sacnoped set numero = '{mnum_pedido}' where sr_recno = 1")
+    hg.conexao_bd.commit()
     return mnum_pedido
 
 
@@ -119,19 +128,19 @@ def criar_tabelas():
 
     def tabela_existe(nome_tabela):
         try:
-            hti_global.conexao_cursor.execute(
+            hg.conexao_cursor.execute(
                 f"SELECT RDB$RELATION_NAME FROM RDB$RELATIONS WHERE RDB$RELATION_NAME='{nome_tabela.upper()}'")
             return True
         except fdb.fbcore.DatabaseError:
             return False
 
     if not tabela_existe('SACMERC1'):
-        hti_global.conexao_cursor.execute(
+        hg.conexao_cursor.execute(
             "CREATE TABLE sachelio(empresa char(3), cod_barr char(14), cod_barr1 char(14), descri1 char(50), "
             "app_imagem varchar(100), ref char(13), gru_sub char(5), cod_merc char(5) not null, "
             "merc char(40), tipo_merc char(1), balanca char(1), data_atu date, "
             "data_cad date, unidade char(3), especie char(4), peso_liq decimal(8, 3), peso  decimal(8, 3))")
-        hti_global.conexao_bd.commit()
+        hg.conexao_bd.commit()
         print('A tabela criada com sucesso no banco de dados.')
         return True
 
@@ -502,11 +511,11 @@ if __name__ == '__main__':
     # config.read('sisconfig.ini')
     # host = config.get('banco', 'host')
     # # Conecte-se ao banco de dados
-    # hti_global.conexao_db = fdb.connect(dsn=host, user='SYSDBA', password='masterkey')
-    # # Crie o hti_global.cursor
-    # hti_global.cursor = hti_global.conexao_db.hti_global.cursor()
+    # hg.conexao_db = fdb.connect(dsn=host, user='SYSDBA', password='masterkey')
+    # # Crie o hg.cursor
+    # hg.cursor = hg.conexao_db.hg.cursor()
     # # listar_dados()
-    nivel_acess = hti_global.geral_nivel_usuario
+    nivel_acess = hg.geral_nivel_usuario
     mprg = 'SAC140'
     resposta = ver_nivel(mprg, 'INCLUSAO DE forNECEDOR/CONTA APAGAR', '15', nivel_acess, ' ', '  ')
     if not resposta:

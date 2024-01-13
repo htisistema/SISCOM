@@ -4,17 +4,17 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QTableWidgetItem, QTableWidget, QStatusBar, QAbstractItemView
 import os
-import hti_global
+import hti_global as hg
 
 titulo = 'PROFISSAO'
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_profissao.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_profissao.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -22,7 +22,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -61,8 +61,8 @@ def f_incl_profissao():
     m_cod_profi = tela.mcod_profi.text().upper()
     m_profi = tela.mprofi.text().upper()
     sql = "INSERT INTO sacprofi (cod_profi, profi, sr_deleted) VALUES (?, ?, ?) "
-    hti_global.conexao_cursor.execute(sql, (m_cod_profi, m_profi, ' '))
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(sql, (m_cod_profi, m_profi, ' '))
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de OBSERVACAO", "Cadastro feito com SUCESSO!")
 
     tela.mcod_profi.setEnabled(False)
@@ -79,9 +79,9 @@ def chama_alteracao():
     m_profi = tela.mprofi.text().upper()
 
     sql = "UPDATE sacprofi SET profi = ? WHERE cod_profi = ?"
-    hti_global.conexao_cursor.execute(sql, (m_profi, m_cod_profi))
+    hg.conexao_cursor.execute(sql, (m_profi, m_cod_profi))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "ALTERACAO DE PROFISSAO", "Alteracao feita com SUCESSO!")
     listar_profissao()
 
@@ -112,9 +112,9 @@ def habilitar_objeto():
     tela.groupBox.setTitle("INCLUSAO")
     tela.mcod_profi.clear()
     tela.mprofi.clear()
-    hti_global.conexao_cursor.execute(f"SELECT max(cod_profi) FROM sacprofi")
-    arq_profi = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT max(cod_profi) FROM sacprofi")
+    arq_profi = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_profi is None:
         codigo = 1
         tela.mcod_profi.setText(str(codigo).zfill(5))
@@ -132,9 +132,9 @@ def habilitar_objeto():
 
 def listar_profissao():
     tela.groupBox.setTitle("INCLUSAO/ALTERACAO")
-    hti_global.conexao_cursor.execute(f"SELECT cod_profi, profi FROM sacprofi order BY cod_profi")
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT cod_profi, profi FROM sacprofi order BY cod_profi")
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tabela.setRowCount(len(dados_lidos))
     tabela.setColumnCount(2)
     tabela.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -172,4 +172,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_profissao()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

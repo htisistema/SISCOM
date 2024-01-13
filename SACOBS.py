@@ -4,17 +4,17 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QTableWidgetItem, QTableWidget, QStatusBar, QAbstractItemView
 import os
-import hti_global
+import hti_global as hg
 
 titulo = 'OBSERVACAO'
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_obs.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_obs.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -22,7 +22,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -61,8 +61,8 @@ def f_incl_observacao():
     m_cod_obs = tela.mcod_obs.text().upper()
     m_obs = tela.mobs.text().upper()
     sql = "INSERT INTO sacobs (cod_obs, obs, sr_deleted) VALUES (?, ?, ?) "
-    hti_global.conexao_cursor.execute(sql, (m_cod_obs, m_obs, ' '))
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(sql, (m_cod_obs, m_obs, ' '))
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de OBSERVACAO", "Cadastro feito com SUCESSO!")
 
     tela.mcod_obs.setEnabled(False)
@@ -79,9 +79,9 @@ def chama_alteracao():
     m_obs = tela.mobs.text().upper()
 
     sql = "UPDATE sacobs SET obs = ? WHERE cod_obs = ?"
-    hti_global.conexao_cursor.execute(sql, (m_obs, m_cod_obs))
+    hg.conexao_cursor.execute(sql, (m_obs, m_cod_obs))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "ALTERACAO DE OBSERVACAO", "Alteracao feita com SUCESSO!")
     listar_observacao()
 
@@ -111,9 +111,9 @@ def editar_item(row):
 def habilitar_objeto():
     tela.mcod_obs.clear()
     tela.mobs.clear()
-    hti_global.conexao_cursor.execute(f"SELECT max(cod_obs) FROM sacobs")
-    arq_obs = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT max(cod_obs) FROM sacobs")
+    arq_obs = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_obs is None:
         codigo = 1
         tela.mcod_obs.setText(str(codigo).zfill(2))
@@ -130,9 +130,9 @@ def habilitar_objeto():
 
 
 def listar_observacao():
-    hti_global.conexao_cursor.execute(f"SELECT obs, cod_obs FROM sacobs order BY obs")
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT obs, cod_obs FROM sacobs order BY obs")
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tabela.setRowCount(len(dados_lidos))
     tabela.setColumnCount(2)
     tabela.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -178,4 +178,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_observacao()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

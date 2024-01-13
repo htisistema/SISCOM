@@ -4,16 +4,16 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QTableWidgetItem, QTableWidget, QStatusBar, QAbstractItemView
 import os
-import hti_global
+import hti_global as hg
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_documento.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_documento.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -21,7 +21,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -65,9 +65,9 @@ def f_incl_documento():
     m_descricao = tela.mdescricao.text().upper()
 
     sql = "INSERT INTO sactipdc (tipo_doc, descri, sr_deleted) VALUES (?, ?, ?) "
-    hti_global.conexao_cursor.execute(sql, (m_sigla, m_descricao, ' '))
+    hg.conexao_cursor.execute(sql, (m_sigla, m_descricao, ' '))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de TIPO DE DOCUMENTO", "Cadastro feito com SUCESSO!")
 
     tela.msigla.setEnabled(False)
@@ -86,8 +86,8 @@ def chama_alteracao():
     sql = "UPDATE sactipdc SET descri = ? WHERE tipo_doc = ?"
     # print(sql, (m_descricao, m_sigla))
 
-    hti_global.conexao_cursor.execute(sql, (m_descricao, m_sigla))
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(sql, (m_descricao, m_sigla))
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "ALTERACAO DE TIPO DE DOCUMENTO", "Alteraco feita com SUCESSO!")
 
     tela.msigla.setEnabled(False)
@@ -132,9 +132,9 @@ def habilitar_objeto():
 
 def listar_documento():
     # tabela = tela.tableWidget
-    hti_global.conexao_cursor.execute(f"SELECT tipo_doc, descri FROM sactipdc order BY tipo_doc")
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT tipo_doc, descri FROM sactipdc order BY tipo_doc")
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
 
     tabela.setRowCount(len(dados_lidos))
     tabela.setColumnCount(2)
@@ -174,4 +174,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_documento()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

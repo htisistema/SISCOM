@@ -5,17 +5,17 @@ from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QTableWidgetItem, QTableWidget, QStatusBar, QAbstractItemView
 from PyQt6.QtWidgets import QGroupBox
 import os
-import hti_global
+import hti_global as hg
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_cfop.ui")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_cfop.ui")
 tela.setWindowTitle('CFOP CADASTRADO')
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 tabela = tela.tableWidget
 # Centraliza a janela na tela
@@ -24,7 +24,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 # tela.setGeometry(0, 0, 400, 200)  # Defina um tamanho inicial para a janela
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -71,9 +71,9 @@ def ajustar_colunas_tabela(tabela1):
 def f_incl_cfop():
     tela.bt_salvar.clicked.disconnect()
     m_operacao = tela.moperacao.text().upper()
-    hti_global.conexao_cursor.execute(f"SELECT operacao FROM sacop WHERE operacao = {m_operacao}")
-    arq_profi = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT operacao FROM sacop WHERE operacao = {m_operacao}")
+    arq_profi = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     if arq_profi is None:
         QMessageBox.information(tela, "Inclusao de CFOP", "CFOP ja CADASTRADO!")
         return
@@ -93,8 +93,8 @@ def f_incl_cfop():
     m_tipo = mop[0:1]
 
     sql = "INSERT INTO sacop (operacao, descr_op, credito, sai_ent, tipo, sr_deleted) VALUES (?, ?, ?, ?, ?, ?) "
-    hti_global.conexao_cursor.execute(sql, (m_operacao, m_descr_op, m_credito, m_sai_ent, m_tipo, ' '))
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(sql, (m_operacao, m_descr_op, m_credito, m_sai_ent, m_tipo, ' '))
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de OBSERVACAO", "Cadastro feito com SUCESSO!")
 
     tela.moperacao.setEnabled(False)
@@ -184,7 +184,7 @@ def habilitar_objeto():
 
 
 def listar_cfop():
-    hti_global.conexao_cursor.execute(f"SELECT CAST(operacao as char(5)), "
+    hg.conexao_cursor.execute(f"SELECT CAST(operacao as char(5)), "
                                       f"CAST(descr_op as char(40)), "
                                       f"iif(credito = 'S','S-Debito ou Credito','N-Sem Movimentacao'), "
                                       f"iif(sai_ent = 'S', 'S-Nota de SAIDA', 'E-Nota de ENTRADA'), "
@@ -192,8 +192,8 @@ def listar_cfop():
                                       f"iif(tipo = '3', '3 - NFe AJUSTE', '4 - DEVOLUCAO/RETORNO')))  "
                                       f" FROM sacop ORDER BY operacao")
 
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tabela.setRowCount(len(dados_lidos))
     tabela.setColumnCount(5)
     tabela.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -236,4 +236,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_cfop()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

@@ -6,17 +6,17 @@ from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QLineEdit, QComboBox, QRadioButton
 from datetime import date
 import os
-import hti_global
+import hti_global as hg
 
 titulo = "CONSULTA DE USUARIOS"
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\htiusuario.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\htiusuario.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -24,7 +24,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 
-if hti_global.mtp_tela == 'G':
+if hg.mtp_tela == 'G':
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -42,18 +42,18 @@ nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
 
-hti_global.conexao_cursor.execute("SELECT * FROM sacsetup")
-# Recupere o resultado
-m_set = hti_global.conexao_cursor.fetchone()
-hti_global.conexao_bd.commit()
+# hg.conexao_cursor.execute("SELECT * FROM sacsetup")
+# # Recupere o resultado
+# m_set = hg.conexao_cursor.fetchone()
+# hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute("SELECT cidade, uf, cep FROM saccid ORDER BY cidade")
+hg.conexao_cursor.execute("SELECT cidade, uf, cep FROM saccid ORDER BY cidade")
 # Recupere o resultado
-arq_cidade = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_cidade = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 # COMBOX
-tela.comboBox_2.addItems(hti_global.estados)
+tela.comboBox_2.addItems(hg.estados)
 tela.comboBox_2.setCurrentIndex(16)  # coloca o focus no index
 
 for ret_cidade in arq_cidade:
@@ -78,7 +78,7 @@ data_vazia = date(1900, 1, 1)
 def on_close_event(event):
     tela.close()
     event.accept()
-    # hti_global.conexao_cursor.close()
+    # hg.conexao_cursor.close()
     tela.closeEvent = on_close_event
 
 
@@ -90,10 +90,10 @@ def fecha_tela():
 
 def consulta_usuario(codigo_usuario):
     # PEGAR O ULTIMO NUMERO DOS usuario E ACRESCENTA 1
-    hti_global.conexao_cursor.execute(f"SELECT * FROM insopera WHERE scod_op = {codigo_usuario}")
+    hg.conexao_cursor.execute(f"SELECT * FROM insopera WHERE scod_op = {codigo_usuario}")
     # # Recupere o resultado
-    arq_usu = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    arq_usu = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     tab_widget = tela.findChild(QtWidgets.QTabWidget, "tabWidget")
     tab_widget.setCurrentIndex(0)
 
@@ -231,7 +231,7 @@ if __name__ == '__main__':
     # Conecte-se ao banco de dados
     conexao_bd = fdb.connect(dsn=host, user='SYSDBA', password='masterkey')
     # Crie o cursor
-    cursor = hti_global.conexao_bd.cursor()
+    cursor = hg.conexao_bd.cursor()
     # listar_dados()
     consulta_usuario('002')
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

@@ -4,16 +4,16 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QAbstractItemView, QTableWidgetItem
 import os
-import hti_global
+import hti_global as hg
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\lista_cartao.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\lista_cartao.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
@@ -28,9 +28,9 @@ nome_file, ext = os.path.splitext(nome_file_com)
 tela.statusBar.showMessage(f"<< {nome_file} >>")
 tabela = tela.tableWidget
 
-hti_global.conexao_cursor.execute(f"SELECT cod_forn, razao FROM sacforn WHERE not forn_desp = 'F'")
-arq_forn = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+hg.conexao_cursor.execute(f"SELECT cod_forn, razao FROM sacforn WHERE not forn_desp = 'F'")
+arq_forn = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 item = f'0000 - DEFAULT'.strip('(),')
 tela.comboBox_2.addItem(item)
@@ -39,9 +39,9 @@ for ret_forn in arq_forn:
     tela.comboBox_2.addItem(item)
 tela.comboBox_2.setCurrentIndex(0)
 
-hti_global.conexao_cursor.execute(f"SELECT codigo,desc1 FROM sacdesp")
-arq_desp = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+hg.conexao_cursor.execute(f"SELECT codigo,desc1 FROM sacdesp")
+arq_desp = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
 item = f'0000 - DEFAULT'.strip('(),')
 tela.comboBox.addItem(item)
@@ -100,10 +100,10 @@ def f_incl_cartao():
 
     sql = "INSERT INTO saccarta (codigo, cartao, sigla, prazo, desconto, cod_forn, tipo_conta, tipo_venda, tef, " \
           "sr_deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-    hti_global.conexao_cursor.execute(sql, (m_codigo, m_cartao, m_sigla, m_prazo, m_desconto, m_cod_forn, m_tipo_conta,
+    hg.conexao_cursor.execute(sql, (m_codigo, m_cartao, m_sigla, m_prazo, m_desconto, m_cod_forn, m_tipo_conta,
                                             m_tipo_venda, m_tef, ' '))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "Inclusao de TIPO DE DOCUMENTO", "Cadastro feito com SUCESSO!")
 
     tela.mcodigo.setEnabled(False)
@@ -152,10 +152,10 @@ def chama_alteracao(mcod_cli):
     sql = "UPDATE saccarta SET (cartao = ?, sigla = ?, prazo = ?, desconto = ?, cod_forn = ?" \
           ", tipo_conta = ?, tipo_venda = ?, tef = ? WHERE tipo_doc = ?"
 
-    hti_global.conexao_cursor.execute(sql, (m_cartao, m_sigla, m_prazo, m_desconto, m_cod_forn, m_tipo_conta,
+    hg.conexao_cursor.execute(sql, (m_cartao, m_sigla, m_prazo, m_desconto, m_cod_forn, m_tipo_conta,
                                             m_tipo_venda, m_tef, m_codigo))
 
-    hti_global.conexao_bd.commit()
+    hg.conexao_bd.commit()
     QMessageBox.information(tela, "ALTERACAO de CARTAO", "ALTERACAO feita com SUCESSO!")
 
     tela.mcodigo.setEnabled(False)
@@ -247,9 +247,9 @@ def editar_item(row):
 # def pesquisa():
 def habilitar_objeto():
     tela.mcodigo.setEnabled(True)
-    hti_global.conexao_cursor.execute(f"SELECT max(codigo) FROM saccarta")
-    arq_cartao = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT max(codigo) FROM saccarta")
+    arq_cartao = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     codigo = int(arq_cartao[0]) + 1
     tela.mcodigo.setText(str(codigo).zfill(3))
     tela.msigla.setText('CT')
@@ -270,7 +270,7 @@ def habilitar_objeto():
 
 
 def listar_cartao():
-    hti_global.conexao_cursor.execute(f"SELECT CAST(codigo as char(3)), "
+    hg.conexao_cursor.execute(f"SELECT CAST(codigo as char(3)), "
                                       f"CAST(cartao as char(20)), "
                                       f"CAST(sigla as char(2)), "
                                       f"prazo, "
@@ -281,8 +281,8 @@ def listar_cartao():
                                       f"iif(tef = 'S','Sim','Nao') "
                                       f" FROM saccarta ORDER BY codigo")
 
-    dados_lidos = hti_global.conexao_cursor.fetchall()
-    hti_global.conexao_bd.commit()
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
     tabela.setRowCount(len(dados_lidos))
     tabela.setColumnCount(9)
     tabela.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -330,4 +330,4 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_cartao()
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()

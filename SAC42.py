@@ -4,16 +4,16 @@ from PyQt6.QtWidgets import QButtonGroup, QLineEdit, QComboBox, QRadioButton
 from PyQt6.QtCore import QDate, QDateTime, QTime
 from datetime import datetime, date
 import os
-import hti_global
+import hti_global as hg
 
 app = QtWidgets.QApplication([])
-app.setStyleSheet(hti_global.style_sheet)
-tela = uic.loadUi(f"{hti_global.c_ui}\\hticliente.ui")
-icon = QIcon(f"{hti_global.c_imagem}\\htiico.jpg")
-icon_cancelar = QIcon(f"{hti_global.c_imagem}\\cancelar.png")
-icon_sair = QIcon(f"{hti_global.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hti_global.c_imagem}\\salvar.png")
-icon_incluir = QIcon(f"{hti_global.c_imagem}\\incluir.png")
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\hticliente.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")
+icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 
 tela.setWindowTitle('CONSULTA DE CLIENTE')
 tela.setWindowIcon(icon)
@@ -31,35 +31,35 @@ nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
 
-hti_global.conexao_cursor.execute(f"SELECT * FROM sacsetup")
+# hg.conexao_cursor.execute(f"SELECT * FROM sacsetup")
+# # Recupere o resultado
+# m_set = hg.conexao_cursor.fetchone()
+# hg.conexao_bd.commit()
+
+hg.conexao_cursor.execute(f"SELECT cidade FROM saccid ORDER BY cidade")
+arq_cidade = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
+
+hg.conexao_cursor.execute(f"SELECT cod_profi, profi FROM sacprofi")
 # Recupere o resultado
-m_set = hti_global.conexao_cursor.fetchone()
-hti_global.conexao_bd.commit()
+arq_profi = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT cidade FROM saccid ORDER BY cidade")
-arq_cidade = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
-
-hti_global.conexao_cursor.execute(f"SELECT cod_profi, profi FROM sacprofi")
+hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
 # Recupere o resultado
-arq_profi = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_usuario = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
+hg.conexao_cursor.execute(f"SELECT codigo, descri FROM sactabpg ORDER BY codigo")
 # Recupere o resultado
-arq_usuario = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+arq_sactabpg = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT codigo, descri FROM sactabpg ORDER BY codigo")
-# Recupere o resultado
-arq_sactabpg = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
+hg.conexao_cursor.execute(f"SELECT codigo, regiao FROM regiao")
+arq_regiao = hg.conexao_cursor.fetchall()
+hg.conexao_bd.commit()
 
-hti_global.conexao_cursor.execute(f"SELECT codigo, regiao FROM regiao")
-arq_regiao = hti_global.conexao_cursor.fetchall()
-hti_global.conexao_bd.commit()
-
-tela.comboBox_2.addItems(hti_global.estados)
+tela.comboBox_2.addItems(hg.estados)
 
 data_vazia = date(1900, 1, 1)
 
@@ -91,9 +91,9 @@ def on_close_event(event):
 
 
 def consulta_cliente(codigo_cliente):
-    hti_global.conexao_cursor.execute(f"SELECT * FROM saccli WHERE cod_cli = {codigo_cliente} ")
-    arq_cli = hti_global.conexao_cursor.fetchone()
-    hti_global.conexao_bd.commit()
+    hg.conexao_cursor.execute(f"SELECT * FROM saccli WHERE cod_cli = {codigo_cliente} ")
+    arq_cli = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     tab_widget = tela.findChild(QtWidgets.QTabWidget, "tabWidget")
     tab_widget.setCurrentIndex(0)
     tela.mcgc.setText(str(arq_cli[31]))
@@ -316,10 +316,10 @@ def consulta_cliente(codigo_cliente):
     else:
         tela.rb_atac.setChecked(True)
 
-    tela.comboBox_4.addItems(hti_global.estados)
+    tela.comboBox_4.addItems(hg.estados)
     tela.comboBox_4.setCurrentIndex(16)    # coloca o focus no index
 
-    tela.comboBox_6.addItems(hti_global.estados)
+    tela.comboBox_6.addItems(hg.estados)
     tela.comboBox_6.setCurrentIndex(16)    # coloca o focus no index
 
     for widget in tela.findChildren((QLineEdit, QComboBox, QRadioButton)):
@@ -353,5 +353,5 @@ if __name__ == '__main__':
     conexao_banco()
     # listar_dados()
     consulta_cliente(10)
-    hti_global.conexao_bd.close()
+    hg.conexao_bd.close()
 

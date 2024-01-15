@@ -179,19 +179,37 @@ def criar_tela(mnum_pedido):
 
 
 def salva_pedido():
+    app1 = QApplication([])
+    app1.setStyleSheet(hg.style_sheet)
+    tela1 = uic.loadUi(f"{hg.c_ui}\\siscom.ui")
+    icon1 = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+    tela1.setWindowIcon(icon)
+    tela1.setWindowTitle(
+        f"FECHAMENTO DO PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}"
+    )
+    # Centraliza a janela na tela
+    qt_rectangle1 = tela1.frameGeometry()
+    center_point1 = app1.primaryScreen().availableGeometry().center()
+    qt_rectangle.moveCenter(center_point)
+    tela1.move(qt_rectangle.topLeft())
+    tela1.show()
+    app1.exec()
     ic()
 
 
 def atualizar_pedido():
     mjuros = 0
     mdesc_aux = tela.ds_desconto.value()
+    mcod_cli = tela.ds_desconto.value()
     mdesc = 0
+    # ic(tela.rb_valor.isChecked())
     if tela.rb_percentual.isChecked():
-        ic(mdesc_aux)
-        mdesc = mdesc_aux/100
+        mdesc = mdesc_aux / 100
     elif tela.rb_valor.isChecked():
-        mdesc = mdesc_aux / VariavelP.mtotal_g
-    ic()
+        mvalor_pedido_str = VariavelP.mtotal_g
+        mvalor_pedido_str = mvalor_pedido_str.replace(",", "").replace(",", ".")
+        mvalor_pedido = float(mvalor_pedido_str)
+        mdesc = mdesc_aux / mvalor_pedido
 
     mcomissao = 0
 
@@ -202,6 +220,22 @@ def atualizar_pedido():
                 comissao = mcomissao * (hg.m_set[113]/100)
 
         # ic(VariavelP.numero_pedido)
+        index = tela.cb_cliente.currentIndex()
+        mop = tela.cb_cliente.itemText(index)
+        mcod_cli = mop[0:5]
+
+        hg.conexao_cursor.execute(
+            f"SELECT * FROM saccli WHERE cod_cli = {mcod_cli}"
+        )
+        cons_cli = hg.conexao_cursor.fetchone()
+        hg.conexao_bd.commit()
+
+        hg.conexao_cursor.execute(
+            f"SELECT * FROM insopera WHERE cod_cli = {hg.geral_cod_usuario}"
+        )
+        cons_oper = hg.conexao_cursor.fetchone()
+        hg.conexao_bd.commit()
+
         hg.conexao_cursor.execute(
             # f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{VariavelP.numero_pedido}'"
             f"SELECT * FROM sacped_s WHERE pnum_ped = {VariavelP.numero_pedido} AND SR_DELETED =' '"
@@ -219,17 +253,67 @@ def atualizar_pedido():
                     if tupla[16] < tupla[19]:
                         valor_teste = float(tupla[19]) * (mdesc + (float(tupla[38]/100)))
                         if valor_teste > 0.01:
-                            ic(valor_teste)
+                            # ic(valor_teste)
                             valor = valor_teste - (valor_teste * (mdesc + (float(tupla[38])/100)))
-                            ic(valor)
+                            # ic(valor)
                     else:
                         valor_teste = float(tupla[17]) * mdesc
                         if valor_teste > 0.01:
-                            ic(mdesc)
-                            ic(valor_teste)
+                            # ic(mdesc)
+                            # ic(valor_teste)
                             valor = valor_teste - (valor_teste * mdesc)
-                            ic(valor)
+                            # ic(valor)
 
+                    sql = (f"UPDATE sacped_s SET "
+                           f"pcgc = ?, "
+                           f"pcpf = ?, "
+                           f"pplaca = ?, "
+                           f"pcarro = ?, "
+                           f"pmodelo = ?, "
+                           f"pkm = ?, "
+                           f"pcod_cli = ?, "
+                           f"pcomi_oper = ?, "
+                           f"pcod_fin = ?, "
+                           f"pcod_tab = ?, "
+                           f"pvlr_pres = ?, "
+                           f"pcond_veze = ?, "
+                           f"pcond_inte = ?, "
+                           f"ptp_vend = ?, "
+                           f"pvlr_ent = ?, "
+                           f"pstat_item = ?, "
+                           f"pcod_vend = ?, "
+                           f"pvendedor = ?, "
+                           f"pcomissao = ?, "
+                           f"pdesc = ?, "
+                           f"pdesc_merc = ?, "
+                           f"pvlr_fat = ?, "
+                           f"pobs1 = ?, "
+                           f"pobs2 = ?, "
+                           f"pobs3 = ?, "
+                           f"pobs4 = ?, "
+                           f"pobs5 = ?, "
+                           f"pobs6 = ?, "
+                           f"pobs7 = ?, "
+                           f"pobs8 = ?, "
+                           f"pproducao = ?, "
+                           f"pcod_tran = ?, "
+                           f"pd_entrega = ?, "
+                           f"pfecha = ? "
+                           f"WHERE  WHERE SR_RECNO = {cons_ped[110]}")
+
+                    values = (cons_cli[31],
+                              cons_cli[33],
+                              mplaca,
+                              m_carro,
+                              m_modelo,
+                              m_km,
+                              cons_cli[1],
+                              cons_oper[8])
+
+                    print(sql, values)
+
+                    hg.conexao_cursor.execute(sql, values)
+                    hg.conexao_bd.commit()
 
 # SR_BEGINTRANSACTION()
 # ccomm := "UPDATE sacped_s SET pcgc = "+sr_cdbvalue(mcgc)
@@ -472,6 +556,7 @@ def fechar_pedido(mnum_pedido):
         if str(mcod_cli).strip() in item_text:
             tela.cb_cliente.setCurrentIndex(i)
             break
+
     liberar_campos()
     tela.cb_forma_pg.currentIndexChanged.connect(verifica_condicao)
     tela.ds_qtd_dias.valueChanged.connect(liberar_campos)

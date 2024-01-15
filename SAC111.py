@@ -514,7 +514,7 @@ def salvar_produto():
               ma_cust_rea, mcust_real, mpr_medio, mul_alt_pr, mhora, mopera_pr, ma_cust_mer, ma_vlr_merc,
               m_cod_merc)
 
-    print(sql, values)
+    # print(sql, values)
 
     hg.conexao_cursor.execute(sql, values)
     hg.conexao_bd.commit()

@@ -125,7 +125,7 @@ def verificar_senha():
     mcod_op = mop[0:3]
     entry_senha_editado = str(tela.inp_senha.text().upper().strip())
     hg.conexao_cursor.execute(f"SELECT * FROM insopera WHERE scod_op = '{mcod_op}' "
-                                      f"and plug = '{entry_senha_editado}'")
+                              f"and plug = '{entry_senha_editado}'")
     # Recupere o resultado
     arq_senha = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()

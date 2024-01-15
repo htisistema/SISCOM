@@ -122,13 +122,22 @@ class MainWindow(QMainWindow):
         fechar_pedido(mnum_ped)
 
 
+class VariavelP(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.numero_pedido = ''
+        self.mtotal_g = 0
+        conexao_banco()
+        fechar_pedido(mnum_ped)
+
+
 def criar_tela(mnum_pedido):
     tela.textBrowser.clear()
-    lbl_numero_pedido.setText(f" Numero Pedido: {mnum_pedido}")
+    lbl_numero_pedido.setText(f" Numero Pedido: {VariavelP.numero_pedido}")
     lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
     try:
         hg.conexao_cursor.execute(
-            f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{mnum_pedido}'"
+            f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{VariavelP.numero_pedido}'"
         )
         # # 145082Recupere o resultado
         resultados = hg.conexao_cursor.fetchall()
@@ -146,6 +155,7 @@ def criar_tela(mnum_pedido):
         if len(resultados) > 0:
             for resultado in resultados:
                 i += 1
+                # ic(resultado[2], resultado[0])
                 pcod_merc, pmerc, pquantd, pvlr_fat = resultado
                 # pcod_merc
                 mquantd = "{:9,.3f}".format(pquantd)
@@ -160,8 +170,8 @@ def criar_tela(mnum_pedido):
                 tela.textBrowser.append(linha)
                 tela.textBrowser.append(linha1)
                 # print(f"{hg.c_produto}\\{mcodigo}.jpg")
-            mtotal_g = "{:12,.2f}".format(mtotal_geral)
-            linha1 = f"SUB-TOTAL: {mtotal_g}"
+            VariavelP.mtotal_g = "{:12,.2f}".format(mtotal_geral)
+            linha1 = f"SUB-TOTAL: {VariavelP.mtotal_g}"
             lbl_sub_total.setText(linha1)
 
     except Exception as e:
@@ -172,8 +182,100 @@ def salva_pedido():
     ic()
 
 
-def verifica_condicao():
+def atualizar_pedido():
+    mjuros = 0
+    mdesc_aux = tela.ds_desconto.value()
+    mdesc = 0
+    if tela.rb_percentual.isChecked():
+        ic(mdesc_aux)
+        mdesc = mdesc_aux/100
+    elif tela.rb_valor.isChecked():
+        mdesc = mdesc_aux / VariavelP.mtotal_g
+    ic()
 
+    mcomissao = 0
+
+    if mjuros > 1 or mdesc > 0:
+        ic('Atualizando e Recalculando o PEDIDO....')
+        if hg.m_set[112] > 0 and mdesc >= hg.m_set[113]:
+            if hg.m_set[112] > 1:
+                comissao = mcomissao * (hg.m_set[113]/100)
+
+        # ic(VariavelP.numero_pedido)
+        hg.conexao_cursor.execute(
+            # f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{VariavelP.numero_pedido}'"
+            f"SELECT * FROM sacped_s WHERE pnum_ped = {VariavelP.numero_pedido} AND SR_DELETED =' '"
+        )
+        cons_ped = hg.conexao_cursor.fetchall()
+        hg.conexao_bd.commit()
+        if len(cons_ped) > 0:
+            # ic(cons_ped)
+            for tupla in cons_ped:
+                promocao = float(tupla[51])
+                # ic(promocao)
+                if promocao > 0:
+                    pass
+                else:
+                    if tupla[16] < tupla[19]:
+                        valor_teste = float(tupla[19]) * (mdesc + (float(tupla[38]/100)))
+                        if valor_teste > 0.01:
+                            ic(valor_teste)
+                            valor = valor_teste - (valor_teste * (mdesc + (float(tupla[38])/100)))
+                            ic(valor)
+                    else:
+                        valor_teste = float(tupla[17]) * mdesc
+                        if valor_teste > 0.01:
+                            ic(mdesc)
+                            ic(valor_teste)
+                            valor = valor_teste - (valor_teste * mdesc)
+                            ic(valor)
+
+
+# SR_BEGINTRANSACTION()
+# ccomm := "UPDATE sacped_s SET pcgc = "+sr_cdbvalue(mcgc)
+# ccomm := ccomm + ",pcpf ="+sr_cdbvalue(mcpf)
+# ccomm := ccomm + ",pplaca = "+sr_cdbvalue(mplaca)
+# ccomm := ccomm + ",pcarro = "+sr_cdbvalue(mcarro)
+# ccomm := ccomm + ",pmodelo = "+sr_cdbvalue(mmodelo)
+# ccomm := ccomm + ",pkm = "+sr_cdbvalue(mkm)
+# ccomm := ccomm + ",pcod_cli = "+sr_cdbvalue(mcod_cli)
+# ccomm := ccomm + ",pcomi_oper ="+sr_cdbvalue(mcom_oper)
+# ccomm := ccomm + ",pcod_fin = "+sr_cdbvalue(STRZERO(mcod_fin,3))
+# ccomm := ccomm + ",pcod_tab = "+sr_cdbvalue(STRZERO(mcod_cond,3))
+# ccomm := ccomm + ",pvlr_pres = "+sr_cdbvalue(mvalor_pres)
+# ccomm := ccomm + ",pcond_veze = "+sr_cdbvalue(mcond_veze)
+# ccomm := ccomm + ",pcond_inte = "+sr_cdbvalue(IF(! EMPTY(mcond_int),mtipo_pg+STRZERO(VAL(mcond_int),3),mtipo_pg+STRZERO(m_dia[1],3)+STRZERO(m_dia[2],3)+STRZERO(m_dia[3],3)+STRZERO(m_dia[4],3)+STRZERO(m_dia[5],3)+STRZERO(m_dia[6],3)+STRZERO(m_dia[7],3)+STRZERO(m_dia[8],3)+STRZERO(m_dia[9],3)+STRZERO(m_dia[10],3)+STRZERO(m_dia[11],3)+STRZERO(m_dia[12],3)+STRZERO(m_dia[13],3)+STRZERO(m_dia[14],3)+STRZERO(m_dia[15],3)))
+# ccomm := ccomm + ",ptp_vend = "+sr_cdbvalue(mtp_venda)
+# ccomm := ccomm + ",pvlr_ent = "+sr_cdbvalue(mvlr_ent)
+# ccomm := ccomm + ",pstat_item = "+sr_cdbvalue(mtelemark)
+# ccomm := ccomm + ",pcod_vend = "+sr_cdbvalue(mcod_ven)
+# ccomm := ccomm + ",pvendedor = "+sr_cdbvalue(mnome_ven)
+# ccomm := ccomm + ",pcomissao = "+sr_cdbvalue(mcomissao)
+# ccomm := ccomm + ",pdesc = "+sr_cdbvalue(mdesc_aux * 100)
+# ccomm := ccomm + ",pdesc_merc = "+sr_cdbvalue(mvlr_desc)
+# ccomm := ccomm + ",pvlr_fat = "+sr_cdbvalue(cons_ped[i,18]*mjuros)
+# ccomm := ccomm + ",pobs1 = "+sr_cdbvalue(mobs1)
+# ccomm := ccomm + ",pobs2 = "+sr_cdbvalue(mobs2)
+# ccomm := ccomm + ",pobs3 = "+sr_cdbvalue(mobs3)
+# ccomm := ccomm + ",pobs4 = "+sr_cdbvalue(mobs4)
+# ccomm := ccomm + ",pobs5 = "+sr_cdbvalue(mobs5)
+# ccomm := ccomm + ",pobs6 = "+sr_cdbvalue(mobs6)
+# ccomm := ccomm + ",pobs7 = "+sr_cdbvalue(mobs7)
+# ccomm := ccomm + ",pobs8 = "+sr_cdbvalue(mobs8)
+# ccomm := ccomm + ",pproducao = "+sr_cdbvalue(mproducao)
+# ccomm := ccomm + ",pcod_tran = "+sr_cdbvalue(mcod_tran)
+# ccomm := ccomm + ",pd_entrega = "+IF(! EMPTY(mpd_entrega),sr_cdbvalue(mpd_entrega),'NULL')
+# ccomm := ccomm + ",pfecha = 'F' WHERE SR_RECNO = "+sr_cdbvalue(cons_ped[i,111])
+# //ccomm := ccomm + ",pfecha = 'F' WHERE pnum_ped = "+sr_cdbvalue(STRZERO(mnum_ped,6))+" AND pcod_merc = "+sr_cdbvalue(cons_ped[i,6])
+# sr_getconnection():exec(ccomm,,.f.)
+# sr_committransaction()
+# SR_ENDTRANSACTION()
+# NEXT
+
+
+def verifica_condicao():
+    tela.groupBox.setEnabled(False)
+    tela.ds_desconto.setEnabled(False)
     tela.ds_vlr_entrada.setValue(float(0))
     tela.ds_entrada.setValue(float(0))
     tela.ds_qtd_dias.setValue(float(0))
@@ -185,7 +287,10 @@ def verifica_condicao():
     mop = tela.cb_forma_pg.itemText(index)
     m_tipo_pag = mop[0:1]
     # ic(m_tipo_pag)
-    if m_tipo_pag == '3':
+    if m_tipo_pag == '2':
+        tela.ds_dia1.setValue(float(1))
+        tela.ds_qtd_dias.setValue(float(1))
+    elif m_tipo_pag == "3":
         tela.ds_qtd_dias.setEnabled(True)
         tela.ds_qtd_dias.setFocus()
         tela.ds_qtd_dias.selectAll()
@@ -194,20 +299,23 @@ def verifica_condicao():
         tela.ds_qtd_dias.setEnabled(True)
         tela.ds_entrada.setFocus()
         tela.ds_entrada.selectAll()
-    if not mcli_aux == mcod_cli and not m_tipo_pag == '3':
-        hg.conexao_cursor.execute(
-            f"SELECT * FROM saccli WHERE cod_cli = {mcod_cli}"
-        )
-        # # 145082Recupere o resultado
-        # ic(mcod_cli, mcli_aux)
-        cons_cli = hg.conexao_cursor.fetchone()
-        hg.conexao_bd.commit()
-        if len(cons_cli) > 0 and cons_cli[58] > 0:
-            mdesc = cons_cli[58]/100
-            print(f"ESTE CLIENTE: {cons_cli[1]} - {cons_cli[2]} TERA UM DESCONTO DE: {cons_cli[58]}")
 
-    elif (m_tipo_pag == '1' or m_tipo_pag == '2' or hg.m_set[34] == 'S' and hg.m_set[104] == 'S'
-          and m_tipo_pag == '5' and ver_serie() == '141416'):
+    # if not mcli_aux == mcod_cli and not m_tipo_pag == '3':
+    # ic(m_tipo_pag)
+    # if m_tipo_pag != '3':
+    hg.conexao_cursor.execute(
+        f"SELECT * FROM saccli WHERE cod_cli = {mcod_cli}"
+    )
+    # # 145082Recupere o resultado
+    # ic(mcod_cli, mcli_aux)
+    cons_cli = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
+    if len(cons_cli) > 0 and cons_cli[58] > 0 and m_tipo_pag != '3':
+        mdesc = cons_cli[58]/100
+        print(f"ESTE CLIENTE: {cons_cli[1]} - {cons_cli[2]} TERA UM DESCONTO DE: {cons_cli[58]}")
+
+    elif ((m_tipo_pag == '1' or m_tipo_pag == '2' or hg.m_set[34] == 'S') and hg.m_set[104] == 'S'
+          or (m_tipo_pag == '6' and ver_serie() == '141416')) and m_tipo_pag != '3':
         tela.groupBox.setEnabled(True)
         tela.ds_desconto.setEnabled(True)
 
@@ -346,13 +454,15 @@ def liberar_campos():
 
 def fechar_pedido(mnum_pedido):
     global mcli_aux
+    VariavelP.numero_pedido = mnum_pedido
+    # ic(VariavelP.numero_pedido)
     hg.conexao_cursor.execute(f"SELECT pcod_cli FROM sacped_s WHERE pnum_ped = '{mnum_pedido}'")
     res_pedido = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
     # ic(res_pedido[0])
     if res_pedido[0] == 0:
         mcod_cli = hg.m_set[83]
-        mcli_aux = 0
+        mcli_aux = hg.m_set[83]
     else:
         mcod_cli = res_pedido[0]
         mcli_aux = res_pedido[0]
@@ -365,6 +475,7 @@ def fechar_pedido(mnum_pedido):
     liberar_campos()
     tela.cb_forma_pg.currentIndexChanged.connect(verifica_condicao)
     tela.ds_qtd_dias.valueChanged.connect(liberar_campos)
+    tela.ds_desconto.valueChanged.connect(atualizar_pedido)
 
     tela.bt_fecha.clicked.connect(salva_pedido)
     tela.bt_fecha.setIcon(icon_salvar)
@@ -375,6 +486,8 @@ def fechar_pedido(mnum_pedido):
     # tela.mcodigo.setFocus()
     # tela.textBrowser.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
     criar_tela(mnum_pedido)
+    liberar_campos()
+    verifica_condicao()
     tela.show()
     app.exec()
 

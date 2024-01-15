@@ -276,6 +276,9 @@ color: rgb(0, 0, 0);</string>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
+    <property name="buttonSymbols">
+     <enum>QAbstractSpinBox::NoButtons</enum>
+    </property>
    </widget>
    <widget class="QDateEdit" name="data_previsao">
     <property name="geometry">
@@ -285,6 +288,9 @@ color: rgb(0, 0, 0);</string>
       <width>140</width>
       <height>40</height>
      </rect>
+    </property>
+    <property name="buttonSymbols">
+     <enum>QAbstractSpinBox::PlusMinus</enum>
     </property>
     <property name="date">
      <date>

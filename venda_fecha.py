@@ -181,7 +181,7 @@ def criar_tela(mnum_pedido):
 def salva_pedido():
     app1 = QApplication([])
     app1.setStyleSheet(hg.style_sheet)
-    tela1 = uic.loadUi(f"{hg.c_ui}\\siscom.ui")
+    tela1 = uic.loadUi(f"{hg.c_ui}\\venda_ini.ui")
     icon1 = QIcon(f"{hg.c_imagem}\\htiico.jpg")
     tela1.setWindowIcon(icon)
     tela1.setWindowTitle(

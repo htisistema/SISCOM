@@ -67,7 +67,7 @@ for ret_grupo in arq_grupo:
 tela.comboBox.setCurrentIndex(0)
 
 hg.conexao_cursor.execute(f"select gru_sub, merc from sacgrupo where gru_sub like '001%'"
-                                  f"and CHAR_LENGTH(trim(gru_sub)) = 5")
+                          f"and CHAR_LENGTH(trim(gru_sub)) = 5")
 arq_sub_grupo = hg.conexao_cursor.fetchall()
 hg.conexao_bd.commit()
 
@@ -92,7 +92,7 @@ arq_usuario = hg.conexao_cursor.fetchall()
 hg.conexao_bd.commit()
 
 # COMBOX
-tela.comboBox_3.addItems(["1->Produto", "2->Matria Prima", "3->Isumos", "4->Consumo", "5->Outros"])
+tela.comboBox_3.addItems(["1->Produto", "2->Materia Prima", "3->Isumos", "4->Consumo", "5->Outros"])
 tela.comboBox_3.setCurrentIndex(0)  # coloca o focus no index
 
 tela.comboBox_5.addItems(["UN ->Unidade", "AR ->Arroba", "CX ->Caixa", "FD ->Fardo", "KG ->Kilo", "MT ->Metro",

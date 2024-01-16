@@ -9,6 +9,7 @@ import hti_global as hg
 import os
 # from icecream import ic
 
+
 app = QApplication([])
 app.setStyleSheet(hg.style_sheet)
 tela = uic.loadUi(f"{hg.c_ui}\\venda_pdv.ui")
@@ -23,6 +24,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_salvar = QIcon(f"{hg.c_imagem}\\confirma.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 # AJUSTAR A TELA EM RELACAO AO MONITOR
@@ -30,8 +32,6 @@ qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
-icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
-icon_salvar = QIcon(f"{hg.c_imagem}\\confirma.png")
 
 if hg.mtp_tela == "G":
     primary_screen = QGuiApplication.primaryScreen()
@@ -85,6 +85,11 @@ lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
 lbl_cabecalho = tela.findChild(QtWidgets.QLabel, "cabecalho")
 lbl_saldo = tela.findChild(QtWidgets.QLabel, "saldo")
 data_atual = QDateTime.currentDateTime()
+
+
+def fecha_tela():
+    tela.close()
+    return
 
 
 class MainWindow(QMainWindow):
@@ -159,11 +164,6 @@ def criar_tela():
 
     except Exception as e:
         print(f"Erro ao executar a consulta: {e}")
-
-
-def fecha_tela():
-    tela.close()
-    return
 
 
 def verificar_produto():
@@ -485,10 +485,6 @@ def pesquisa_produto():
 
 
 if __name__ == "__main__":
-    # from hti_funcoes import conexao_banco
-    # conexao_banco()
     mnum_ped = "145082"
     MainWindow()
-    # tela.show()
-    # app.exec()
     hg.conexao_bd.close()

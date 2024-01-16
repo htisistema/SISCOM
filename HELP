@@ -1,5 +1,21 @@
-ERAR O EXECUTAVEL
+GERAR O EXECUTAVEL
 pyinstaller --onefile -w --icon=C:\HTI\SISCOM\imagem\htiico.jpg --name=SISCOM siscom.py
+
+# Método append():
+O método append() é usado para adicionar um item ao final da lista.
+minha_lista = [1, 2, 3]
+novo_item = 4
+minha_lista.append(novo_item)
+Neste exemplo, minha_lista se tornará [1, 2, 3, 4] após a execução.
+
+### A função insert() permite adicionar um item em uma posição específica da lista.
+minha_lista = [1, 2, 3]
+novo_item = 4
+posicao = 1
+minha_lista.insert(posicao, novo_item)
+Neste exemplo, minha_lista se tornará [1, 4, 2, 3] após a execução.
+
+
 
 cx-Freeze
 python setup.py build

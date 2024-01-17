@@ -437,9 +437,11 @@ def fecha_pedido():
 keyboard.add_hotkey('F10', fecha_pedido)
 
 
-def executar_consulta():
+def executar_consulta(m_informa_pedido):
+    global mnum_ped
     tela.mcodigo.returnPressed.connect(verificar_produto)
     tela.mcodigo.setFocus()
+    mnum_ped = m_informa_pedido[0]
     tela.bt_fecha.clicked.connect(fecha_pedido)
     tela.bt_fecha.setIcon(icon_salvar)
     tela.bt_sair.clicked.connect(fecha_tela)

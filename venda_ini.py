@@ -1,3 +1,5 @@
+from typing import List, Any
+
 from PyQt6 import uic, QtWidgets, QtGui
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QButtonGroup
@@ -47,8 +49,8 @@ hg.conexao_bd.commit()
 for ret_cli in arq_cli:
     item = f"{str(ret_cli[0]).zfill(5)} - {ret_cli[1]} - {ret_cli[2]}".strip("(),")
     tela.cb_cliente.addItem(item)
-
 tela.cb_cliente.setCurrentIndex(0)
+
 hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
 # Recupere o resultado
 arq_usuario = hg.conexao_cursor.fetchall()
@@ -84,28 +86,94 @@ rb_tipo_pedido_group.addButton(tela.rb_pedido_avaria, id=2)
 tela.rb_pedido_normal.setChecked(True)
 
 
-
 def fecha_tela():
     tela.close()
     return
 
 
+def buscar_pedido(self):
+    itens = f"       -              "
+    tela.cb_pedido.addItem(itens)
+    hg.conexao_cursor.execute(f"SELECT pnum_ped, sum(pquantd * pvlr_fat) FROM sacped_s "
+                              f"WHERE sr_deleted = ' ' AND (ppag IS NULL OR ppag = ' ') group by 1")
+    arq_ped = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
+    for ret_ped in arq_ped:
+        itens = f"{ret_ped[0]} - {ret_ped[1]}"
+        tela.cb_pedido.addItem(itens)
+    tela.cb_pedido.setCurrentIndex(0)
+
+
+def buscar_orcamento(self):
+    itens = f"       -              "
+    tela.cb_orcamento.addItem(itens)
+    hg.conexao_cursor.execute(f"SELECT pnum_PED, sum(pquantd * pvlr_fat) FROM sacorcam "
+                              f"WHERE sr_deleted = ' ' AND (ppag IS NULL OR ppag = ' ') group by 1")
+    arq_orca = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
+    for ret_ped in arq_orca:
+        itens = f"{ret_ped[0]} - {ret_ped[1]}"
+        tela.cb_orcamento.addItem(itens)
+    tela.cb_orcamento.setCurrentIndex(0)
+
+
+def buscar_os(self):
+    itens = f"       -                         "
+    tela.cb_os.addItem(itens)
+    hg.conexao_cursor.execute(f"SELECT num_os, (select razao from saccli cli where cli.cod_cli = os.cod_cli) "
+                              f"FROM sacoss os WHERE (num_ped IS NULL OR num_ped = ' ')")
+    arq_os = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
+    for ret_ped in arq_os:
+        itens = f"{ret_ped[0] - ret_ped[1]}"
+        tela.cb_os.addItem(itens)
+    tela.cb_os.setCurrentIndex(0)
+
+
 def salvar_informacao():
     from venda import executar_consulta
     informacao_pedido = []
-    mnum_ped = ''
+    mnum_pedido = '145082'
+    mnum_os = m_num_os
+    mcod_cliente = m_cod_cliente
+    mcod_vendedor = m_cod_vendedor
+    mtipo_venda = m_tipo_venda
+    mcod_pagamento = m_cod_pagamento
+    mpercentual_tab = m_percentual_tab
+    mcod_representante = m_cod_representante
+    mtipo_pedido = m_tipo_pedido
     # adicionar item no final da lista
-    informacao_pedido.append(mnum_ped)
-    executar_consulta()
+    informacao_pedido.append(mnum_pedido)
+    informacao_pedido.append(mnum_os)
+    informacao_pedido.append(mcod_cliente)
+    informacao_pedido.append(mcod_vendedor)
+    informacao_pedido.append(mtipo_venda)
+    informacao_pedido.append(mcod_pagamento)
+    informacao_pedido.append(mpercentual_tab)
+    informacao_pedido.append(mcod_representante)
+    informacao_pedido.append(mtipo_pedido)
+    informacao_pedido.append(mcod_cliente)
+    executar_consulta(informacao_pedido)
     tela.close()
     return
 
 
 def pedido_inicial():
-    tela.pb_buscar_cliente.clicked.connect(salvar_informacao)
     tela.pb_buscar_cliente.setIcon(icon_consulta)
-    tela.bt_fecha.clicked.connect(salvar_informacao)
+    tela.pb_buscar_cliente.clicked.connect(salvar_informacao)
+
+    tela.pb_buscar_pedido.setIcon(icon_consulta)
+    tela.pb_buscar_pedido.clicked.connect(buscar_pedido)
+
+    tela.pb_buscar_os.setIcon(icon_consulta)
+    tela.pb_buscar_os.clicked.connect(buscar_os)
+
+    tela.pb_buscar_orcamento.setIcon(icon_consulta)
+    tela.pb_buscar_orcamento.clicked.connect(buscar_orcamento)
+
     tela.bt_fecha.setIcon(icon_salvar)
+    tela.bt_fecha.clicked.connect(salvar_informacao)
+
     tela.bt_sair.clicked.connect(fecha_tela)
     tela.bt_sair.setIcon(icon_sair)
 

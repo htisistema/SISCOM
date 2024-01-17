@@ -3,11 +3,13 @@ from typing import List, Any
 from PyQt6 import uic, QtWidgets, QtGui
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QButtonGroup
+import icecream as ic
 from PyQt6.QtCore import QDateTime
 from datetime import datetime
 import keyboard
 from hti_funcoes import conexao_banco
 import hti_global as hg
+from venda import executar_consulta
 import os
 
 app = QApplication([])
@@ -63,14 +65,21 @@ for ret_usuario in arq_usuario:
 tela.cb_vendedor.setCurrentIndex(0)
 tela.cb_representante.setCurrentIndex(0)
 
-hg.conexao_cursor.execute(f"SELECT codigo, descri FROM sactabpg ORDER BY codigo")
+hg.conexao_cursor.execute(
+    f"SELECT codigo, descri, percent, cond FROM sactabpg ORDER BY codigo"
+)
 # Recupere o resultado
 arq_sactabpg = hg.conexao_cursor.fetchall()
 hg.conexao_bd.commit()
 
-tela.cb_cond_pagamento.addItem("000 - DEFAULT")
+tela.cb_cond_pagamento.addItem("000 - DEFAULT                                     ")
 for ret_sactabpg in arq_sactabpg:
-    item = f"{ret_sactabpg[0]} - {ret_sactabpg[1]}".strip("(),")
+    print(f"{ret_sactabpg[2]:,.2f}".replace(",", " ").replace(".", ","))
+    # formatar numero com tamanho de 8
+    valor = '{:,.2f}'.format(ret_sactabpg[2]).rjust(8)
+    # valor = f"{ret_sactabpg[0][2]:,.2f}".replace(",", " ").replace(".", ",")
+
+    item = f"{ret_sactabpg[0]} - {ret_sactabpg[1]} - (%): {valor} - Condicao: {ret_sactabpg[3][0]} - {ret_sactabpg[3][1:2]}"
     tela.cb_cond_pagamento.addItem(item)
 
 tela.cb_cond_pagamento.setCurrentIndex(0)
@@ -84,6 +93,7 @@ rb_tipo_pedido_group = QButtonGroup()
 rb_tipo_pedido_group.addButton(tela.rb_pedido_normal, id=1)
 rb_tipo_pedido_group.addButton(tela.rb_pedido_avaria, id=2)
 tela.rb_pedido_normal.setChecked(True)
+mnum_ped = ""
 
 
 def fecha_tela():
@@ -92,36 +102,45 @@ def fecha_tela():
 
 
 def buscar_pedido(self):
-    itens = f"       -              "
+    tela.cb_pedido.clear()
+    itens = "       -              "
     tela.cb_pedido.addItem(itens)
-    hg.conexao_cursor.execute(f"SELECT pnum_ped, sum(pquantd * pvlr_fat) FROM sacped_s "
-                              f"WHERE sr_deleted = ' ' AND (ppag IS NULL OR ppag = ' ') group by 1")
+    hg.conexao_cursor.execute(
+        f"SELECT pnum_ped, pcod_cli, sum(pquantd * pvlr_fat) FROM sacped_s "
+        f"WHERE sr_deleted = ' ' AND (ppag IS NULL OR ppag = ' ') group by 1,2"
+    )
     arq_ped = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()
     for ret_ped in arq_ped:
-        itens = f"{ret_ped[0]} - {ret_ped[1]}"
+        itens = f"{ret_ped[0]} - {ret_ped[1]} - {ret_ped[2]}"
         tela.cb_pedido.addItem(itens)
     tela.cb_pedido.setCurrentIndex(0)
 
 
 def buscar_orcamento(self):
-    itens = f"       -              "
+    tela.cb_orcamento.clear()
+    itens = "       -              "
     tela.cb_orcamento.addItem(itens)
-    hg.conexao_cursor.execute(f"SELECT pnum_PED, sum(pquantd * pvlr_fat) FROM sacorcam "
-                              f"WHERE sr_deleted = ' ' AND (ppag IS NULL OR ppag = ' ') group by 1")
+    hg.conexao_cursor.execute(
+        f"SELECT pnum_ped, pcod_cli, sum(pquantd * pvlr_fat) FROM sacorcam "
+        f"WHERE sr_deleted = ' ' AND (ppag IS NULL OR ppag = ' ') group by 1,2"
+    )
     arq_orca = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()
     for ret_ped in arq_orca:
-        itens = f"{ret_ped[0]} - {ret_ped[1]}"
+        itens = f"{ret_ped[0]} - {ret_ped[1]} - {ret_ped[2]}"
         tela.cb_orcamento.addItem(itens)
     tela.cb_orcamento.setCurrentIndex(0)
 
 
 def buscar_os(self):
-    itens = f"       -                         "
+    tela.cb_os.clear()
+    itens = "       -                         "
     tela.cb_os.addItem(itens)
-    hg.conexao_cursor.execute(f"SELECT num_os, (select razao from saccli cli where cli.cod_cli = os.cod_cli) "
-                              f"FROM sacoss os WHERE (num_ped IS NULL OR num_ped = ' ')")
+    hg.conexao_cursor.execute(
+        f"SELECT num_os, (select razao from saccli cli where cli.cod_cli = os.cod_cli) "
+        f"FROM sacoss os WHERE (num_ped IS NULL OR num_ped = ' ')"
+    )
     arq_os = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()
     for ret_ped in arq_os:
@@ -131,9 +150,8 @@ def buscar_os(self):
 
 
 def salvar_informacao():
-    from venda import executar_consulta
     informacao_pedido = []
-    mnum_pedido = '145082'
+    mnum_pedido = "145082"
     mnum_os = m_num_os
     mcod_cliente = m_cod_cliente
     mcod_vendedor = m_cod_vendedor
@@ -154,11 +172,43 @@ def salvar_informacao():
     informacao_pedido.append(mtipo_pedido)
     informacao_pedido.append(mcod_cliente)
     executar_consulta(informacao_pedido)
-    tela.close()
     return
 
 
+def ver_pedido():
+    global mnum_ped
+    informacao_pedido = []
+    index = tela.cb_pedido.currentIndex()
+    mop = tela.cb_pedido.itemText(index)
+    mnum_ped = mop[0:6]
+    if mnum_ped == "      ":
+        return
+
+    # mnum_pedido = '145082'
+    informacao_pedido.append(mnum_ped)
+    executar_consulta(informacao_pedido)
+
+
+def ver_cond_pagamento():
+    index = tela.cb_cond_pagamento.currentIndex()
+    mop = tela.cb_cond_pagamento.itemText(index)
+    mcod_cond_pg = mop[0:3]
+    if mcod_cond_pg == "   ":
+        return
+    hg.conexao_cursor.execute(f"SELECT * FROM sactabpg where codigo = {mcod_cond_pg}")
+    # Recupere o resultado
+    ver_sactabpg = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
+    mpercentual = ver_sactabpg[4]
+    mcodicao = ver_sactabpg[5]
+
+
 def pedido_inicial():
+    tela.cb_pedido.currentIndexChanged.connect(ver_pedido)
+    tela.cb_cond_pagamento.currentIndexChanged.connect(ver_cond_pagamento)
+    # tela.cb_cliente.currentIndexChanged.connect(ver_cliente)
+    # tela.cb_cond_pagamento.currentIndexChanged.connect(ver_cliente)
+
     tela.pb_buscar_cliente.setIcon(icon_consulta)
     tela.pb_buscar_cliente.clicked.connect(salvar_informacao)
 

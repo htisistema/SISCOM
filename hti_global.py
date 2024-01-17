@@ -47,6 +47,7 @@ estados = ['AC - ACRE', 'AL - ALAGOAS', 'AP - AMAPA', 'AM - AMAZONAS', 'BA - BAH
 
 
 # Crie uma classe para a folha de estilo CSS
+
 style_sheet = """
 QWidget {
     border-radius: 4px;
@@ -96,6 +97,7 @@ QPushButton:pressed {
 
 QComboBox {
     font: 700 12pt "Segoe UI";
+    font: 700 11pt "Courier";
     background-color: rgb(255, 255, 255);
     border-color: rgb(132, 168, 163);
     border-style: Outset;

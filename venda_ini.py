@@ -43,6 +43,8 @@ else:
 pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
 tela.empresa.setPixmap(pixmap_redimensionado)
 
+lbl_forma_pagamento = tela.findChild(QtWidgets.QLabel, "lb_forma_pagamento")
+
 conexao_banco()
 
 hg.conexao_cursor.execute(f"SELECT cod_cli, razao, nome FROM saccli order by razao")
@@ -66,20 +68,44 @@ tela.cb_vendedor.setCurrentIndex(0)
 tela.cb_representante.setCurrentIndex(0)
 
 hg.conexao_cursor.execute(
-    f"SELECT codigo, descri, percent, cond FROM sactabpg ORDER BY codigo"
+    f"SELECT codigo, descri, percent, cond, COALESCE(dia1, 0), COALESCE(dia2, 0) , "
+    f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), COALESCE(dia7, 0), "
+    f"COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), COALESCE(dia11, 0), COALESCE(dia12, 0), "
+    f"COALESCE(dia13, 0), COALESCE(dia14, 0), COALESCE(dia15, 0) FROM sactabpg ORDER BY codigo"
 )
 # Recupere o resultado
 arq_sactabpg = hg.conexao_cursor.fetchall()
 hg.conexao_bd.commit()
 
-tela.cb_cond_pagamento.addItem("000 - DEFAULT                                     ")
+tela.cb_cond_pagamento.addItem("000-DEFAULT                                     ")
 for ret_sactabpg in arq_sactabpg:
-    print(f"{ret_sactabpg[2]:,.2f}".replace(",", " ").replace(".", ","))
+    # print(f"{ret_sactabpg[2]:,.2f}".replace(",", " ").replace(".", ","))
     # formatar numero com tamanho de 8
-    valor = '{:,.2f}'.format(ret_sactabpg[2]).rjust(8)
+    valor = "{:,.2f}".format(ret_sactabpg[2]).rjust(6)
+
+    mdia1 = "{:,.0f}".format(ret_sactabpg[4]).rjust(3)
+    mdia2 = "{:,.0f}".format(ret_sactabpg[5]).rjust(3)
+    mdia3 = "{:,.0f}".format(ret_sactabpg[6]).rjust(3)
+    mdia4 = "{:,.0f}".format(ret_sactabpg[7]).rjust(3)
+    mdia5 = "{:,.0f}".format(ret_sactabpg[8]).rjust(3)
+    mdia6 = "{:,.0f}".format(ret_sactabpg[9]).rjust(3)
+    mdia7 = "{:,.0f}".format(ret_sactabpg[10]).rjust(3)
+    mdia8 = "{:,.0f}".format(ret_sactabpg[11]).rjust(3)
+    mdia9 = "{:,.0f}".format(ret_sactabpg[12]).rjust(3)
+    mdia10 = "{:,.0f}".format(ret_sactabpg[13]).rjust(3)
+    mdia11 = "{:,.0f}".format(ret_sactabpg[14]).rjust(3)
+    mdia12 = "{:,.0f}".format(ret_sactabpg[15]).rjust(3)
+    mdia13 = "{:,.0f}".format(ret_sactabpg[16]).rjust(3)
+    mdia14 = "{:,.0f}".format(ret_sactabpg[17]).rjust(3)
+    mdia15 = "{:,.0f}".format(ret_sactabpg[18]).rjust(3)
     # valor = f"{ret_sactabpg[0][2]:,.2f}".replace(",", " ").replace(".", ",")
 
-    item = f"{ret_sactabpg[0]} - {ret_sactabpg[1]} - (%): {valor} - Condicao: {ret_sactabpg[3][0]} - {ret_sactabpg[3][1:2]}"
+    item = (
+        f"{ret_sactabpg[0]}-{ret_sactabpg[1]}-(%):{valor}-Cond: {ret_sactabpg[3][0]}+{ret_sactabpg[3][1:3]} "
+        f"dias: {mdia1} {mdia2} {mdia3} {mdia4} {mdia5} {mdia6} {mdia7} {mdia8} {mdia9} {mdia10} "
+        f"{mdia11} {mdia12} {mdia13} {mdia14} {mdia15}"
+    )
+
     tela.cb_cond_pagamento.addItem(item)
 
 tela.cb_cond_pagamento.setCurrentIndex(0)
@@ -195,12 +221,57 @@ def ver_cond_pagamento():
     mcod_cond_pg = mop[0:3]
     if mcod_cond_pg == "   ":
         return
-    hg.conexao_cursor.execute(f"SELECT * FROM sactabpg where codigo = {mcod_cond_pg}")
+    hg.conexao_cursor.execute(f"SELECT COALESCE(percent,0), COALESCE(cond, '   '), COALESCE(dia1, 0), "
+                              f"COALESCE(dia2, 0) , "
+                              f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
+                              f"COALESCE(dia7, 0), COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), "
+                              f"COALESCE(dia11, 0), COALESCE(dia12, 0), COALESCE(dia13, 0), COALESCE(dia14, 0), "
+                              f"COALESCE(dia15, 0)  FROM sactabpg where codigo = {mcod_cond_pg}")
     # Recupere o resultado
     ver_sactabpg = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
-    mpercentual = ver_sactabpg[4]
-    mcodicao = ver_sactabpg[5]
+    mpercentual = ver_sactabpg[0]
+    if ver_sactabpg[1] == '   ':
+        mcond = '000'
+    else:
+        mcond = ver_sactabpg[1]
+
+    mcondicao = f"Percentual (%): {mpercentual} - Entrada: {mcond[0:1]} + {mcond[1:3]} dias"
+    print(mcondicao)
+    if float(mcond[1:3]) >= 1:
+        mcondicao += f" Prazos: {ver_sactabpg[2]}"
+    if float(mcond[1:3]) >= 2:
+        mcondicao += f" {ver_sactabpg[3]}"
+    if float(mcond[1:3]) >= 3:
+        mcondicao += f" {ver_sactabpg[4]}"
+    if float(mcond[1:3]) >= 4:
+        mcondicao += f" {ver_sactabpg[5]}"
+    if float(mcond[1:3]) >= 5:
+        mcondicao += f" {ver_sactabpg[6]}"
+    if float(mcond[1:3]) >= 6:
+        mcondicao += f" {ver_sactabpg[7]}"
+    if float(mcond[1:3]) >= 7:
+        mcondicao += f" {ver_sactabpg[8]}"
+    if float(mcond[1:3]) >= 8:
+        mcondicao += f" {ver_sactabpg[9]}"
+    if float(mcond[1:3]) >= 9:
+        mcondicao += f" {ver_sactabpg[10]}"
+    if float(mcond[1:3]) >= 10:
+        mcondicao += f" {ver_sactabpg[11]}"
+    if float(mcond[1:3]) >= 11:
+        mcondicao += f" {ver_sactabpg[12]}"
+    if float(mcond[1:3]) >= 12:
+        mcondicao += f" {ver_sactabpg[13]}"
+    if float(mcond[1:3]) >= 13:
+        mcondicao += f" {ver_sactabpg[14]}"
+    if float(mcond[1:3]) >= 14:
+        mcondicao += f" {ver_sactabpg[15]}"
+    if float(mcond[1:3]) >= 15:
+        mcondicao += f" {ver_sactabpg[16]}"
+
+    lbl_forma_pagamento.setText(mcondicao)
+
+    # print(mcondicao)
 
 
 def pedido_inicial():

@@ -80,7 +80,7 @@ border-radius: 12px;</string>
      <rect>
       <x>10</x>
       <y>200</y>
-      <width>210</width>
+      <width>170</width>
       <height>30</height>
      </rect>
     </property>
@@ -93,7 +93,7 @@ border-radius: 12px;</string>
      <rect>
       <x>10</x>
       <y>400</y>
-      <width>210</width>
+      <width>170</width>
       <height>30</height>
      </rect>
     </property>
@@ -106,7 +106,7 @@ border-radius: 12px;</string>
      <rect>
       <x>10</x>
       <y>440</y>
-      <width>210</width>
+      <width>170</width>
       <height>30</height>
      </rect>
     </property>
@@ -119,7 +119,7 @@ border-radius: 12px;</string>
      <rect>
       <x>10</x>
       <y>240</y>
-      <width>210</width>
+      <width>170</width>
       <height>30</height>
      </rect>
     </property>
@@ -132,7 +132,7 @@ border-radius: 12px;</string>
      <rect>
       <x>10</x>
       <y>480</y>
-      <width>210</width>
+      <width>170</width>
       <height>30</height>
      </rect>
     </property>
@@ -143,7 +143,7 @@ border-radius: 12px;</string>
    <widget class="QComboBox" name="cb_cliente">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>200</y>
       <width>850</width>
       <height>30</height>
@@ -158,7 +158,7 @@ border-radius: 12px;</string>
      <rect>
       <x>10</x>
       <y>280</y>
-      <width>210</width>
+      <width>170</width>
       <height>30</height>
      </rect>
     </property>
@@ -184,12 +184,12 @@ border-radius: 12px;</string>
      <rect>
       <x>10</x>
       <y>360</y>
-      <width>210</width>
+      <width>170</width>
       <height>30</height>
      </rect>
     </property>
     <property name="text">
-     <string>Codigo Condicao Pagamento:</string>
+     <string>Condicao Pagamento:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_6">
@@ -197,12 +197,12 @@ border-radius: 12px;</string>
      <rect>
       <x>10</x>
       <y>90</y>
-      <width>210</width>
+      <width>170</width>
       <height>30</height>
      </rect>
     </property>
     <property name="text">
-     <string>Numero do Pedido:</string>
+     <string>No. PEDIDO:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_10">
@@ -210,18 +210,18 @@ border-radius: 12px;</string>
      <rect>
       <x>10</x>
       <y>120</y>
-      <width>210</width>
+      <width>170</width>
       <height>30</height>
      </rect>
     </property>
     <property name="text">
-     <string>Numero da Orcamento:</string>
+     <string>No. ORCAMENTO:</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pb_buscar_pedido">
     <property name="geometry">
      <rect>
-      <x>770</x>
+      <x>720</x>
       <y>90</y>
       <width>180</width>
       <height>30</height>
@@ -246,7 +246,7 @@ border-radius: 12px;</string>
    <widget class="QPushButton" name="pb_buscar_orcamento">
     <property name="geometry">
      <rect>
-      <x>770</x>
+      <x>720</x>
       <y>120</y>
       <width>180</width>
       <height>30</height>
@@ -259,7 +259,7 @@ border-radius: 12px;</string>
    <widget class="QLabel" name="lb_obs">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>240</y>
       <width>850</width>
       <height>30</height>
@@ -275,7 +275,7 @@ border-radius: 12px;</string>
    <widget class="QComboBox" name="cb_vendedor">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>280</y>
       <width>520</width>
       <height>30</height>
@@ -285,11 +285,14 @@ border-radius: 12px;</string>
    <widget class="QComboBox" name="cb_cond_pagamento">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>360</y>
-      <width>890</width>
+      <width>1060</width>
       <height>30</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
     </property>
    </widget>
    <widget class="QLabel" name="label_8">
@@ -297,12 +300,12 @@ border-radius: 12px;</string>
      <rect>
       <x>10</x>
       <y>560</y>
-      <width>210</width>
+      <width>170</width>
       <height>30</height>
      </rect>
     </property>
     <property name="text">
-     <string>Codigo do Representante:</string>
+     <string>Codigo Representante:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_13">
@@ -310,7 +313,7 @@ border-radius: 12px;</string>
      <rect>
       <x>10</x>
       <y>600</y>
-      <width>210</width>
+      <width>170</width>
       <height>30</height>
      </rect>
     </property>
@@ -323,7 +326,7 @@ border-radius: 12px;</string>
      <rect>
       <x>10</x>
       <y>520</y>
-      <width>210</width>
+      <width>170</width>
       <height>30</height>
      </rect>
     </property>
@@ -336,7 +339,7 @@ border-radius: 12px;</string>
      <rect>
       <x>10</x>
       <y>320</y>
-      <width>210</width>
+      <width>170</width>
       <height>30</height>
      </rect>
     </property>
@@ -347,7 +350,7 @@ border-radius: 12px;</string>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>320</y>
       <width>210</width>
       <height>30</height>
@@ -425,9 +428,9 @@ border-radius: 12px;</string>
    <widget class="QLabel" name="lb_forma_pagamento">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>400</y>
-      <width>520</width>
+      <width>1060</width>
       <height>30</height>
      </rect>
     </property>
@@ -441,7 +444,7 @@ border-radius: 12px;</string>
    <widget class="QLabel" name="lb_dias">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>440</y>
       <width>520</width>
       <height>30</height>
@@ -457,7 +460,7 @@ border-radius: 12px;</string>
    <widget class="QLabel" name="lb_media_dias">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>480</y>
       <width>60</width>
       <height>30</height>
@@ -473,7 +476,7 @@ border-radius: 12px;</string>
    <widget class="QLabel" name="lb_percentual">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>520</y>
       <width>60</width>
       <height>30</height>
@@ -489,7 +492,7 @@ border-radius: 12px;</string>
    <widget class="QComboBox" name="cb_representante">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>560</y>
       <width>510</width>
       <height>30</height>
@@ -499,7 +502,7 @@ border-radius: 12px;</string>
    <widget class="QGroupBox" name="groupBox_3">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>600</y>
       <width>179</width>
       <height>30</height>
@@ -512,7 +515,7 @@ border-radius: 12px;</string>
    <widget class="QRadioButton" name="rb_pedido_normal">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>600</y>
       <width>89</width>
       <height>30</height>
@@ -525,7 +528,7 @@ border-radius: 12px;</string>
    <widget class="QRadioButton" name="rb_pedido_avaria">
     <property name="geometry">
      <rect>
-      <x>319</x>
+      <x>269</x>
       <y>600</y>
       <width>89</width>
       <height>30</height>
@@ -554,7 +557,7 @@ border-radius: 12px;</string>
    <widget class="QComboBox" name="cb_orcamento">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>120</y>
       <width>520</width>
       <height>30</height>
@@ -564,7 +567,7 @@ border-radius: 12px;</string>
    <widget class="QComboBox" name="cb_pedido">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>90</y>
       <width>520</width>
       <height>30</height>
@@ -574,7 +577,7 @@ border-radius: 12px;</string>
    <widget class="QPushButton" name="pb_buscar_os">
     <property name="geometry">
      <rect>
-      <x>770</x>
+      <x>720</x>
       <y>150</y>
       <width>180</width>
       <height>30</height>
@@ -587,7 +590,7 @@ border-radius: 12px;</string>
    <widget class="QComboBox" name="cb_os">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>180</x>
       <y>150</y>
       <width>520</width>
       <height>30</height>
@@ -599,12 +602,12 @@ border-radius: 12px;</string>
      <rect>
       <x>10</x>
       <y>150</y>
-      <width>210</width>
+      <width>170</width>
       <height>30</height>
      </rect>
     </property>
     <property name="text">
-     <string>Numero da Ordem Servico:</string>
+     <string>No.ORDEM DE SERVICO:</string>
     </property>
    </widget>
   </widget>

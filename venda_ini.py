@@ -3,7 +3,8 @@ from typing import List, Any
 from PyQt6 import uic, QtWidgets, QtGui
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QButtonGroup
-import icecream as ic
+
+# import icecream as ic
 from PyQt6.QtCore import QDateTime
 from datetime import datetime
 import keyboard
@@ -221,23 +222,43 @@ def ver_cond_pagamento():
     mcod_cond_pg = mop[0:3]
     if mcod_cond_pg == "   ":
         return
-    hg.conexao_cursor.execute(f"SELECT COALESCE(percent,0), COALESCE(cond, '   '), COALESCE(dia1, 0), "
-                              f"COALESCE(dia2, 0) , "
-                              f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
-                              f"COALESCE(dia7, 0), COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), "
-                              f"COALESCE(dia11, 0), COALESCE(dia12, 0), COALESCE(dia13, 0), COALESCE(dia14, 0), "
-                              f"COALESCE(dia15, 0)  FROM sactabpg where codigo = {mcod_cond_pg}")
+    hg.conexao_cursor.execute(
+        f"SELECT COALESCE(percent,0), COALESCE(cond, '   '), COALESCE(dia1, 0), "
+        f"COALESCE(dia2, 0) , "
+        f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
+        f"COALESCE(dia7, 0), COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), "
+        f"COALESCE(dia11, 0), COALESCE(dia12, 0), COALESCE(dia13, 0), COALESCE(dia14, 0), "
+        f"COALESCE(dia15, 0)  FROM sactabpg where codigo = {mcod_cond_pg}"
+    )
     # Recupere o resultado
     ver_sactabpg = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
     mpercentual = ver_sactabpg[0]
-    if ver_sactabpg[1] == '   ':
-        mcond = '000'
+    if ver_sactabpg[1] == "   ":
+        mcond = "000"
     else:
         mcond = ver_sactabpg[1]
 
-    mcondicao = f"Percentual (%): {mpercentual} - Entrada: {mcond[0:1]} + {mcond[1:3]} dias"
-    print(mcondicao)
+    mcondicao = (
+        f"Percentual (%): {mpercentual} - Entrada: {mcond[0:1]} + {mcond[1:3]} dias"
+    )
+    media_dias = (
+        ver_sactabpg[2]
+        + ver_sactabpg[3]
+        + ver_sactabpg[4]
+        + ver_sactabpg[5]
+        + ver_sactabpg[6]
+        + ver_sactabpg[7]
+        + ver_sactabpg[8]
+        + ver_sactabpg[9]
+        + ver_sactabpg[10]
+        + ver_sactabpg[11]
+        + ver_sactabpg[12]
+        + ver_sactabpg[13]
+        + ver_sactabpg[14]
+        + ver_sactabpg[15]
+        + ver_sactabpg[16]
+    )
     if float(mcond[1:3]) >= 1:
         mcondicao += f" Prazos: {ver_sactabpg[2]}"
     if float(mcond[1:3]) >= 2:
@@ -268,6 +289,10 @@ def ver_cond_pagamento():
         mcondicao += f" {ver_sactabpg[15]}"
     if float(mcond[1:3]) >= 15:
         mcondicao += f" {ver_sactabpg[16]}"
+
+    media_dias = float(media_dias) / float(mcond[1:3])
+    media_dias = "{:,.0f}".format(media_dias).rjust(3)
+    mcondicao += f" - Medias de dias: {media_dias}"
 
     lbl_forma_pagamento.setText(mcondicao)
 

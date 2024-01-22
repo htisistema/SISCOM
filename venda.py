@@ -454,7 +454,7 @@ def executar_consulta(m_informa_pedido):
     mnum_ped = m_informa_pedido[0]
     group_box = tela.findChild(QGroupBox, "gb_cliente")
     # Altera o título do QGroupBox
-    group_box.setTitle(f"Codigo do Cliente: {m_informa_pedido[0]}")
+    group_box.setTitle(f"Codigo do Cliente: {m_informa_pedido[3]}")
 
     # quebra de linha em uma string
     # lbl_cliente.setText(f"{m_informa_pedido[0]}<br/>{m_informa_pedido[1]}")

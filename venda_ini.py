@@ -1,16 +1,14 @@
 from typing import List, Any
 
-from PyQt6 import uic, QtWidgets, QtGui
-from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
-from PyQt6.QtWidgets import QApplication, QButtonGroup, QRadioButton
+from PyQt6 import uic, QtWidgets
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtWidgets import QApplication, QButtonGroup, QMessageBox
 
-# import icecream as ic
-from PyQt6.QtCore import QDateTime
-from datetime import datetime
-import keyboard
+# import keyboard
 from hti_funcoes import conexao_banco
 import hti_global as hg
 from venda import executar_consulta
+from autorizacao_senha import aut_sen
 import os
 
 app = QApplication([])
@@ -63,9 +61,13 @@ hg.conexao_bd.commit()
 for ret_usuario in arq_usuario:
     item = f"{ret_usuario[0]} - {ret_usuario[1]}".strip("(),")
     tela.cb_vendedor.addItem(item)
-    tela.cb_representante.addItem(item)
-
 tela.cb_vendedor.setCurrentIndex(0)
+
+item = "000 - "
+tela.cb_representante.addItem(item)
+for ret_usuario in arq_usuario:
+    item = f"{ret_usuario[0]} - {ret_usuario[1]}".strip("(),")
+    tela.cb_representante.addItem(item)
 tela.cb_representante.setCurrentIndex(0)
 
 hg.conexao_cursor.execute(
@@ -82,7 +84,7 @@ tela.cb_cond_pagamento.addItem("000-DEFAULT                                     
 for ret_sactabpg in arq_sactabpg:
     # print(f"{ret_sactabpg[2]:,.2f}".replace(",", " ").replace(".", ","))
     # formatar numero com tamanho de 8
-    valor = "{:,.2f}".format(ret_sactabpg[2]).rjust(6)
+    valor = "{:,.2f}".format(ret_sactabpg[2]).rjust(7)
 
     mdia1 = "{:,.0f}".format(ret_sactabpg[4]).rjust(3)
     mdia2 = "{:,.0f}".format(ret_sactabpg[5]).rjust(3)
@@ -115,6 +117,7 @@ rb_tipo_venda_group = QButtonGroup()
 rb_tipo_venda_group.addButton(tela.rb_av_ap_a, id=1)
 rb_tipo_venda_group.addButton(tela.rb_av_ap_p, id=2)
 tela.rb_av_ap_a.setChecked(True)
+mvendedor_aux = ""
 
 
 def fecha_tela():
@@ -174,17 +177,6 @@ def buscar_os(self):
 def salvar_informacao():
     # adicionar item no final da lista
     informacao_pedido = []
-    mnum_ped = ""
-    mnum_os = ""
-    mnum_orcamento = ""
-    mcod_cliente = ""
-    mcod_cond_pg = ""
-    mcod_vendedor = ""
-    mav_ap = ""
-    mcod_pagamento = ""
-    mpercentual_tab = ""
-    mavaria = ""
-
     index = tela.cb_pedido.currentIndex()
     mop = tela.cb_pedido.itemText(index)
     mnum_ped = mop[0:6]
@@ -213,8 +205,9 @@ def salvar_informacao():
 
     index = tela.cb_cond_pagamento.currentIndex()
     mop = tela.cb_cond_pagamento.itemText(index)
-    mcod_pagamento = mop[0:70]
-
+    mcod_pagamento = mop
+    mpercentual = float(mop[29:36])
+    # print(f"teste {mpercentual} {mcod_pagamento}")
     if tela.rb_av_ap_a.isChecked():
         mav_ap = "A"
     elif tela.rb_av_ap_p.isChecked():
@@ -225,11 +218,12 @@ def salvar_informacao():
     informacao_pedido.append(mnum_orcamento)
     informacao_pedido.append(mcod_cliente)
     informacao_pedido.append(mcod_vendedor)
-    informacao_pedido.append(mav_ap)
     informacao_pedido.append(mcod_pagamento)
-    print(informacao_pedido)
-    # executar_consulta(informacao_pedido)
-    return
+    informacao_pedido.append(mav_ap)
+    informacao_pedido.append(mpercentual)
+    # print(informacao_pedido)
+    executar_consulta(informacao_pedido)
+    # return
 
 
 def ver_pedido():
@@ -257,7 +251,7 @@ def ver_pedido():
     arq_ped = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
     if arq_ped is None:
-        print("Pedido nao encontrado....")
+        QMessageBox.information(tela, "PESQUISA DE PEDIDO", "Pedido nao encontrado....")
         return
 
     for i in range(tela.cb_cliente.count()):
@@ -284,7 +278,7 @@ def ver_pedido():
     rb_av_ap = QButtonGroup()
     rb_av_ap.addButton(tela.rb_av_ap_a, id=1)
     rb_av_ap.addButton(tela.rb_av_ap_p, id=2)
-    if arq_ped[3] == '1':
+    if arq_ped[3] == "1":
         tela.rb_av_ap_a.setChecked(True)
     else:
         tela.rb_av_ap_p.setChecked(True)
@@ -299,10 +293,11 @@ def ver_cond_pagamento():
     index = tela.cb_cond_pagamento.currentIndex()
     mop = tela.cb_cond_pagamento.itemText(index)
     m_cod_cond_pg = mop[0:3]
-    if m_cod_cond_pg == "   ":
+    lbl_forma_pagamento.clear()
+    if m_cod_cond_pg == "000":
         return
     hg.conexao_cursor.execute(
-        f"SELECT COALESCE(percent,0), COALESCE(cond, '   '), COALESCE(dia1, 0), "
+        f"SELECT COALESCE(percent,0), COALESCE(cond, ''), COALESCE(dia1, 0), "
         f"COALESCE(dia2, 0) , "
         f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
         f"COALESCE(dia7, 0), COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), "
@@ -312,79 +307,91 @@ def ver_cond_pagamento():
     # Recupere o resultado
     ver_sactabpg = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
-    mpercentual = ver_sactabpg[0]
-    if ver_sactabpg[1] == "   ":
-        mcond = "000"
+
+    if ver_sactabpg is not None:
+        mpercentual = ver_sactabpg[0]
+        if ver_sactabpg[1] == "   " or ver_sactabpg[1] == "000":
+            mcond = "000"
+        else:
+            mcond = ver_sactabpg[1]
+
+        mperc_tab = "{:,.2f}".format(mpercentual).rjust(7)
+
+        mcondicao = (
+            f"Percentual (%): {mperc_tab} - Entrada: {mcond[0:1]} + {mcond[1:3]} dias"
+        )
+
+        media_dias = (
+            ver_sactabpg[2]
+            + ver_sactabpg[3]
+            + ver_sactabpg[4]
+            + ver_sactabpg[5]
+            + ver_sactabpg[6]
+            + ver_sactabpg[7]
+            + ver_sactabpg[8]
+            + ver_sactabpg[9]
+            + ver_sactabpg[10]
+            + ver_sactabpg[11]
+            + ver_sactabpg[12]
+            + ver_sactabpg[13]
+            + ver_sactabpg[14]
+            + ver_sactabpg[15]
+            + ver_sactabpg[16]
+        )
+
+        if float(mcond[1:3]) >= 1:
+            mcondicao += f" Prazos: {ver_sactabpg[2]}"
+        if float(mcond[1:3]) >= 2:
+            mcondicao += f" {ver_sactabpg[3]}"
+        if float(mcond[1:3]) >= 3:
+            mcondicao += f" {ver_sactabpg[4]}"
+        if float(mcond[1:3]) >= 4:
+            mcondicao += f" {ver_sactabpg[5]}"
+        if float(mcond[1:3]) >= 5:
+            mcondicao += f" {ver_sactabpg[6]}"
+        if float(mcond[1:3]) >= 6:
+            mcondicao += f" {ver_sactabpg[7]}"
+        if float(mcond[1:3]) >= 7:
+            mcondicao += f" {ver_sactabpg[8]}"
+        if float(mcond[1:3]) >= 8:
+            mcondicao += f" {ver_sactabpg[9]}"
+        if float(mcond[1:3]) >= 9:
+            mcondicao += f" {ver_sactabpg[10]}"
+        if float(mcond[1:3]) >= 10:
+            mcondicao += f" {ver_sactabpg[11]}"
+        if float(mcond[1:3]) >= 11:
+            mcondicao += f" {ver_sactabpg[12]}"
+        if float(mcond[1:3]) >= 12:
+            mcondicao += f" {ver_sactabpg[13]}"
+        if float(mcond[1:3]) >= 13:
+            mcondicao += f" {ver_sactabpg[14]}"
+        if float(mcond[1:3]) >= 14:
+            mcondicao += f" {ver_sactabpg[15]}"
+        if float(mcond[1:3]) >= 15:
+            mcondicao += f" {ver_sactabpg[16]}"
+
+        if float(mcond[1:3]) > 0 and float(media_dias) > 0:
+            media_dias = float(media_dias) / float(mcond[1:3])
+            media_dias = "{:,.0f}".format(media_dias).rjust(3)
+            mcondicao += f" - Medias de dias: {media_dias}"
+
     else:
-        mcond = ver_sactabpg[1]
-
-    mcondicao = (
-        f"Percentual (%): {mpercentual} - Entrada: {mcond[0:1]} + {mcond[1:3]} dias"
-    )
-    media_dias = (
-        ver_sactabpg[2]
-        + ver_sactabpg[3]
-        + ver_sactabpg[4]
-        + ver_sactabpg[5]
-        + ver_sactabpg[6]
-        + ver_sactabpg[7]
-        + ver_sactabpg[8]
-        + ver_sactabpg[9]
-        + ver_sactabpg[10]
-        + ver_sactabpg[11]
-        + ver_sactabpg[12]
-        + ver_sactabpg[13]
-        + ver_sactabpg[14]
-        + ver_sactabpg[15]
-        + ver_sactabpg[16]
-    )
-    if float(mcond[1:3]) >= 1:
-        mcondicao += f" Prazos: {ver_sactabpg[2]}"
-    if float(mcond[1:3]) >= 2:
-        mcondicao += f" {ver_sactabpg[3]}"
-    if float(mcond[1:3]) >= 3:
-        mcondicao += f" {ver_sactabpg[4]}"
-    if float(mcond[1:3]) >= 4:
-        mcondicao += f" {ver_sactabpg[5]}"
-    if float(mcond[1:3]) >= 5:
-        mcondicao += f" {ver_sactabpg[6]}"
-    if float(mcond[1:3]) >= 6:
-        mcondicao += f" {ver_sactabpg[7]}"
-    if float(mcond[1:3]) >= 7:
-        mcondicao += f" {ver_sactabpg[8]}"
-    if float(mcond[1:3]) >= 8:
-        mcondicao += f" {ver_sactabpg[9]}"
-    if float(mcond[1:3]) >= 9:
-        mcondicao += f" {ver_sactabpg[10]}"
-    if float(mcond[1:3]) >= 10:
-        mcondicao += f" {ver_sactabpg[11]}"
-    if float(mcond[1:3]) >= 11:
-        mcondicao += f" {ver_sactabpg[12]}"
-    if float(mcond[1:3]) >= 12:
-        mcondicao += f" {ver_sactabpg[13]}"
-    if float(mcond[1:3]) >= 13:
-        mcondicao += f" {ver_sactabpg[14]}"
-    if float(mcond[1:3]) >= 14:
-        mcondicao += f" {ver_sactabpg[15]}"
-    if float(mcond[1:3]) >= 15:
-        mcondicao += f" {ver_sactabpg[16]}"
-
-    media_dias = float(media_dias) / float(mcond[1:3])
-    media_dias = "{:,.0f}".format(media_dias).rjust(3)
-    mcondicao += f" - Medias de dias: {media_dias}"
+        mcond = "000"
+        mpercentual = 0
+        mcondicao = "000 - "
 
     lbl_forma_pagamento.setText(mcondicao)
 
-    # print(mcondicao)
-
 
 def ver_cliente():
+    global mvendedor_aux
     index = tela.cb_cliente.currentIndex()
     mop = tela.cb_cliente.itemText(index)
     mcodigo_cliente = mop[0:5]
-
     hg.conexao_cursor.execute(
-        f"SELECT COALESCE(codvend,0), COALESCE(cod_cond, '   ') FROM saccli where cod_cli = {mcodigo_cliente}"
+        f"SELECT COALESCE(codvend,'000'), COALESCE(cod_cond, '   '), COALESCE(desconto, 0), COALESCE(ATAC_VARE, ''),"
+        f"COALESCE(BLOQUEIO, ''), COALESCE(DATA_BLOQ, ''), COALESCE(OBS_BLOQ, '') "
+        f"FROM saccli where cod_cli = {mcodigo_cliente}"
     )
     # Recupere o resultado
     vercliente = hg.conexao_cursor.fetchone()
@@ -395,14 +402,64 @@ def ver_cliente():
         if str(vercliente[0]).strip() in item_text:
             tela.cb_vendedor.setCurrentIndex(i)
             break
-
-    for i in range(tela.cb_cond_pagamento.count()):
-        item_text = tela.cb_cond_pagamento.itemText(i)
-        if str(vercliente[1]).strip() in item_text:
-            tela.cb_cond_pagamento.setCurrentIndex(i)
-            break
         else:
-            tela.cb_cond_pagamento.setText('000')
+            tela.cb_vendedor.setCurrentIndex(0)
+
+    index = tela.cb_vendedor.currentIndex()
+    mop = tela.cb_vendedor.itemText(index)
+    mvendedor_aux = mop[0:6]
+
+    # print(vercliente[0], vercliente[1])
+
+    if float(vercliente[1]) > 0:
+        for i in range(tela.cb_cond_pagamento.count()):
+            item_text = tela.cb_cond_pagamento.itemText(i)
+            if str(vercliente[1]).strip() in item_text:
+                tela.cb_cond_pagamento.setCurrentIndex(i)
+                break
+            else:
+                tela.cb_cond_pagamento.setCurrentIndex(0)
+
+    if vercliente[2] > 0:
+        op_cartao = "S"
+
+    if vercliente[3] == "A":
+        mvarejo = 2
+    else:
+        mvarejo = 1
+    if vercliente[4] == "S":
+        QMessageBox.information(
+            tela,
+            "CLIENTE BLOQUEADO",
+            f"CLIENTE COM CREDITO BLOQUEADO PELO SISTEMA EM: {vercliente[5]} "
+            f"\n\n ***************************************************************************\n M O T I V O: "
+            f"{vercliente[6]}\n ***************************************************************************",
+        )
+
+
+def ver_vendedor():
+    global mvendedor_aux
+    index = tela.cb_pedido.currentIndex()
+    mop = tela.cb_pedido.itemText(index)
+    mnum_ped = mop[0:6]
+
+    index = tela.cb_vendedor.currentIndex()
+    mop = tela.cb_vendedor.itemText(index)
+    mcod_ven = mop[0:3]
+
+    index = tela.cb_cliente.currentIndex()
+    mop = tela.cb_cliente.itemText(index)
+    mcod_cli = mop[0:3]
+    if hg.m_set[107] == "S" and mnum_ped == "      ":
+        if hg.m_set[9] == "S" and not mcod_ven == mvendedor_aux and not mcod_cli == hg.m_set[83]:
+            if not aut_sen("Cod. Vend. Diferente do Vend. Resp.CLIENTE, Senha autorizacao:",
+                           "LIBCLIVEN", mcod_cli, "", "", ""):
+                for i in range(tela.cb_vendedor.count()):
+                    item_text = tela.cb_vendedor.itemText(i)
+                    if str(mvendedor_aux).strip() in item_text:
+                        tela.cb_vendedor.setCurrentIndex(i)
+                        break
+    return
 
 
 def pedido_inicial():
@@ -447,6 +504,12 @@ def pedido_inicial():
         item_text = tela.cb_cliente.itemText(i)
         if str(hg.m_set[83]).zfill(5) in item_text:
             tela.cb_cliente.setCurrentIndex(i)
+            break
+
+    for i in range(tela.cb_vendedor.count()):
+        item_text = tela.cb_vendedor.itemText(i)
+        if str(hg.geral_cod_usuario).zfill(5) in item_text:
+            tela.cb_vendedor.setCurrentIndex(i)
             break
 
     tela.show()

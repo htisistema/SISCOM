@@ -282,19 +282,6 @@ border-radius: 12px;</string>
      <string>Codigo Representante:</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_13">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>480</y>
-      <width>170</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Tipo de Pedido:</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_15">
     <property name="geometry">
      <rect>
@@ -320,7 +307,7 @@ border-radius: 12px;</string>
     <property name="title">
      <string/>
     </property>
-    <widget class="QRadioButton" name="rb_venda_normal">
+    <widget class="QRadioButton" name="rb_av_ap_a">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -333,7 +320,7 @@ border-radius: 12px;</string>
       <string>Normal</string>
      </property>
     </widget>
-    <widget class="QRadioButton" name="rb_venda_especial">
+    <widget class="QRadioButton" name="rb_av_ap_p">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -345,45 +332,6 @@ border-radius: 12px;</string>
      <property name="text">
       <string>Especial</string>
      </property>
-    </widget>
-    <widget class="QGroupBox" name="groupBox_2">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>160</y>
-       <width>220</width>
-       <height>40</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string/>
-     </property>
-     <widget class="QRadioButton" name="radioButton_3">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>100</width>
-        <height>40</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Normal</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="radioButton_4">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>0</y>
-        <width>120</width>
-        <height>40</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Especial</string>
-      </property>
-     </widget>
     </widget>
    </widget>
    <widget class="QLabel" name="lb_forma_pagamento">
@@ -410,48 +358,6 @@ border-radius: 12px;</string>
       <width>510</width>
       <height>30</height>
      </rect>
-    </property>
-   </widget>
-   <widget class="QGroupBox" name="groupBox_3">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>480</y>
-      <width>179</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="rb_pedido_normal">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>480</y>
-      <width>89</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Normal</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="rb_pedido_avaria">
-    <property name="geometry">
-     <rect>
-      <x>269</x>
-      <y>480</y>
-      <width>89</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
-    </property>
-    <property name="text">
-     <string>Avarias</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pb_buscar_cliente">

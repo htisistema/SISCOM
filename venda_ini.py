@@ -2,7 +2,7 @@ from typing import List, Any
 
 from PyQt6 import uic, QtWidgets, QtGui
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QButtonGroup
+from PyQt6.QtWidgets import QApplication, QButtonGroup, QRadioButton
 
 # import icecream as ic
 from PyQt6.QtCore import QDateTime
@@ -112,15 +112,9 @@ for ret_sactabpg in arq_sactabpg:
 tela.cb_cond_pagamento.setCurrentIndex(0)
 
 rb_tipo_venda_group = QButtonGroup()
-rb_tipo_venda_group.addButton(tela.rb_venda_normal, id=1)
-rb_tipo_venda_group.addButton(tela.rb_venda_especial, id=2)
-tela.rb_venda_normal.setChecked(True)
-
-rb_tipo_pedido_group = QButtonGroup()
-rb_tipo_pedido_group.addButton(tela.rb_pedido_normal, id=1)
-rb_tipo_pedido_group.addButton(tela.rb_pedido_avaria, id=2)
-tela.rb_pedido_normal.setChecked(True)
-mnum_ped = ""
+rb_tipo_venda_group.addButton(tela.rb_av_ap_a, id=1)
+rb_tipo_venda_group.addButton(tela.rb_av_ap_p, id=2)
+tela.rb_av_ap_a.setChecked(True)
 
 
 def fecha_tela():
@@ -128,9 +122,9 @@ def fecha_tela():
     return
 
 
-def buscar_pedido(self):
+def buscar_pedido():
     tela.cb_pedido.clear()
-    itens = "       -              "
+    itens = "Numero      Cliente  ValorR$"
     tela.cb_pedido.addItem(itens)
     hg.conexao_cursor.execute(
         f"SELECT pnum_ped, pcod_cli, sum(pquantd * pvlr_fat) FROM sacped_s "
@@ -139,14 +133,15 @@ def buscar_pedido(self):
     arq_ped = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()
     for ret_ped in arq_ped:
-        itens = f"{ret_ped[0]} - {ret_ped[1]} - {ret_ped[2]}"
+        mcodigo_cliente = str(ret_ped[1]).zfill(5)
+        itens = f"{ret_ped[0]} - {mcodigo_cliente} - {ret_ped[2]}"
         tela.cb_pedido.addItem(itens)
     tela.cb_pedido.setCurrentIndex(0)
 
 
 def buscar_orcamento(self):
     tela.cb_orcamento.clear()
-    itens = "       -              "
+    itens = "Numero      Cliente  ValorR$"
     tela.cb_orcamento.addItem(itens)
     hg.conexao_cursor.execute(
         f"SELECT pnum_ped, pcod_cli, sum(pquantd * pvlr_fat) FROM sacorcam "
@@ -162,7 +157,7 @@ def buscar_orcamento(self):
 
 def buscar_os(self):
     tela.cb_os.clear()
-    itens = "       -                         "
+    itens = "Numero      Cliente  ValorR$"
     tela.cb_os.addItem(itens)
     hg.conexao_cursor.execute(
         f"SELECT num_os, (select razao from saccli cli where cli.cod_cli = os.cod_cli) "
@@ -177,50 +172,134 @@ def buscar_os(self):
 
 
 def salvar_informacao():
-    informacao_pedido = []
-    mnum_pedido = "145082"
-    mnum_os = m_num_os
-    mcod_cliente = m_cod_cliente
-    mcod_vendedor = m_cod_vendedor
-    mtipo_venda = m_tipo_venda
-    mcod_pagamento = m_cod_pagamento
-    mpercentual_tab = m_percentual_tab
-    mcod_representante = m_cod_representante
-    mtipo_pedido = m_tipo_pedido
     # adicionar item no final da lista
-    informacao_pedido.append(mnum_pedido)
+    informacao_pedido = []
+    mnum_ped = ""
+    mnum_os = ""
+    mnum_orcamento = ""
+    mcod_cliente = ""
+    mcod_cond_pg = ""
+    mcod_vendedor = ""
+    mav_ap = ""
+    mcod_pagamento = ""
+    mpercentual_tab = ""
+    mavaria = ""
+
+    index = tela.cb_pedido.currentIndex()
+    mop = tela.cb_pedido.itemText(index)
+    mnum_ped = mop[0:6]
+    if mnum_ped == "Numero":
+        mnum_ped = ""
+
+    index = tela.cb_os.currentIndex()
+    mop = tela.cb_os.itemText(index)
+    mnum_os = mop[0:6]
+    if mnum_os == "Numero":
+        mnum_os = ""
+
+    index = tela.cb_orcamento.currentIndex()
+    mop = tela.cb_orcamento.itemText(index)
+    mnum_orcamento = mop[0:6]
+    if mnum_orcamento == "Numero":
+        mnum_orcamento = ""
+
+    index = tela.cb_cliente.currentIndex()
+    mop = tela.cb_cliente.itemText(index)
+    mcod_cliente = mop[0:48]
+
+    index = tela.cb_vendedor.currentIndex()
+    mop = tela.cb_vendedor.itemText(index)
+    mcod_vendedor = mop[0:36]
+
+    index = tela.cb_cond_pagamento.currentIndex()
+    mop = tela.cb_cond_pagamento.itemText(index)
+    mcod_pagamento = mop[0:70]
+
+    if tela.rb_av_ap_a.isChecked():
+        mav_ap = "A"
+    elif tela.rb_av_ap_p.isChecked():
+        mav_ap = "P"
+
+    informacao_pedido.append(mnum_ped)
     informacao_pedido.append(mnum_os)
+    informacao_pedido.append(mnum_orcamento)
     informacao_pedido.append(mcod_cliente)
     informacao_pedido.append(mcod_vendedor)
-    informacao_pedido.append(mtipo_venda)
+    informacao_pedido.append(mav_ap)
     informacao_pedido.append(mcod_pagamento)
-    informacao_pedido.append(mpercentual_tab)
-    informacao_pedido.append(mcod_representante)
-    informacao_pedido.append(mtipo_pedido)
-    informacao_pedido.append(mcod_cliente)
-    executar_consulta(informacao_pedido)
+    print(informacao_pedido)
+    # executar_consulta(informacao_pedido)
     return
 
 
 def ver_pedido():
-    global mnum_ped
-    informacao_pedido = []
     index = tela.cb_pedido.currentIndex()
     mop = tela.cb_pedido.itemText(index)
     mnum_ped = mop[0:6]
-    if mnum_ped == "      ":
+    m_cod_cliente = mop[13:18]
+    if mnum_ped == "Numero":
         return
 
+    if hg.m_set[4] == "S":
+        tela.rb_av_ap_a.setDisabled(True)
+        tela.rb_av_ap_p.setDisabled(True)
+
+    if hg.m_set[45] == "S":
+        tela.cb_cond_pagamento.setDisabled(True)
+
+    ver_cliente()
+
+    hg.conexao_cursor.execute(
+        f"SELECT COALESCE(pnum_ped,''), COALESCE(pcod_cli,0), COALESCE(pcod_vend,''), "
+        f"COALESCE(tipo_venda,''), COALESCE(pcod_tab,'')  FROM sacped_s "
+        f"WHERE pnum_ped = {mnum_ped}"
+    )
+    arq_ped = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
+    if arq_ped is None:
+        print("Pedido nao encontrado....")
+        return
+
+    for i in range(tela.cb_cliente.count()):
+        item_text = tela.cb_cliente.itemText(i)
+        if str(m_cod_cliente).strip() in item_text:
+            tela.cb_cliente.setCurrentIndex(i)
+            break
+
+    for i in range(tela.cb_vendedor.count()):
+        item_text = tela.cb_vendedor.itemText(i)
+        if str(arq_ped[2]).strip() in item_text:
+            tela.cb_vendedor.setCurrentIndex(i)
+            break
+
+    for i in range(tela.cb_cond_pagamento.count()):
+        item_text = tela.cb_cond_pagamento.itemText(i)
+        if str(arq_ped[4]).strip() in item_text:
+            tela.cb_cond_pagamento.setCurrentIndex(i)
+            break
+        else:
+            tela.cb_cond_pagamento.setCurrentIndex(0)
+            break
+
+    rb_av_ap = QButtonGroup()
+    rb_av_ap.addButton(tela.rb_av_ap_a, id=1)
+    rb_av_ap.addButton(tela.rb_av_ap_p, id=2)
+    if arq_ped[3] == '1':
+        tela.rb_av_ap_a.setChecked(True)
+    else:
+        tela.rb_av_ap_p.setChecked(True)
+
     # mnum_pedido = '145082'
-    informacao_pedido.append(mnum_ped)
-    executar_consulta(informacao_pedido)
+    # informacao_pedido.append(mnum_ped)
+
+    salvar_informacao()
 
 
 def ver_cond_pagamento():
     index = tela.cb_cond_pagamento.currentIndex()
     mop = tela.cb_cond_pagamento.itemText(index)
-    mcod_cond_pg = mop[0:3]
-    if mcod_cond_pg == "   ":
+    m_cod_cond_pg = mop[0:3]
+    if m_cod_cond_pg == "   ":
         return
     hg.conexao_cursor.execute(
         f"SELECT COALESCE(percent,0), COALESCE(cond, '   '), COALESCE(dia1, 0), "
@@ -228,7 +307,7 @@ def ver_cond_pagamento():
         f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
         f"COALESCE(dia7, 0), COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), "
         f"COALESCE(dia11, 0), COALESCE(dia12, 0), COALESCE(dia13, 0), COALESCE(dia14, 0), "
-        f"COALESCE(dia15, 0)  FROM sactabpg where codigo = {mcod_cond_pg}"
+        f"COALESCE(dia15, 0)  FROM sactabpg where codigo = {m_cod_cond_pg}"
     )
     # Recupere o resultado
     ver_sactabpg = hg.conexao_cursor.fetchone()
@@ -299,14 +378,41 @@ def ver_cond_pagamento():
     # print(mcondicao)
 
 
+def ver_cliente():
+    index = tela.cb_cliente.currentIndex()
+    mop = tela.cb_cliente.itemText(index)
+    mcodigo_cliente = mop[0:5]
+
+    hg.conexao_cursor.execute(
+        f"SELECT COALESCE(codvend,0), COALESCE(cod_cond, '   ') FROM saccli where cod_cli = {mcodigo_cliente}"
+    )
+    # Recupere o resultado
+    vercliente = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
+
+    for i in range(tela.cb_vendedor.count()):
+        item_text = tela.cb_vendedor.itemText(i)
+        if str(vercliente[0]).strip() in item_text:
+            tela.cb_vendedor.setCurrentIndex(i)
+            break
+
+    for i in range(tela.cb_cond_pagamento.count()):
+        item_text = tela.cb_cond_pagamento.itemText(i)
+        if str(vercliente[1]).strip() in item_text:
+            tela.cb_cond_pagamento.setCurrentIndex(i)
+            break
+        else:
+            tela.cb_cond_pagamento.setText('000')
+
+
 def pedido_inicial():
     tela.cb_pedido.currentIndexChanged.connect(ver_pedido)
     tela.cb_cond_pagamento.currentIndexChanged.connect(ver_cond_pagamento)
-    # tela.cb_cliente.currentIndexChanged.connect(ver_cliente)
+    tela.cb_cliente.currentIndexChanged.connect(ver_cliente)
     # tela.cb_cond_pagamento.currentIndexChanged.connect(ver_cliente)
 
     tela.pb_buscar_cliente.setIcon(icon_consulta)
-    tela.pb_buscar_cliente.clicked.connect(salvar_informacao)
+    # tela.pb_buscar_cliente.currentIndexChanged.connect()
 
     tela.pb_buscar_pedido.setIcon(icon_consulta)
     tela.pb_buscar_pedido.clicked.connect(buscar_pedido)
@@ -322,6 +428,26 @@ def pedido_inicial():
 
     tela.bt_sair.clicked.connect(fecha_tela)
     tela.bt_sair.setIcon(icon_sair)
+
+    tela.cb_representante.setDisabled(True)
+    if hg.m_set[151] == "S":
+        tela.cb_representante.setDisabled(False)
+
+    tela.rb_av_ap_a.setDisabled(True)
+    tela.rb_av_ap_p.setDisabled(True)
+    if hg.m_set[4] == "S":
+        tela.rb_av_ap_a.setDisabled(False)
+        tela.rb_av_ap_p.setDisabled(False)
+
+    tela.cb_cond_pagamento.setDisabled(True)
+    if hg.m_set[45] == "S":
+        tela.cb_cond_pagamento.setDisabled(False)
+
+    for i in range(tela.cb_cliente.count()):
+        item_text = tela.cb_cliente.itemText(i)
+        if str(hg.m_set[83]).zfill(5) in item_text:
+            tela.cb_cliente.setCurrentIndex(i)
+            break
 
     tela.show()
     app.exec()

@@ -18,6 +18,14 @@ Neste exemplo, minha_lista se tornará [1, 4, 2, 3] após a execução.
     # formatar numero com tamanho de 8
     valor = '{:,.2f}'.format(ret_sactabpg[2]).rjust(8)
 
+# quebra de linha em uma string
+# lbl_cliente.setText(f"{m_informa_pedido[0]}<br/>{m_informa_pedido[1]}")
+# lbl_cliente.setText(f"{m_informa_pedido[0]}\n{m_informa_pedido[1]}")
+
+# alterar titulo do GroupBox
+    group_box = tela.findChild(QGroupBox, "gb_cliente")
+    # Altera o título do QGroupBox
+    group_box.setTitle(f"Codigo do Cliente: {m_informa_pedido[0]}")
 
 
 cx-Freeze

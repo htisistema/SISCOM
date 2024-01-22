@@ -1,12 +1,13 @@
 from PyQt6 import uic, QtWidgets, QtGui
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox  # , QLineEdit
+from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QGroupBox  # , QLineEdit
 from PyQt6.QtCore import QDateTime
 from datetime import datetime
 import keyboard
 from hti_funcoes import conexao_banco, gerar_numero_pedido
 import hti_global as hg
 import os
+
 # from icecream import ic
 
 
@@ -15,9 +16,7 @@ app.setStyleSheet(hg.style_sheet)
 tela = uic.loadUi(f"{hg.c_ui}\\venda_pdv.ui")
 icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
 tela.setWindowIcon(icon)
-tela.setWindowTitle(
-    f"PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}"
-)
+tela.setWindowTitle(f"PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}")
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
@@ -78,8 +77,9 @@ pixmap_redimensionado = usuario.scaled(125, 130)  # redimensiona a imagem para 1
 tela.usuario.setPixmap(pixmap_redimensionado)
 lbl_operador.setText(f" Operador: {hg.geral_cod_usuario}")
 lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
+lbl_cliente = tela.findChild(QtWidgets.QLabel, "lb_cliente")
 
-mnum_ped = ''
+mnum_ped = ""
 tela.mquantidade.setValue(1)
 lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
 lbl_cabecalho = tela.findChild(QtWidgets.QLabel, "cabecalho")
@@ -95,8 +95,9 @@ def fecha_tela():
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        m_informa_pedido = ["145082", "CLIENTE"]
         conexao_banco()
-        executar_consulta()
+        executar_consulta(m_informa_pedido)
 
 
 def criar_tela():
@@ -188,9 +189,9 @@ def verificar_produto():
         ver_produto = hg.conexao_cursor.fetchone()
         hg.conexao_bd.commit()
         if ver_produto is None:
-            QMessageBox.critical(tela, "ATENCAO", 'Produto nao encontrado...')
+            QMessageBox.critical(tela, "ATENCAO", "Produto nao encontrado...")
         else:
-            if mnum_ped == '':
+            if mnum_ped == "":
                 mnum_ped = gerar_numero_pedido()
 
             # msaldo = f"{ver_produto[55]:,.3f}".replace(",", " ").replace(".", ",")
@@ -209,8 +210,10 @@ def verificar_produto():
             # mhora = data_atual.toString("hh:mm:ss")
 
             mhora = datetime.now().strftime("%H:%M:%S")
-            hg.conexao_cursor.execute(f"UPDATE sacmerc SET saldo_mer = {m_saldo_pos}, "
-                                              f"data_atu = '{data_formatada}' WHERE cod_merc = {m_codmerc}")
+            hg.conexao_cursor.execute(
+                f"UPDATE sacmerc SET saldo_mer = {m_saldo_pos}, "
+                f"data_atu = '{data_formatada}' WHERE cod_merc = {m_codmerc}"
+            )
             hg.conexao_bd.commit()
 
             sql = (
@@ -233,7 +236,9 @@ def verificar_produto():
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
             )
 
-            hg.conexao_cursor.execute(sql, (
+            hg.conexao_cursor.execute(
+                sql,
+                (
                     data_formatada,
                     data_formatada,
                     mhora,
@@ -248,7 +253,9 @@ def verificar_produto():
                     "S",
                     float(ver_produto[45]),
                     float(ver_produto[43]),
-                    " "))
+                    " ",
+                ),
+            )
             hg.conexao_bd.commit()
 
             sql = (
@@ -287,14 +294,14 @@ def verificar_produto():
                 "pfabrica, "
                 "pcod_oper, "
                 "pcomi_oper, "
-                "pcod_vend, " 
+                "pcod_vend, "
                 "pvendedor, "
                 "palimento, "
                 "pcod_fin, "
                 "pcod_tab, "
                 "pvlr_pres, "
                 "pcond_veze, "
-                "pcond_inte, " 
+                "pcond_inte, "
                 "phora, "
                 "ptp_vend, "
                 "pvlr_ent, "
@@ -352,7 +359,7 @@ def verificar_produto():
                     ver_produto[8],
                     ver_produto[13],
                     ver_produto[14],
-                    '',
+                    "",
                     ver_produto[16],
                     ver_produto[15],
                     ver_produto[73],
@@ -367,59 +374,61 @@ def verificar_produto():
                     float(ver_produto[44]),
                     float(ver_produto[43]),
                     0,
-                    '',
-                    '',
-                    '',
-                    '',
-                    '',
-                    '',
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
                     ver_produto[29],
                     ver_produto[30],
                     hg.geral_cod_usuario,
                     0,
                     0,
-                    '',
+                    "",
                     ver_produto[20],
-                    '',
-                    '',
+                    "",
+                    "",
                     0,
                     0,
-                    '',
+                    "",
                     mhora,
-                    '',
+                    "",
                     0,
                     ver_produto[60],
                     float(ver_produto[22]),
-                    '',
-                    '',
+                    "",
+                    "",
                     0,
                     ver_produto[26],
                     float(ver_produto[74]),
                     float(ver_produto[61]),
                     float(ver_produto[64]),
-                    '',
+                    "",
                     ver_produto[81],
-                    '',
+                    "",
                     ver_produto[82],
-                    '',
-                    '',
-                    '',
-                    '',
+                    "",
+                    "",
+                    "",
+                    "",
                     ver_produto[72][:2],
-                    '',
-                    '',
-                    '',
-                    '',
-                    '',
-                    '',
-                    '',
-                    '',
-                    '',
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
                     None,
-                    '',
-                    '',
+                    "",
+                    "",
                     1,
-                    " "))
+                    " ",
+                ),
+            )
             hg.conexao_bd.commit()
 
     tela.mcodigo.setText("")
@@ -431,10 +440,11 @@ def verificar_produto():
 
 def fecha_pedido():
     from venda_fecha import fechar_pedido
+
     fechar_pedido(mnum_ped)
 
 
-keyboard.add_hotkey('F10', fecha_pedido)
+keyboard.add_hotkey("F10", fecha_pedido)
 
 
 def executar_consulta(m_informa_pedido):
@@ -442,6 +452,14 @@ def executar_consulta(m_informa_pedido):
     tela.mcodigo.returnPressed.connect(verificar_produto)
     tela.mcodigo.setFocus()
     mnum_ped = m_informa_pedido[0]
+    group_box = tela.findChild(QGroupBox, "gb_cliente")
+    # Altera o título do QGroupBox
+    group_box.setTitle(f"Codigo do Cliente: {m_informa_pedido[0]}")
+
+    # quebra de linha em uma string
+    # lbl_cliente.setText(f"{m_informa_pedido[0]}<br/>{m_informa_pedido[1]}")
+    # lbl_cliente.setText(f"{m_informa_pedido[0]}\n{m_informa_pedido[1]}")
+    lbl_cliente.setText(m_informa_pedido[1])
     tela.bt_fecha.clicked.connect(fecha_pedido)
     tela.bt_fecha.setIcon(icon_salvar)
     tela.bt_sair.clicked.connect(fecha_tela)
@@ -480,6 +498,7 @@ def pesquisa_produto():
             tela, "Pesquisa de PRODUTO", "PRODUTO nao encontrado...!!!"
         )
         return
+
 
 # def venda():
 #     tela.mcodigo.textChanged.connect(pesquisa_produto)

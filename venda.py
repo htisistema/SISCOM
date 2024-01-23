@@ -4,7 +4,8 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QGroupBox  #
 from PyQt6.QtCore import QDateTime
 from datetime import datetime
 import keyboard
-from hti_funcoes import conexao_banco, gerar_numero_pedido
+from hti_funcoes import conexao_banco, gerar_numero_pedido, ver_serie
+from autorizacao_senha import aut_sen
 import hti_global as hg
 import os
 
@@ -80,6 +81,7 @@ lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
 lbl_cliente = tela.findChild(QtWidgets.QLabel, "lb_cliente")
 
 mnum_ped = ""
+infor_pedido = []
 tela.mquantidade.setValue(1)
 lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
 lbl_cabecalho = tela.findChild(QtWidgets.QLabel, "cabecalho")
@@ -95,7 +97,7 @@ def fecha_tela():
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        m_informa_pedido = ["145082", "CLIENTE"]
+        m_informa_pedido = ["145082", '', '', '6 - ACEROLANDIA LTDA']
         conexao_banco()
         executar_consulta(m_informa_pedido)
 
@@ -168,7 +170,7 @@ def criar_tela():
 
 
 def verificar_produto():
-    global mnum_ped
+    global mnum_ped, infor_pedido
     # print(tela.mcodigo.text())
     # ic()
     m_codigo = tela.mcodigo.text()
@@ -177,6 +179,12 @@ def verificar_produto():
         tela.mcodigo.setText("")
         return
     else:
+        hg.conexao_cursor.execute(
+                f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3]}"
+            )
+        ver_cliente = hg.conexao_cursor.fetchone()
+        hg.conexao_bd.commit()
+
         if len(m_codigo) <= 5:
             m_codigo = m_codigo.zfill(5)
             hg.conexao_cursor.execute(
@@ -197,9 +205,11 @@ def verificar_produto():
             # msaldo = f"{ver_produto[55]:,.3f}".replace(",", " ").replace(".", ",")
             msaldo = f"{ver_produto[55]:,.3f}"
             lbl_saldo.setText(msaldo)
-            tela.mpreco_venda.setValue(float(ver_produto[45]))
+            # tela.mpreco_venda.setValue(float(ver_produto[45]))
+            # tela.mpreco_venda.Value()
             m_quantidade = tela.mquantidade.value()
-            m_pre_venda = tela.mpreco_venda.value()
+            mvlr_fat = tela.mpreco_venda.value()
+            mp_venda = float(ver_produto[45])
             lbl_produto.setText(ver_produto[8])
             m_codmerc = ver_produto[7]
             m_saldo_ant = float(ver_produto[55])
@@ -208,6 +218,46 @@ def verificar_produto():
             m_data_f = data_atual.toPyDateTime().date()
             data_formatada = m_data_f.strftime("%Y/%m/%d")
             # mhora = data_atual.toString("hh:mm:ss")
+            mcomissao = ver_produto[25]
+            if mp_venda > mvlr_fat:
+                mdesconto = ((mp_venda-mvlr_fat)/mp_venda)*100
+                if hg.m_set[112] > 0 and mdesconto >= hg.m_set[113]:
+                    if hg.m_set[112] > 1:
+                        mcomissao = mcomissao * (hg.m_set[112]/100)
+                    else:
+                        mcomissao = mcomissao - (iat(mdesconto,2) * hg.m_set[112])
+                        if mcomissao < 0:
+                            mcomissao = 0
+
+                if ((mp_venda - (mvlr_fat / mp_venda) * 100) > hg.m_set[32] and ver_produto[79] == 0
+                    and hg.m_set[32] > 0 and ver_cliente[0] == 0):
+
+                    if not aut_sen(f"Cod.Prod..: {ver_produto[7]} - {ver_produto[8]}\n"
+                                   f"Vlr.Solic.: {mvlr_fat}\n"
+                                   f"Pr.Venda .: {mp_venda}\n"
+                                   f"Desc.Soli.: {((mp_venda - mvlr_fat) / mp_venda)*100} %"
+                                   f"Desc.Aut..: {hg.m_set[32]} %",'LIB_DESC','',ver_produto[8],'',''):
+                        mquantd = 1
+                        return
+                elif ((mp_venda - mvlr_fat)/mp_venda)*100 > ver_produto[1,79] and ver_produto[79] > 0:
+                    if not aut_sen(f"Cod.Prod..: {ver_produto[7]} - {ver_produto[8]}\n"
+                                   f"Vlr.Solic.: {mvlr_fat}\n"
+                                   f"'Pr.Venda..: {mp_venda}\n"
+                                   f"Desc.Soli.:' {((mp_venda - mvlr_fat)/mp_venda)*100} %\n"
+                                   f"Desc.Aut..: {ver_produto[79]} %",'LIB_DESC','',ver_produto[7],
+                                   '',''):
+                        return
+                elif hg.m_set[37] == 'C' and mvlr_fat < ver_produto[44]:
+                    if not aut_sen(f"Cod.Prod..: {ver_produto[7]}\n"
+                                   f"Vlr.Solic.: {mvlr_fat}\n"
+                                   f"Pr.Custo..: {ver_produto[44]}",'LIB_DESC','',ver_produto[7],
+                                   '',''):
+                        return
+                elif hg.m_set[37] == 'V' and mvlr_fat < mp_venda:
+                    if not aut_sen(f"Cod.Prod..: {ver_produto[7]}\n"
+                                   f"Vlr.Solic.: {mvlr_fat}\n"
+                                   f"Pr.Venda..: {mp_venda}",'LIB_DESC','',ver_produto[7],'',''):
+                        return
 
             mhora = datetime.now().strftime("%H:%M:%S")
             hg.conexao_cursor.execute(
@@ -399,7 +449,7 @@ def verificar_produto():
                     float(ver_produto[22]),
                     "",
                     "",
-                    0,
+                    mcomissao,
                     ver_produto[26],
                     float(ver_produto[74]),
                     float(ver_produto[61]),
@@ -433,6 +483,7 @@ def verificar_produto():
 
     tela.mcodigo.setText("")
     tela.mpreco_venda.setValue(float(0))
+    mcomissao = mcomissao
     msaldo = f"{0:,.3f}"
     lbl_saldo.setText(msaldo)
     criar_tela()
@@ -448,7 +499,8 @@ keyboard.add_hotkey("F10", fecha_pedido)
 
 
 def executar_consulta(m_informa_pedido):
-    global mnum_ped
+    global mnum_ped, infor_pedido
+    infor_pedido = m_informa_pedido
     tela.mcodigo.returnPressed.connect(verificar_produto)
     tela.mcodigo.setFocus()
     mnum_ped = m_informa_pedido[0]
@@ -490,8 +542,8 @@ def pesquisa_produto():
         QMessageBox.information(
             tela, "Pesquisa de PRODUTO", f"PRODUTO: '{resutado_prod[0]}'"
         )
-        if not mnum_ped == "":
-            print(mnum_ped)
+        # if not mnum_ped == "":
+        #     print(mnum_ped)
         return
     else:
         QMessageBox.information(

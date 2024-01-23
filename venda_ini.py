@@ -118,6 +118,7 @@ rb_tipo_venda_group.addButton(tela.rb_av_ap_a, id=1)
 rb_tipo_venda_group.addButton(tela.rb_av_ap_p, id=2)
 tela.rb_av_ap_a.setChecked(True)
 mvendedor_aux = ""
+mpercentual = 0
 
 
 def fecha_tela():
@@ -206,13 +207,14 @@ def salvar_informacao():
     index = tela.cb_cond_pagamento.currentIndex()
     mop = tela.cb_cond_pagamento.itemText(index)
     mcod_pagamento = mop
-    mpercentual = float(mop[29:36])
+    # mpercentual = float(mop[29:36])
     # print(f"teste {mpercentual} {mcod_pagamento}")
     if tela.rb_av_ap_a.isChecked():
         mav_ap = "A"
     elif tela.rb_av_ap_p.isChecked():
         mav_ap = "P"
 
+    print(mcod_cliente)
     informacao_pedido.append(mnum_ped)
     informacao_pedido.append(mnum_os)
     informacao_pedido.append(mnum_orcamento)
@@ -290,6 +292,7 @@ def ver_pedido():
 
 
 def ver_cond_pagamento():
+    global mpercentual
     index = tela.cb_cond_pagamento.currentIndex()
     mop = tela.cb_cond_pagamento.itemText(index)
     m_cod_cond_pg = mop[0:3]
@@ -396,10 +399,13 @@ def ver_cliente():
     # Recupere o resultado
     vercliente = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
+    if not hg.m_set[9] == 'S':
+        mvendedor_aux = vercliente[0]
+        mcod_vendedor = hg.geral_cod_usuario
 
     for i in range(tela.cb_vendedor.count()):
         item_text = tela.cb_vendedor.itemText(i)
-        if str(vercliente[0]).strip() in item_text:
+        if str(mcod_vendedor).strip() in item_text:
             tela.cb_vendedor.setCurrentIndex(i)
             break
         else:
@@ -435,6 +441,10 @@ def ver_cliente():
             f"\n\n ***************************************************************************\n M O T I V O: "
             f"{vercliente[6]}\n ***************************************************************************",
         )
+
+        if vercliente[2] > 0 and op_cartao == 'S':
+            global mpercentual
+            mpercentual = mpercentual + (vercliente[2] * -1)
 
 
 def ver_vendedor():

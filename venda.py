@@ -13,9 +13,7 @@ from hti_funcoes import conexao_banco, gerar_numero_pedido, ver_serie
 from autorizacao_senha import aut_sen
 import hti_global as hg
 import os
-
-# from icecream import ic
-
+from ATENCAO import atencao
 
 app = QApplication([])
 app.setStyleSheet(hg.style_sheet)
@@ -178,6 +176,9 @@ def verificar_produto():
     global mnum_ped, infor_pedido
     # ic()
     m_codigo = tela.mcodigo.text()
+    if len(m_codigo) == 0:
+        return
+
     if m_codigo[0] == "X":
         tela.mquantidade.setValue(float(m_codigo[1:20]))
         tela.mcodigo.setText("")
@@ -206,7 +207,7 @@ def verificar_produto():
             if mnum_ped == "":
                 mnum_ped = gerar_numero_pedido()
 
-            if hg.m_indiv[25] == 'S':
+            if hg.m_indiv[25] == "S":
                 tela.mpreco_venda.setValue(float(ver_produto[45]))
 
             # msaldo = f"{ver_produto[55]:,.3f}".replace(",", " ").replace(".", ",")
@@ -294,6 +295,19 @@ def verificar_produto():
                         "",
                     ):
                         return
+
+                if 0 < hg.m_set[153] < m_quantidade:
+                    atencao("QUANTIDADE Solicitada maior que o MAXIMO Permitido")
+                    return
+
+                hg.conexao_cursor.execute(f"SELECT sum(pquantd * pvlr_fat) FROM sacped_s WHERE pnum_ped = '{mnum_ped}'")
+                msubtotal = hg.conexao_cursor.fetchone()
+                hg.conexao_bd.commit()
+
+                if (infor_pedido[9] + msubtotal + (mvlr_fat * m_quantidade)) >= infor_pedido[8] > 0:
+                    atencao(f"Limite do Cliente foi ultrapassado em R$: "
+                            f"{(infor_pedido[9] + msubtotal + (mvlr_fat * m_quantidade))}")
+                    return
 
             mhora = datetime.now().strftime("%H:%M:%S")
             hg.conexao_cursor.execute(

@@ -31,6 +31,15 @@ def verificar_conexao():
         print("Não foi possível recuperar a versão do Firebird.")
 
 
+# VER TOTAL DE COMPRAS
+def ver_compras(mcod):
+    hg.conexao_cursor.execute(f"SELECT SUM(valor) FROM sacdupr WHERE fornec = {mcod} AND datpag IS NULL")
+    # Recupere o resultado
+    resultado_compras = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
+    return resultado_compras[0]
+
+
 def ver_nivel(mmodulo, mdescri, mnivel, mconf_nivel, mamb, mopera):
     from autorizacao_senha import aut_sen
     # print(mmodulo)

@@ -9,6 +9,7 @@ from hti_funcoes import conexao_banco
 import hti_global as hg
 from venda import executar_consulta
 from autorizacao_senha import aut_sen
+from hti_funcoes import ver_compras
 import os
 
 app = QApplication([])
@@ -119,6 +120,8 @@ rb_tipo_venda_group.addButton(tela.rb_av_ap_p, id=2)
 tela.rb_av_ap_a.setChecked(True)
 mvendedor_aux = ""
 mpercentual = 0
+mlimite = 0
+mcompras = 0
 
 
 def fecha_tela():
@@ -223,6 +226,8 @@ def salvar_informacao():
     informacao_pedido.append(mcod_pagamento)
     informacao_pedido.append(mav_ap)
     informacao_pedido.append(mpercentual)
+    informacao_pedido.append(mlimite)
+    informacao_pedido.append(mcompras)
     # print(informacao_pedido)
     executar_consulta(informacao_pedido)
     # return
@@ -387,19 +392,19 @@ def ver_cond_pagamento():
 
 
 def ver_cliente():
-    global mvendedor_aux
+    global mvendedor_aux, mlimite, mcompras
     index = tela.cb_cliente.currentIndex()
     mop = tela.cb_cliente.itemText(index)
     mcodigo_cliente = mop[0:5]
     hg.conexao_cursor.execute(
         f"SELECT COALESCE(codvend,'000'), COALESCE(cod_cond, '   '), COALESCE(desconto, 0), COALESCE(ATAC_VARE, ''),"
-        f"COALESCE(BLOQUEIO, ''), COALESCE(DATA_BLOQ, ''), COALESCE(OBS_BLOQ, '') "
+        f"COALESCE(BLOQUEIO, ''), COALESCE(DATA_BLOQ, ''), COALESCE(OBS_BLOQ, ''), COALESCE(limite, 0) "
         f"FROM saccli where cod_cli = {mcodigo_cliente}"
     )
     # Recupere o resultado
     vercliente = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
-    if not hg.m_set[9] == 'S':
+    if not hg.m_set[9] == "S":
         mvendedor_aux = vercliente[0]
         mcod_vendedor = hg.geral_cod_usuario
 
@@ -442,9 +447,13 @@ def ver_cliente():
             f"{vercliente[6]}\n ***************************************************************************",
         )
 
-        if vercliente[2] > 0 and op_cartao == 'S':
+        if vercliente[2] > 0 and op_cartao == "S":
             global mpercentual
             mpercentual = mpercentual + (vercliente[2] * -1)
+
+        if not hg.m_set[83] == mcodigo_cliente:
+            mlimite = vercliente[7]
+            mcompras = ver_compras(mcodigo_cliente)
 
 
 def ver_vendedor():
@@ -461,9 +470,19 @@ def ver_vendedor():
     mop = tela.cb_cliente.itemText(index)
     mcod_cli = mop[0:3]
     if hg.m_set[107] == "S" and mnum_ped == "      ":
-        if hg.m_set[9] == "S" and not mcod_ven == mvendedor_aux and not mcod_cli == hg.m_set[83]:
-            if not aut_sen("Cod. Vend. Diferente do Vend. Resp.CLIENTE, Senha autorizacao:",
-                           "LIBCLIVEN", mcod_cli, "", "", ""):
+        if (
+            hg.m_set[9] == "S"
+            and not mcod_ven == mvendedor_aux
+            and not mcod_cli == hg.m_set[83]
+        ):
+            if not aut_sen(
+                "Cod. Vend. Diferente do Vend. Resp.CLIENTE, Senha autorizacao:",
+                "LIBCLIVEN",
+                mcod_cli,
+                "",
+                "",
+                "",
+            ):
                 for i in range(tela.cb_vendedor.count()):
                     item_text = tela.cb_vendedor.itemText(i)
                     if str(mvendedor_aux).strip() in item_text:

@@ -1,5 +1,5 @@
 from PyQt6 import uic, QtWidgets
-from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
+from PyQt6.QtGui import QIcon,QPixmap
 import keyboard
 import os
 from hti_funcoes import ver_nivel, dcripto, conexao_banco
@@ -36,6 +36,7 @@ tela.empresa.setPixmap(pixmap_redimensionado)
 
 mcod_aut = " "
 ambiente = ""
+mmodulo = ''
 
 
 def sair_programa():
@@ -140,7 +141,7 @@ def autorizar_senha():
     maut_oper = mcod_op
     m_aut_senha = tela.maut_senha.text()
 
-    print(f"senha digitada: {m_aut_senha} e Senha do Operador: {dcripto(arq_usu[1])}")
+    # print(f"senha digitada: {m_aut_senha} e Senha do Operador: {dcripto(arq_usu[1])}")
     mok = " "
 
     if m_aut_senha == dcripto(arq_usu[1]):
@@ -154,14 +155,14 @@ def autorizar_senha():
         if not letra2 == " ":
             presente2 = letra2 in arq_conf[2]
 
-        print(f"nivel {arq_conf[2]}")
-        print(f"Letra1 {letra1}")
-        print(f"Letra2 {letra2}")
-        print(f"presente1 {presente1}")
-        print(f"presente2 {presente2}")
+        # print(f"nivel {arq_conf[2]}")
+        # print(f"Letra1 {letra1}")
+        # print(f"Letra2 {letra2}")
+        # print(f"presente1 {presente1}")
+        # print(f"presente2 {presente2}")
 
         if presente1 or presente2 or hg.geral_cod_usuario == "999":
-            print("if not presente1 and not presente2 or hg.geral_cod_usuario == '999'")
+            # print("if not presente1 and not presente2 or hg.geral_cod_usuario == '999'")
             hg.m_autorizado = True
             tela.close()
             return True
@@ -663,19 +664,10 @@ def autorizar_senha():
 #
 # sr_getconnection(): exec("COMMIT",, .f.)
 # ** ** ** ** ** ** ** ** ** ** *
-# SELE(msel_sen);
 # if mord_sen > 0, ORDSETFOCUS(mord_sen), )
 # ** ** ** ** ** ** ** ** ** ** *
-# wvw_lclosewindow()
 # RETURN.T.
 #
-# atencao('Cod. Operador:' + maut_oper + ' - Operador nao Autorizada !!!')
-# mcont + +
-# LOOP
-# ELSE
-# atencao('Senha nao Autorizada 2 !!!')
-# mcont + +
-# LOOP
 
 
 def aut_sen(mensagem, mdl, mnum_cli, mnum_prod, mamb, mnum_pedido):
@@ -691,7 +683,7 @@ def aut_sen(mensagem, mdl, mnum_cli, mnum_prod, mamb, mnum_pedido):
     arq_nivel = hg.conexao_cursor.fetchone()
     tela.statusBar().showMessage("Digite a SENHA ou SOLICITAR AUTORIZACAO")
     # print(f'Autorizado: {m_autorizado}')
-    # tela.maut_senha.returnPressed.connect(verificar_produto)
+    tela.maut_senha.returnPressed.connect(autorizar_senha)
     tela.maut_senha.setFocus()
     # if not m_autorizado == '':
     #     print(f'Autorizado: {m_autorizado}')

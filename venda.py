@@ -1,6 +1,11 @@
 from PyQt6 import uic, QtWidgets, QtGui
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QGroupBox  # , QLineEdit
+from PyQt6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QMessageBox,
+    QGroupBox,
+)  # , QLineEdit
 from PyQt6.QtCore import QDateTime
 from datetime import datetime
 import keyboard
@@ -97,7 +102,7 @@ def fecha_tela():
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        m_informa_pedido = ["145082", '', '', '6 - ACEROLANDIA LTDA']
+        m_informa_pedido = ["145082", "", "", "6 - ACEROLANDIA LTDA"]
         conexao_banco()
         executar_consulta(m_informa_pedido)
 
@@ -171,7 +176,6 @@ def criar_tela():
 
 def verificar_produto():
     global mnum_ped, infor_pedido
-    # print(tela.mcodigo.text())
     # ic()
     m_codigo = tela.mcodigo.text()
     if m_codigo[0] == "X":
@@ -179,12 +183,12 @@ def verificar_produto():
         tela.mcodigo.setText("")
         return
     else:
+        # print(infor_pedido[3][0:5])
         hg.conexao_cursor.execute(
-                f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3]}"
-            )
+            f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3][0:5]}"
+        )
         ver_cliente = hg.conexao_cursor.fetchone()
         hg.conexao_bd.commit()
-
         if len(m_codigo) <= 5:
             m_codigo = m_codigo.zfill(5)
             hg.conexao_cursor.execute(
@@ -202,10 +206,12 @@ def verificar_produto():
             if mnum_ped == "":
                 mnum_ped = gerar_numero_pedido()
 
+            if hg.m_indiv[25] == 'S':
+                tela.mpreco_venda.setValue(float(ver_produto[45]))
+
             # msaldo = f"{ver_produto[55]:,.3f}".replace(",", " ").replace(".", ",")
             msaldo = f"{ver_produto[55]:,.3f}"
             lbl_saldo.setText(msaldo)
-            # tela.mpreco_venda.setValue(float(ver_produto[45]))
             # tela.mpreco_venda.Value()
             m_quantidade = tela.mquantidade.value()
             mvlr_fat = tela.mpreco_venda.value()
@@ -220,43 +226,73 @@ def verificar_produto():
             # mhora = data_atual.toString("hh:mm:ss")
             mcomissao = ver_produto[25]
             if mp_venda > mvlr_fat:
-                mdesconto = ((mp_venda-mvlr_fat)/mp_venda)*100
+                mdesconto = ((mp_venda - mvlr_fat) / mp_venda) * 100
                 if hg.m_set[112] > 0 and mdesconto >= hg.m_set[113]:
                     if hg.m_set[112] > 1:
-                        mcomissao = mcomissao * (hg.m_set[112]/100)
+                        mcomissao = mcomissao * (hg.m_set[112] / 100)
                     else:
-                        mcomissao = mcomissao - (iat(mdesconto,2) * hg.m_set[112])
+                        mdesc = "{:,.2f}".format(mdesconto).rjust(7)
+                        mcomissao = mcomissao - (mdesc * hg.m_set[112])
                         if mcomissao < 0:
                             mcomissao = 0
 
-                if ((mp_venda - (mvlr_fat / mp_venda) * 100) > hg.m_set[32] and ver_produto[79] == 0
-                    and hg.m_set[32] > 0 and ver_cliente[0] == 0):
-
-                    if not aut_sen(f"Cod.Prod..: {ver_produto[7]} - {ver_produto[8]}\n"
-                                   f"Vlr.Solic.: {mvlr_fat}\n"
-                                   f"Pr.Venda .: {mp_venda}\n"
-                                   f"Desc.Soli.: {((mp_venda - mvlr_fat) / mp_venda)*100} %"
-                                   f"Desc.Aut..: {hg.m_set[32]} %",'LIB_DESC','',ver_produto[8],'',''):
+                mvalor_calculado = mp_venda - ((mvlr_fat / mp_venda) * 100)
+                if (
+                    mvalor_calculado > hg.m_set[32] > 0
+                    and ver_produto[79] == 0
+                    and ver_cliente[0] == 0
+                ):
+                    if not aut_sen(
+                        f"Cod.Prod..: {ver_produto[7]} - {ver_produto[8]}\n"
+                        f"Vlr.Solic.: {mvlr_fat}\n"
+                        f"Pr.Venda .: {mp_venda}\n"
+                        f"Desc.Soli.: {((mp_venda - mvlr_fat) / mp_venda)*100} %"
+                        f"Desc.Aut..: {hg.m_set[32]} %",
+                        "LIB_DESC",
+                        "",
+                        ver_produto[8],
+                        "",
+                        "",
+                    ):
                         mquantd = 1
                         return
-                elif ((mp_venda - mvlr_fat)/mp_venda)*100 > ver_produto[1,79] and ver_produto[79] > 0:
-                    if not aut_sen(f"Cod.Prod..: {ver_produto[7]} - {ver_produto[8]}\n"
-                                   f"Vlr.Solic.: {mvlr_fat}\n"
-                                   f"'Pr.Venda..: {mp_venda}\n"
-                                   f"Desc.Soli.:' {((mp_venda - mvlr_fat)/mp_venda)*100} %\n"
-                                   f"Desc.Aut..: {ver_produto[79]} %",'LIB_DESC','',ver_produto[7],
-                                   '',''):
+                elif ((mp_venda - mvlr_fat) / mp_venda) * 100 > ver_produto[79] > 0:
+                    if not aut_sen(
+                        f"Cod.Prod..: {ver_produto[7]} - {ver_produto[8]}\n"
+                        f"Vlr.Solic.: {mvlr_fat}\n"
+                        f"'Pr.Venda..: {mp_venda}\n"
+                        f"Desc.Soli.:' {((mp_venda - mvlr_fat)/mp_venda)*100} %\n"
+                        f"Desc.Aut..: {ver_produto[79]} %",
+                        "LIB_DESC",
+                        "",
+                        ver_produto[7],
+                        "",
+                        "",
+                    ):
                         return
-                elif hg.m_set[37] == 'C' and mvlr_fat < ver_produto[44]:
-                    if not aut_sen(f"Cod.Prod..: {ver_produto[7]}\n"
-                                   f"Vlr.Solic.: {mvlr_fat}\n"
-                                   f"Pr.Custo..: {ver_produto[44]}",'LIB_DESC','',ver_produto[7],
-                                   '',''):
+                elif hg.m_set[37] == "C" and mvlr_fat < ver_produto[44]:
+                    if not aut_sen(
+                        f"Cod.Prod..: {ver_produto[7]}\n"
+                        f"Vlr.Solic.: {mvlr_fat}\n"
+                        f"Pr.Custo..: {ver_produto[44]}",
+                        "LIB_DESC",
+                        "",
+                        ver_produto[7],
+                        "",
+                        "",
+                    ):
                         return
-                elif hg.m_set[37] == 'V' and mvlr_fat < mp_venda:
-                    if not aut_sen(f"Cod.Prod..: {ver_produto[7]}\n"
-                                   f"Vlr.Solic.: {mvlr_fat}\n"
-                                   f"Pr.Venda..: {mp_venda}",'LIB_DESC','',ver_produto[7],'',''):
+                elif hg.m_set[37] == "V" and mvlr_fat < mp_venda:
+                    if not aut_sen(
+                        f"Cod.Prod..: {ver_produto[7]}\n"
+                        f"Vlr.Solic.: {mvlr_fat}\n"
+                        f"Pr.Venda..: {mp_venda}",
+                        "LIB_DESC",
+                        "",
+                        ver_produto[7],
+                        "",
+                        "",
+                    ):
                         return
 
             mhora = datetime.now().strftime("%H:%M:%S")
@@ -416,10 +452,10 @@ def verificar_produto():
                     m_quantidade,
                     0,
                     0,
-                    m_pre_venda,
+                    mp_venda,
                     0,
-                    m_pre_venda * 1,
-                    m_pre_venda,
+                    mp_venda * 1,
+                    mp_venda,
                     float(ver_produto[46]),
                     float(ver_produto[44]),
                     float(ver_produto[43]),

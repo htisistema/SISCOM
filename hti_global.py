@@ -1,5 +1,5 @@
 import configparser
-from PyQt6 import QtWidgets
+# from PyQt6 import QtWidgets
 
 VERSAO = 'v23.04.13'
 SISTEMA = '.: SISCOM :. Sistema Automacao Comercial'
@@ -17,6 +17,7 @@ UF_HTI = 'PE'
 CEP_HTI = '55140000'
 FONE_HTI = '993127894'
 m_set = []
+m_indiv = []
 
 
 geral_cod_usuario = '999'

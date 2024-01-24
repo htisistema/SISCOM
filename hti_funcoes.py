@@ -4,7 +4,7 @@ import hti_global as hg
 
 # VER NUMERO DA SERIE
 def ver_serie():
-    return hg.hg.m_set[122][15:6]
+    return hg.m_set[122][15:6]
 
 
 def conexao_banco():
@@ -15,7 +15,9 @@ def conexao_banco():
     hg.conexao_cursor.execute("SELECT * FROM sacsetup")
     hg.m_set = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
-
+    hg.conexao_cursor.execute(f"SELECT * FROM sacindiv where terminal = '{hg.nome_computador}'")
+    hg.m_indiv = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
     return
 
 

@@ -1,6 +1,7 @@
 from PyQt6 import uic, QtWidgets
-from PyQt6.QtGui import QIcon, QGuiApplication
+from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 import keyboard
+import os
 from hti_funcoes import ver_nivel, dcripto, conexao_banco
 import hti_global as hg
 import time
@@ -20,6 +21,19 @@ qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
+nome_file_com = os.path.basename(__file__)
+nome_file, ext = os.path.splitext(nome_file_com)
+tela.statusbar.showMessage(f"<< {nome_file} >>")
+
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
+else:
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
+
+pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
+tela.empresa.setPixmap(pixmap_redimensionado)
+
+
 mcod_aut = " "
 ambiente = ""
 

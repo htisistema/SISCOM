@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>498</width>
-    <height>396</height>
+    <height>452</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>200</y>
+      <y>250</y>
       <width>140</width>
       <height>30</height>
      </rect>
@@ -34,7 +34,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>240</y>
+      <y>290</y>
       <width>140</width>
       <height>30</height>
      </rect>
@@ -47,7 +47,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>280</y>
+      <y>330</y>
       <width>140</width>
       <height>30</height>
      </rect>
@@ -60,7 +60,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>200</y>
+      <y>250</y>
       <width>300</width>
       <height>30</height>
      </rect>
@@ -73,7 +73,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>240</y>
+      <y>290</y>
       <width>113</width>
       <height>30</height>
      </rect>
@@ -89,7 +89,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>280</y>
+      <y>330</y>
       <width>60</width>
       <height>30</height>
      </rect>
@@ -105,7 +105,7 @@
     <property name="geometry">
      <rect>
       <x>240</x>
-      <y>280</y>
+      <y>330</y>
       <width>60</width>
       <height>30</height>
      </rect>
@@ -121,7 +121,7 @@
     <property name="geometry">
      <rect>
       <x>320</x>
-      <y>280</y>
+      <y>330</y>
       <width>150</width>
       <height>30</height>
      </rect>
@@ -137,7 +137,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>50</y>
+      <y>100</y>
       <width>440</width>
       <height>120</height>
      </rect>
@@ -163,7 +163,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>320</y>
+      <y>370</y>
       <width>60</width>
       <height>30</height>
      </rect>
@@ -176,7 +176,7 @@
     <property name="geometry">
      <rect>
       <x>330</x>
-      <y>320</y>
+      <y>370</y>
       <width>120</width>
       <height>30</height>
      </rect>
@@ -192,13 +192,37 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>30</y>
+      <y>80</y>
       <width>110</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
      <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="empresa">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>10</y>
+      <width>70</width>
+      <height>70</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: Outset;
+border-width: 2px;
+border-radius: 12px;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>../../../../Users/Helio/.designer/backup/CADASTRO.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>

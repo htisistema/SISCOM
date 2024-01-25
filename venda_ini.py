@@ -217,7 +217,6 @@ def salvar_informacao():
     elif tela.rb_av_ap_p.isChecked():
         mav_ap = "P"
 
-    print(mcod_cliente)
     informacao_pedido.append(mnum_ped)
     informacao_pedido.append(mnum_os)
     informacao_pedido.append(mnum_orcamento)

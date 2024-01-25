@@ -99,13 +99,15 @@ def botao_item():
 def editar_item(row):
     # rb_tipo_consulta = None
     item = tela.tableWidget.item(row, 0)
+
     if mconsulta_imclusao == "C":
         tela.close()
+        print(f"f4: {item.text()}")
         return item.text()
-
-    if item.isSelected():
-        tela.tableWidget.itemDoubleClicked.disconnect()
     else:
+        # if item.isSelected():
+        #     tela.tableWidget.itemDoubleClicked.disconnect()
+        # else:
         tela.tableWidget.itemDoubleClicked.disconnect()
 
     if tela.rb_alteracao.isChecked():

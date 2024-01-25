@@ -248,6 +248,14 @@ border-radius: 12px;</string>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
+ <tabstops>
+  <tabstop>pesquisa</tabstop>
+  <tabstop>rb_alteracao</tabstop>
+  <tabstop>rb_consulta</tabstop>
+  <tabstop>bt_inclusao</tabstop>
+  <tabstop>bt_sair</tabstop>
+  <tabstop>tableWidget</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

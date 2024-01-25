@@ -12,7 +12,7 @@ import hti_global as hg
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hg.style_sheet)
 tela = uic.loadUi(f"{hg.c_ui}\\f4_merc.ui")
-tela.setWindowTitle('PRODUTOS CADASTRADO')
+tela.setWindowTitle("PRODUTOS CADASTRADO")
 icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
 icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
 icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
@@ -27,7 +27,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 # tela.move(15, 10)
 
-if hg.mtp_tela == 'G':
+if hg.mtp_tela == "G":
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
@@ -41,6 +41,7 @@ else:
 
 pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
 tela.empresa.setPixmap(pixmap_redimensionado)
+mconsulta_imclusao = ""
 
 
 def on_close_event(event):
@@ -67,12 +68,14 @@ def ajustar_colunas_tabela(tabela):
 
 def f_incl_produto():
     from SAC110 import inclusao_produto
+
     inclusao_produto()
     return
 
 
 def chama_alteracao(mcod_prod):
     from SAC111 import alteracao_produto
+
     alteracao_produto(mcod_prod[0:5])
     return
 
@@ -94,20 +97,23 @@ def botao_item():
 
 
 def editar_item(row):
-    rb_tipo_consulta = None
+    # rb_tipo_consulta = None
     item = tela.tableWidget.item(row, 0)
+    if mconsulta_imclusao == "C":
+        tela.close()
+        return item.text()
+
     if item.isSelected():
         tela.tableWidget.itemDoubleClicked.disconnect()
     else:
         tela.tableWidget.itemDoubleClicked.disconnect()
 
-    # print(item.text())
     if tela.rb_alteracao.isChecked():
         chama_alteracao(item.text())
-        rb_tipo_consulta = 'A'
+        # rb_tipo_consulta = "A"
     elif tela.rb_consulta.isChecked():
         chama_consulta(item.text())
-        rb_tipo_consulta = 'C'
+        # rb_tipo_consulta = "C"
 
     # if rb_tipo_consulta == 'A':
     #     chama_alteracao(item.text())
@@ -119,31 +125,37 @@ def editar_item(row):
 
 
 def pesquisa():
-
-    if hg.mtipo_temrinal == 'L':
-        valor_aprazo_calculado = 'pr_venda * ((varejo / 100) + 1)'
+    if hg.mtipo_temrinal == "L":
+        valor_aprazo_calculado = "pr_venda * ((varejo / 100) + 1)"
     else:
-        valor_aprazo_calculado = 'iif(pr_venda1 > 0, pr_venda1, pr_venda * ((varejo / 100) + 1))'
+        valor_aprazo_calculado = (
+            "iif(pr_venda1 > 0, pr_venda1, pr_venda * ((varejo / 100) + 1))"
+        )
 
     nome_buscar = tela.pesquisa.text()
-    hg.conexao_cursor.execute(f"SELECT CAST(cod_merc as char(5)) as cod_merc, COALESCE(merc, ' ') as merc, "
-                                      f"REPLACE(CAST(saldo_mer AS DECIMAL(12, 2)), '.', ',') as saldomer, "
-                                      f"REPLACE(CAST(pr_venda AS DECIMAL(12, 2)), '.', ',') as prvenda, "
-                                      f"REPLACE(CAST({valor_aprazo_calculado} AS DECIMAL(12, 2)), '.', ','), "
-                                      f"COALESCE(unidade, ' '), "
-                                      f"COALESCE(cod_barr, ' '), COALESCE(ref, ' ') FROM sacmerc "
-                                      f"WHERE (cod_merc LIKE UPPER('%{nome_buscar}%') OR "
-                                      f"merc LIKE UPPER('%{nome_buscar}%') OR cod_barr LIKE UPPER('%{nome_buscar}%') "
-                                      f"OR ref LIKE UPPER('%{nome_buscar}%')) ORDER BY cod_merc")
+    hg.conexao_cursor.execute(
+        f"SELECT CAST(cod_merc as char(5)) as cod_merc, COALESCE(merc, ' ') as merc, "
+        f"REPLACE(CAST(saldo_mer AS DECIMAL(12, 2)), '.', ',') as saldomer, "
+        f"REPLACE(CAST(pr_venda AS DECIMAL(12, 2)), '.', ',') as prvenda, "
+        f"REPLACE(CAST({valor_aprazo_calculado} AS DECIMAL(12, 2)), '.', ','), "
+        f"COALESCE(unidade, ' '), "
+        f"COALESCE(cod_barr, ' '), COALESCE(ref, ' ') FROM sacmerc "
+        f"WHERE (cod_merc LIKE UPPER('%{nome_buscar}%') OR "
+        f"merc LIKE UPPER('%{nome_buscar}%') OR cod_barr LIKE UPPER('%{nome_buscar}%') "
+        f"OR ref LIKE UPPER('%{nome_buscar}%')) ORDER BY cod_merc"
+    )
 
 
 def incluir_produto():
     from SAC110 import inclusao_produto
+
     inclusao_produto()
 
 
-def listar_produto():
+def listar_produto(mtipo):
+    global mconsulta_imclusao
     pesquisa()
+    mconsulta_imclusao = mtipo
     dados_lidos = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()
     tela.tableWidget.setRowCount(len(dados_lidos))
@@ -162,10 +174,11 @@ def listar_produto():
     rb_tipo_group.addButton(tela.rb_consulta, id=2)
     tela.rb_alteracao.setChecked(True)
 
-    tela.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+    tela.tableWidget.setEditTriggers(
+        QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
+    )
     tela.tableWidget.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
     tela.bt_inclusao.clicked.connect(incluir_produto)
-    tela.bt_sair.clicked.connect(fecha_tela)
     tela.bt_sair.clicked.connect(fecha_tela)
     tela.bt_sair.setIcon(icon_sair)
     tela.bt_inclusao.setIcon(icon_incluir)
@@ -190,10 +203,10 @@ class MainWindow(QMainWindow):
         # locale.setlocale(locale.LC_NUMERIC, '')
         # Executar a consulta
         conexao_banco()
-        listar_produto()
+        listar_produto("I")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # from hti_funcoes import conexao_banco
     # conexao_banco()
     # listar_produto()

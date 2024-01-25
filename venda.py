@@ -3,9 +3,8 @@ from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
-    QMessageBox,
     QGroupBox,
-)  # , QLineEdit
+)
 from PyQt6.QtCore import QDateTime
 from datetime import datetime
 import keyboard
@@ -172,11 +171,20 @@ def criar_tela():
         print(f"Erro ao executar a consulta: {e}")
 
 
+def checar_produto(mproduto):
+    tela.mcodigo.setText(mproduto)
+    return
+
+
 def verificar_produto():
     global mnum_ped, infor_pedido
     # ic()
     m_codigo = tela.mcodigo.text()
     if len(m_codigo) == 0:
+        from F4_MERC import listar_produto
+        m_cod = listar_produto("C")
+        print(m_cod)
+        checar_produto(m_cod)
         return
 
     if m_codigo[0] == "X":
@@ -202,7 +210,7 @@ def verificar_produto():
         ver_produto = hg.conexao_cursor.fetchone()
         hg.conexao_bd.commit()
         if ver_produto is None:
-            QMessageBox.critical(tela, "ATENCAO", "Produto nao encontrado...")
+            atencao("Produto nao encontrado...")
         else:
             if mnum_ped == "":
                 mnum_ped = gerar_numero_pedido()
@@ -300,13 +308,21 @@ def verificar_produto():
                     atencao("QUANTIDADE Solicitada maior que o MAXIMO Permitido")
                     return
 
-                hg.conexao_cursor.execute(f"SELECT sum(pquantd * pvlr_fat) FROM sacped_s WHERE pnum_ped = '{mnum_ped}'")
+                hg.conexao_cursor.execute(
+                    f"SELECT sum(pquantd * pvlr_fat) FROM sacped_s WHERE pnum_ped = '{mnum_ped}'"
+                )
                 msubtotal = hg.conexao_cursor.fetchone()
                 hg.conexao_bd.commit()
 
-                if (infor_pedido[9] + msubtotal + (mvlr_fat * m_quantidade)) >= infor_pedido[8] > 0:
-                    atencao(f"Limite do Cliente foi ultrapassado em R$: "
-                            f"{(infor_pedido[9] + msubtotal + (mvlr_fat * m_quantidade))}")
+                if (
+                    (infor_pedido[9] + msubtotal + (mvlr_fat * m_quantidade))
+                    >= infor_pedido[8]
+                    > 0
+                ):
+                    atencao(
+                        f"Limite do Cliente foi ultrapassado em R$: "
+                        f"{(infor_pedido[9] + msubtotal + (mvlr_fat * m_quantidade))}"
+                    )
                     return
 
             mhora = datetime.now().strftime("%H:%M:%S")
@@ -589,16 +605,12 @@ def pesquisa_produto():
     resutado_prod = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
     if resutado_prod is not None:
-        QMessageBox.information(
-            tela, "Pesquisa de PRODUTO", f"PRODUTO: '{resutado_prod[0]}'"
-        )
+        atencao(f"Pesquisa de PRODUTO, PRODUTO: {resutado_prod[0]}'")
         # if not mnum_ped == "":
         #     print(mnum_ped)
         return
     else:
-        QMessageBox.information(
-            tela, "Pesquisa de PRODUTO", "PRODUTO nao encontrado...!!!"
-        )
+        atencao("PRODUTO nao encontrado...!!!")
         return
 
 

@@ -29,10 +29,6 @@ if hg.mtp_tela == 'G':
 
 tela.setWindowIcon(icon)
 
-tela.statusBar().showMessage(f"Nome do Computador: {nome_computador} - Caminho do Servidor BD: {hg.host} - "
-                             f"IP: {endereco_ip} - << {nome_file} >>")
-
-
 imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 pixmap_redimensionado = imagem.scaled(450, 250)  # redimensiona a imagem para 100x100
 tela.imagem_menu.setPixmap(pixmap_redimensionado)
@@ -62,7 +58,8 @@ tela.setStatusBar(tela.statusBar)
 nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
 
-tela.statusBar.showMessage(f"<< {nome_file} >>")
+tela.statusBar.showMessage(f"<< {nome_file} >>  -  Nome do Computador: {nome_computador}   -   "
+                           f"Caminho do Servidor BD: {hg.host}   -   IP: {endereco_ip}")
 
 
 def on_close_event(event):
@@ -73,7 +70,7 @@ def on_close_event(event):
     tela.close()
     event.accept()
     tela.quit()
-    app_menu.quit()
+    app.quit()
     tela.closeEvent = on_close_event
 
 
@@ -82,12 +79,13 @@ def sair():
     hg.conexao_bd.close()
     hg.conexao_cursor.close()
     tela.close()
-    app_menu.quit()
+    app.quit()
+    # tela.quit()
 
 
 def incluir_venda():
-    from venda import MainWindow
-    MainWindow()
+    from venda_ini import pedido_inicial
+    pedido_inicial()
 
 
 def m_produto():

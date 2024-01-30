@@ -108,8 +108,6 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         m_informa_pedido = ["145082", "", "", "6 - ACEROLANDIA LTDA"]
-        tela.show()
-        app.exec()
         conexao_banco()
         executar_consulta(m_informa_pedido)
 
@@ -240,7 +238,7 @@ class ConsultaProduto(QMainWindow):
         item = tela1.tableWidget.item(row, 0)
         tela.mcodigo.setText(item.text())
         tela1.close()
-        print(f"item {item.text()}")
+        # print(f"item {item.text()}")
         tela1.tableWidget.cellActivated.connect(
             lambda row, col: self.editar_prod(item.row())
         )
@@ -673,7 +671,9 @@ def verificar_produto():
             )
             hg.conexao_bd.commit()
 
+    tela.mcodigo.returnPressed.disconnect()
     tela.mcodigo.setText("")
+    tela.mcodigo.setFocus()
     tela.mpreco_venda.setValue(float(0))
     mcomissao = mcomissao
     msaldo = f"{0:,.3f}"
@@ -711,6 +711,8 @@ def executar_consulta(m_informa_pedido):
     # tela.recupera_pedido = QLineEdit(tela)
     # tela.recupera_pedido.setGeometry(500, 500, 140, 40)
     # tela.textBrowser.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
+    tela.show()
+    app.exec()
     criar_tela()
 
 

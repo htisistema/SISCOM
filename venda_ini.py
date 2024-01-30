@@ -227,7 +227,8 @@ def salvar_informacao():
     informacao_pedido.append(mpercentual)
     informacao_pedido.append(mlimite)
     informacao_pedido.append(mcompras)
-    # print(informacao_pedido)
+    print(informacao_pedido)
+    tela.close()
     executar_consulta(informacao_pedido)
     # return
 
@@ -292,7 +293,7 @@ def ver_pedido():
     # mnum_pedido = '145082'
     # informacao_pedido.append(mnum_ped)
 
-    salvar_informacao()
+    # salvar_informacao()
 
 
 def ver_cond_pagamento():

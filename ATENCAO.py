@@ -1,5 +1,6 @@
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtCore import Qt
 import os
 import hti_global as hg
 
@@ -19,18 +20,28 @@ tela.empresa.setPixmap(pixmap_redimensionado)
 
 def fecha_tela():
     tela.close()
-    return
 
 
 def atencao(mensagem):
-    tela.bt_sair.clicked.connect(fecha_tela)
     tela.bt_sair.setIcon(icon_sair)
     text_browser = tela.findChild(QtWidgets.QTextBrowser, "textBrowser")
     text_browser.setText(f"{mensagem}")
-
+    tela.bt_sair.setFocus()
+    tela.bt_sair.clicked.connect(fecha_tela)
     tela.show()
-    app.exec()
 
+
+def keyPressEvent(event):
+    if event.key() == Qt.Key.Key_Enter or event.key() == Qt.Key.Key_Return:
+        # print("Enter pressionado")
+        fecha_tela()
+    elif event.key() == Qt.Key.Key_Escape:
+        # print("Esc pressionado")
+        fecha_tela()
+
+
+tela.keyPressEvent = keyPressEvent
 
 if __name__ == "__main__":
-    atencao('teste ')
+    atencao("teste ")
+    app.exec()

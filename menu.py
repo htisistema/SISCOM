@@ -14,7 +14,6 @@ nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
 
 app = QtWidgets.QApplication([])
-# Defina a folha de estilo global
 app.setStyleSheet(hg.style_sheet)
 
 tela = uic.loadUi(f"{hg.c_ui}\\menu.ui")
@@ -63,8 +62,6 @@ tela.statusBar.showMessage(f"<< {nome_file} >>  -  Nome do Computador: {nome_com
 
 
 def on_close_event(event):
-    # Esta função será chamada quando o usuário clicar no botão de fechar a janela
-    # print("Fechando a janela...")
     hg.conexao_bd.close()
     hg.conexao_cursor.close()
     tela.close()
@@ -246,4 +243,4 @@ if __name__ == '__main__':
     hg.conexao_cursor.close()
     tela.close()
     hg.conexao_bd.close()
-    app_menu.quit()
+    app.quit()

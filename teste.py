@@ -1,35 +1,50 @@
-import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QGroupBox, QLabel, QVBoxLayout
+from PyQt6 import uic, QtWidgets
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtCore import Qt
+import os
+import hti_global as hg
 
-class App(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.title = 'PyQt6 GroupBox'
-        self.left = 10
-        self.top = 10
-        self.width = 320
-        self.height = 200
-        self.initUI()
+app = QtWidgets.QApplication([])
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\hti_atencao.ui")
+tela.setWindowTitle("ATENCAO")
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
 
-    def initUI(self):
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
 
-        groupBox = QGroupBox("GroupBox Example")
-        vbox = QVBoxLayout()
+def fecha_tela():
+    tela.close()
 
-        label = QLabel("Conteúdo do GrupoBox")
-        vbox.addWidget(label)
 
-        groupBox.setLayout(vbox)
+def atencao(mensagem):
+    tela.bt_sair.setIcon(icon_sair)
+    text_browser = tela.findChild(QtWidgets.QTextBrowser, "textBrowser")
+    text_browser.setText(f"{mensagem}")
+    tela.bt_sair.setFocus()
+    tela.bt_sair.clicked.connect(fecha_tela)
+    tela.show()
 
-        vbox_main = QVBoxLayout()
-        vbox_main.addWidget(groupBox)
-        self.setLayout(vbox_main)
 
-        self.show()
+def keyPressEvent(event):
+    if event.key() == Qt.Key.Key_Enter or event.key() == Qt.Key.Key_Return:
+        print("Enter pressionado")
+        buffer_mode = "esc"
+    elif event.key() == Qt.Key.Key_Escape:
+        print("Esc pressionado")
+        buffer_mode = "normal"
+    print("atencao")
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = App()
-    sys.exit(app.exec())
+
+tela.keyPressEvent = keyPressEvent
+
+if __name__ == "__main__":
+    if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+        imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
+    else:
+        imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
+
+    pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
+    tela.empresa.setPixmap(pixmap_redimensionado)
+
+    atencao("teste ")
+
+    app.exec()

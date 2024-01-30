@@ -1,10 +1,8 @@
 # LISTA CLIENTES PRODUTOS
-
-import sys
 import os
-from PyQt6 import uic, QtWidgets, QtCore
+from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
-from PyQt6.QtWidgets import QButtonGroup, QApplication, QMainWindow
+from PyQt6.QtWidgets import QButtonGroup, QMainWindow
 from hti_funcoes import conexao_banco
 import hti_global as hg
 
@@ -41,12 +39,9 @@ else:
 
 pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
 tela.empresa.setPixmap(pixmap_redimensionado)
-mconsulta_imclusao = ""
 
 
 def on_close_event(event):
-    # Esta função será chamada quando o usuário clicar no botão de fechar a janela
-    # print("Fechando a janela...")
     tela.close()
     event.accept()
 
@@ -99,16 +94,7 @@ def botao_item():
 def editar_item(row):
     # rb_tipo_consulta = None
     item = tela.tableWidget.item(row, 0)
-
-    if mconsulta_imclusao == "C":
-        tela.close()
-        print(f"f4: {item.text()}")
-        return item.text()
-    else:
-        # if item.isSelected():
-        #     tela.tableWidget.itemDoubleClicked.disconnect()
-        # else:
-        tela.tableWidget.itemDoubleClicked.disconnect()
+    tela.tableWidget.itemDoubleClicked.disconnect()
 
     if tela.rb_alteracao.isChecked():
         chama_alteracao(item.text())
@@ -154,10 +140,8 @@ def incluir_produto():
     inclusao_produto()
 
 
-def listar_produto(mtipo):
-    global mconsulta_imclusao
+def listar_produto():
     pesquisa()
-    mconsulta_imclusao = mtipo
     dados_lidos = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()
     tela.tableWidget.setRowCount(len(dados_lidos))
@@ -205,13 +189,10 @@ class MainWindow(QMainWindow):
         # locale.setlocale(locale.LC_NUMERIC, '')
         # Executar a consulta
         conexao_banco()
-        listar_produto("I")
+        listar_produto()
 
 
 if __name__ == "__main__":
-    # from hti_funcoes import conexao_banco
-    # conexao_banco()
-    # listar_produto()
     MainWindow()
     hg.conexao_bd.close()
     hg.conexao_cursor.close()

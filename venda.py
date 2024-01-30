@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (
     QMainWindow,
     QGroupBox,
 )
-from PyQt6.QtCore import QDateTime, Qt
+from PyQt6.QtCore import QDateTime
 from datetime import datetime
 import keyboard
 from hti_funcoes import conexao_banco, gerar_numero_pedido
@@ -91,6 +91,7 @@ lbl_cabecalho = tela.findChild(QtWidgets.QLabel, "cabecalho")
 lbl_saldo = tela.findChild(QtWidgets.QLabel, "saldo")
 data_atual = QDateTime.currentDateTime()
 
+
 tela1 = uic.loadUi(f"{hg.c_ui}\\f4_merc.ui")
 tela1.setWindowTitle("PRODUTOS CADASTRADO")
 # icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
@@ -98,10 +99,29 @@ tela1.setWindowTitle("PRODUTOS CADASTRADO")
 # icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 tela1.setWindowIcon(icon)
 tabela1 = tela1.tableWidget
+if hg.mtp_tela == "G":
+    primary_screen = QGuiApplication.primaryScreen()
+    if primary_screen is not None:
+        screen_geometry = primary_screen.geometry()
+        tela1.setGeometry(screen_geometry)
+
+tela1.statusBar.showMessage(f"<< {nome_file} >>")
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
+else:
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
+
+pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
+tela1.empresa.setPixmap(pixmap_redimensionado)
 
 
 def fecha_tela():
     tela.close()
+    return
+
+
+def fecha_tela1():
+    tela1.close()
     return
 
 
@@ -205,106 +225,85 @@ def pesquisa_prod():
     return
 
 
-class ConsultaProduto(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        conexao_banco()
-        tela1.show()
-        # app.exec()
+# class ConsultaProduto(QMainWindow):
+#     def __init__(self):
+#         super().__init__()
+#         conexao_banco()
+#         tela1.show()
+#         # app.exec()
 
-    # app1 = QtWidgets.QApplication([])
-    # app1.setStyleSheet(hg.style_sheet)
-    # tela1 = uic.loadUi(f"{hg.c_ui}\\f4_merc.ui")
-    # tela1.setWindowTitle("PRODUTOS CADASTRADO")
-    # icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
-    # icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
-    # icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
-    # tela1.setWindowIcon(icon)
-    # tabela1 = tela1.tableWidget
+# app1 = QtWidgets.QApplication([])
+# app1.setStyleSheet(hg.style_sheet)
+# tela1 = uic.loadUi(f"{hg.c_ui}\\f4_merc.ui")
+# tela1.setWindowTitle("PRODUTOS CADASTRADO")
+# icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+# icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+# icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
+# tela1.setWindowIcon(icon)
+# tabela1 = tela1.tableWidget
 
-    # PEGA O NOME DO ARQUIVO EM EXECUCAO
-    nome_file_com = os.path.basename(__file__)
-    nome_file, ext = os.path.splitext(nome_file_com)
-    # AJUSTAR A TELA EM RELACAO AO MONITOR
-    qt_rectangle = tela1.frameGeometry()
-    center_point = app.primaryScreen().availableGeometry().center()
-    qt_rectangle.moveCenter(center_point)
+# # PEGA O NOME DO ARQUIVO EM EXECUCAO
+# nome_file_com = os.path.basename(__file__)
+# nome_file, ext = os.path.splitext(nome_file_com)
+# # AJUSTAR A TELA EM RELACAO AO MONITOR
+# qt_rectangle = tela1.frameGeometry()
+# center_point = app.primaryScreen().availableGeometry().center()
+# qt_rectangle.moveCenter(center_point)
 
-    if hg.mtp_tela == "G":
-        primary_screen = QGuiApplication.primaryScreen()
-        if primary_screen is not None:
-            screen_geometry = primary_screen.geometry()
-            tela1.setGeometry(screen_geometry)
+# mconsulta_inclusao = ""
 
-    tela1.statusBar.showMessage(f"<< {nome_file} >>")
-    if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
-        imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
-    else:
-        imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
+# Define a função para ajustar as colunas da tabela
+# def ajustar_colunas_tabela(self, x):
+#     # print(x)
+#     header = tabela1.horizontalHeader()
+#     header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+#     header.setStretchLastSection(False)
 
-    pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
-    tela1.empresa.setPixmap(pixmap_redimensionado)
-    # mconsulta_inclusao = ""
 
-    # Define a função para ajustar as colunas da tabela
-    # def ajustar_colunas_tabela(self, x):
-    #     # print(x)
-    #     header = tabela1.horizontalHeader()
-    #     header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
-    #     header.setStretchLastSection(False)
+def editar_prod(row):
+    # rb_tipo_consulta = None
+    tela1.tableWidget.itemDoubleClicked.disconnect()
+    tela1.tableWidget.cellActivated.disconnect()
+    print(f"linha: {row}")
+    # item = tela1.tableWidget.item(row, 0)
+    item = tela1.tableWidget.item(row, 0)
+    tela.mcodigo.setText(item.text())
+    print(f"item {item.text()}")
+    # tela1.tableWidget.cellActivated.connect(lambda row1, col: editar_prod(item.row()))
+    # tela.tableWidget.itemDoubleClicked.connect(lambda item: editar_prod(item.row()))
+    # verificar_produto()
+    # criar_tela()
+    tela1.close()
+    return
 
-    def editar_prod(self, row):
-        # rb_tipo_consulta = None
-        tela1.tableWidget.itemDoubleClicked.disconnect()
-        tela1.tableWidget.cellActivated.disconnect()
-        # print(f"linha: {row}")
-        # item = tela1.tableWidget.item(row, 0)
-        item = tela1.tableWidget.item(row, 0)
-        tela.mcodigo.setText(item.text())
-        # print(f"item {item.text()}")
-        tela1.tableWidget.cellActivated.connect(
-            lambda row1, col: self.editar_prod(item.row())
-        )
 
-        tela1.tableWidget.itemDoubleClicked.connect(
-            lambda item1: self.editar_prod(item.row())
-        )
-        # verificar_produto()
-        # criar_tela()
-        tela1.close()
-        return
+def listar_produto():
+    pesquisa_prod()
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
+    tela1.tableWidget.setRowCount(len(dados_lidos))
+    tela1.tableWidget.setColumnCount(8)
+    for i, linha in enumerate(dados_lidos):
+        for j, valor in enumerate(linha):
+            valor = str(valor) if valor is not None else ""
+            item = QtWidgets.QTableWidgetItem(valor)
+            tela1.tableWidget.setItem(i, j, item)
+    header = tabela1.horizontalHeader()
+    header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+    header.setStretchLastSection(False)
 
-    def listar_produto(self):
-        pesquisa_prod()
-        dados_lidos = hg.conexao_cursor.fetchall()
-        hg.conexao_bd.commit()
-        tela1.tableWidget.setRowCount(len(dados_lidos))
-        tela1.tableWidget.setColumnCount(8)
-        for i, linha in enumerate(dados_lidos):
-            for j, valor in enumerate(linha):
-                valor = str(valor) if valor is not None else ""
-                item = QtWidgets.QTableWidgetItem(valor)
-                tela1.tableWidget.setItem(i, j, item)
-        header = tabela1.horizontalHeader()
-        header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
-        header.setStretchLastSection(False)
+    tela1.tableWidget.setEditTriggers(
+        QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
+    )
+    tela1.bt_sair.clicked.connect(fecha_tela1)
+    tela1.bt_sair.setIcon(icon_sair)
 
-        tela1.tableWidget.setEditTriggers(
-            QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
-        )
-        tela1.bt_sair.clicked.connect(fecha_tela)
-        tela1.bt_sair.setIcon(icon_sair)
-
-        tela1.pesquisa.textChanged.connect(pesquisa_prod)
-        tela1.tableWidget.cellActivated.connect(
-            lambda row, col: self.editar_prod(item.row())
-        )
-        tela1.tableWidget.itemDoubleClicked.connect(
-            lambda item1: self.editar_prod(item.row())
-        )
-        # tela.mcodigo.returnPressed.connect(verificar_produto)
-        tela1.close()
-        criar_tela()
+    tela1.pesquisa.textChanged.connect(pesquisa_prod)
+    tela1.tableWidget.cellActivated.connect(lambda row, col: editar_prod(item.row()))
+    tela1.tableWidget.itemDoubleClicked.connect(lambda item: editar_prod(item.row()))
+    # tela.mcodigo.returnPressed.connect(verificar_produto)
+    tela1.show()
+    criar_tela()
 
 
 def verificar_produto():
@@ -318,9 +317,17 @@ def verificar_produto():
     if len(m_codigo.strip()) == 0:
         atencao("Produto em branco....")
         return
-    elif m_codigo[0] == "X":
-        tela.mquantidade.setValue(float(m_codigo[1:20]))
-        tela.mcodigo.setText("")
+    elif m_codigo[0] == "X" or m_codigo[0] == "x":
+        if len(m_codigo[1:20]) > 0:
+            tela.mquantidade.setValue(float(m_codigo[1:20]))
+            tela.mcodigo.setText("")
+        else:
+            tela.mcodigo.setText("")
+            tela.mcodigo.setFocus()
+            tela.mpreco_venda.setValue(float(0))
+            tela.mquantidade.setValue(float(1))
+            msaldo = f"{0:,.3f}"
+            lbl_saldo.setText(msaldo)
         return
     else:
         print(infor_pedido[3][0:5])
@@ -684,6 +691,7 @@ def verificar_produto():
     tela.mcodigo.setText("")
     tela.mcodigo.setFocus()
     tela.mpreco_venda.setValue(float(0))
+    tela.mquantidade.setValue(float(1))
     # mcomissao = mcomissao
     msaldo = f"{0:,.3f}"
     lbl_saldo.setText(msaldo)
@@ -701,7 +709,7 @@ keyboard.add_hotkey("F10", fecha_pedido)
 
 def executar_consulta(m_informa_pedido):
     global mnum_ped, infor_pedido
-    instancia = ConsultaProduto()
+    # instancia = ConsultaProduto()
     infor_pedido = m_informa_pedido
     tela.mcodigo.returnPressed.connect(verificar_produto)
     tela.mcodigo.setFocus()
@@ -714,7 +722,7 @@ def executar_consulta(m_informa_pedido):
     # lbl_cliente.setText(f"{m_informa_pedido[0]}<br/>{m_informa_pedido[1]}")
     # lbl_cliente.setText(f"{m_informa_pedido[0]}\n{m_informa_pedido[1]}")
     lbl_cliente.setText(m_informa_pedido[1])
-    tela.bt_buscar_produto.clicked.connect(instancia.listar_produto)
+    tela.bt_buscar_produto.clicked.connect(listar_produto)
     tela.bt_fecha.clicked.connect(fecha_pedido)
     tela.bt_fecha.setIcon(icon_salvar)
     tela.bt_sair.clicked.connect(fecha_tela)

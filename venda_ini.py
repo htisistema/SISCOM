@@ -1,4 +1,4 @@
-from typing import List, Any
+# from typing import List, Any
 
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QPixmap
@@ -146,7 +146,7 @@ def buscar_pedido():
     tela.cb_pedido.setCurrentIndex(0)
 
 
-def buscar_orcamento(self):
+def buscar_orcamento():
     tela.cb_orcamento.clear()
     itens = "Numero      Cliente  ValorR$"
     tela.cb_orcamento.addItem(itens)
@@ -162,7 +162,7 @@ def buscar_orcamento(self):
     tela.cb_orcamento.setCurrentIndex(0)
 
 
-def buscar_os(self):
+def buscar_os():
     tela.cb_os.clear()
     itens = "Numero      Cliente  ValorR$"
     tela.cb_os.addItem(itens)
@@ -180,6 +180,7 @@ def buscar_os(self):
 
 def salvar_informacao():
     # adicionar item no final da lista
+    mav_ap = ''
     informacao_pedido = []
     index = tela.cb_pedido.currentIndex()
     mop = tela.cb_pedido.itemText(index)
@@ -227,7 +228,7 @@ def salvar_informacao():
     informacao_pedido.append(mpercentual)
     informacao_pedido.append(mlimite)
     informacao_pedido.append(mcompras)
-    print(informacao_pedido)
+    # print(informacao_pedido)
     tela.close()
     executar_consulta(informacao_pedido)
     # return
@@ -300,6 +301,7 @@ def ver_cond_pagamento():
     global mpercentual
     index = tela.cb_cond_pagamento.currentIndex()
     mop = tela.cb_cond_pagamento.itemText(index)
+    mcond = '000'
     m_cod_cond_pg = mop[0:3]
     lbl_forma_pagamento.clear()
     if m_cod_cond_pg == "000":
@@ -382,7 +384,6 @@ def ver_cond_pagamento():
             media_dias = float(media_dias) / float(mcond[1:3])
             media_dias = "{:,.0f}".format(media_dias).rjust(3)
             mcondicao += f" - Medias de dias: {media_dias}"
-
     else:
         mcond = "000"
         mpercentual = 0
@@ -393,6 +394,9 @@ def ver_cond_pagamento():
 
 def ver_cliente():
     global mvendedor_aux, mlimite, mcompras
+    mcod_vendedor = ''
+    op_cartao = ''
+    mvarejo = ''
     index = tela.cb_cliente.currentIndex()
     mop = tela.cb_cliente.itemText(index)
     mcodigo_cliente = mop[0:5]

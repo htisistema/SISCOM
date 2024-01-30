@@ -5,10 +5,10 @@ from PyQt6.QtWidgets import (
     QMainWindow,
     QGroupBox,
 )
-from PyQt6.QtCore import QDateTime
+from PyQt6.QtCore import QDateTime, Qt
 from datetime import datetime
 import keyboard
-from hti_funcoes import conexao_banco, gerar_numero_pedido, ver_serie
+from hti_funcoes import conexao_banco, gerar_numero_pedido
 from autorizacao_senha import aut_sen
 import hti_global as hg
 import os
@@ -82,6 +82,7 @@ lbl_operador.setText(f" Operador: {hg.geral_cod_usuario}")
 lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
 lbl_cliente = tela.findChild(QtWidgets.QLabel, "lb_cliente")
 
+m_informacao_pedido = []
 mnum_ped = ""
 infor_pedido = []
 tela.mquantidade.setValue(1)
@@ -113,13 +114,13 @@ class MainWindow(QMainWindow):
 
 
 def criar_tela():
-    print("ok")
+    print("criar tela")
     tela.textBrowser.clear()
     lbl_numero_pedido.setText(f" Numero Pedido: {mnum_ped}")
     lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
     # try:
     hg.conexao_cursor.execute(
-        f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{mnum_ped}'"
+        f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{mnum_ped}' order by sr_recno"
     )
     # # 145082Recupere o resultado
     resultados = hg.conexao_cursor.fetchall()
@@ -153,8 +154,8 @@ def criar_tela():
             descricao = pmerc
             # ic(soma)
             msoma = "{:12,.2f}".format(soma)
-            linha = f"  {i}   {pcod_merc}  {pmerc}"  # Formatar o campo valor como float com 2 casas decimais
-            linha1 = f"                {mquantd} x {mvalor} = {msoma}"  # Formatar o campo valor como float com 2 casas decimais
+            linha = f"  {i}   {pcod_merc}  {pmerc}"
+            linha1 = f"                {mquantd} x {mvalor} = {msoma}"
             mtotal_geral += soma
             # linha = ' '.join(map(str, resultado))
             tela.textBrowser.append(linha)
@@ -179,6 +180,29 @@ def criar_tela():
 
     # except Exception as e:
     #     print(f"Erro ao executar a consulta: {e}")
+
+
+def pesquisa_prod():
+    if hg.mtipo_temrinal == "L":
+        valor_aprazo_calculado = "pr_venda * ((varejo / 100) + 1)"
+    else:
+        valor_aprazo_calculado = (
+            "iif(pr_venda1 > 0, pr_venda1, pr_venda * ((varejo / 100) + 1))"
+        )
+
+    nome_buscar = tela1.pesquisa.text()
+    hg.conexao_cursor.execute(
+        f"SELECT CAST(cod_merc as char(5)) as cod_merc, COALESCE(merc, ' ') as merc, "
+        f"REPLACE(CAST(saldo_mer AS DECIMAL(12, 2)), '.', ',') as saldomer, "
+        f"REPLACE(CAST(pr_venda AS DECIMAL(12, 2)), '.', ',') as prvenda, "
+        f"REPLACE(CAST({valor_aprazo_calculado} AS DECIMAL(12, 2)), '.', ','), "
+        f"COALESCE(unidade, ' '), "
+        f"COALESCE(cod_barr, ' '), COALESCE(ref, ' ') FROM sacmerc "
+        f"WHERE (cod_merc LIKE UPPER('%{nome_buscar}%') OR "
+        f"merc LIKE UPPER('%{nome_buscar}%') OR cod_barr LIKE UPPER('%{nome_buscar}%') "
+        f"OR ref LIKE UPPER('%{nome_buscar}%')) ORDER BY cod_merc"
+    )
+    return
 
 
 class ConsultaProduto(QMainWindow):
@@ -237,43 +261,21 @@ class ConsultaProduto(QMainWindow):
         # item = tela1.tableWidget.item(row, 0)
         item = tela1.tableWidget.item(row, 0)
         tela.mcodigo.setText(item.text())
-        tela1.close()
         # print(f"item {item.text()}")
         tela1.tableWidget.cellActivated.connect(
-            lambda row, col: self.editar_prod(item.row())
+            lambda row1, col: self.editar_prod(item.row())
         )
 
         tela1.tableWidget.itemDoubleClicked.connect(
-            lambda item: self.editar_prod(item.row())
+            lambda item1: self.editar_prod(item.row())
         )
         # verificar_produto()
         # criar_tela()
-        return
-
-    def pesquisa_prod(self):
-        if hg.mtipo_temrinal == "L":
-            valor_aprazo_calculado = "pr_venda * ((varejo / 100) + 1)"
-        else:
-            valor_aprazo_calculado = (
-                "iif(pr_venda1 > 0, pr_venda1, pr_venda * ((varejo / 100) + 1))"
-            )
-
-        nome_buscar = tela1.pesquisa.text()
-        hg.conexao_cursor.execute(
-            f"SELECT CAST(cod_merc as char(5)) as cod_merc, COALESCE(merc, ' ') as merc, "
-            f"REPLACE(CAST(saldo_mer AS DECIMAL(12, 2)), '.', ',') as saldomer, "
-            f"REPLACE(CAST(pr_venda AS DECIMAL(12, 2)), '.', ',') as prvenda, "
-            f"REPLACE(CAST({valor_aprazo_calculado} AS DECIMAL(12, 2)), '.', ','), "
-            f"COALESCE(unidade, ' '), "
-            f"COALESCE(cod_barr, ' '), COALESCE(ref, ' ') FROM sacmerc "
-            f"WHERE (cod_merc LIKE UPPER('%{nome_buscar}%') OR "
-            f"merc LIKE UPPER('%{nome_buscar}%') OR cod_barr LIKE UPPER('%{nome_buscar}%') "
-            f"OR ref LIKE UPPER('%{nome_buscar}%')) ORDER BY cod_merc"
-        )
+        tela1.close()
         return
 
     def listar_produto(self):
-        self.pesquisa_prod()
+        pesquisa_prod()
         dados_lidos = hg.conexao_cursor.fetchall()
         hg.conexao_bd.commit()
         tela1.tableWidget.setRowCount(len(dados_lidos))
@@ -293,30 +295,35 @@ class ConsultaProduto(QMainWindow):
         tela1.bt_sair.clicked.connect(fecha_tela)
         tela1.bt_sair.setIcon(icon_sair)
 
-        tela1.pesquisa.textChanged.connect(self.pesquisa_prod)
+        tela1.pesquisa.textChanged.connect(pesquisa_prod)
         tela1.tableWidget.cellActivated.connect(
             lambda row, col: self.editar_prod(item.row())
         )
         tela1.tableWidget.itemDoubleClicked.connect(
-            lambda item: self.editar_prod(item.row())
+            lambda item1: self.editar_prod(item.row())
         )
+        # tela.mcodigo.returnPressed.connect(verificar_produto)
+        tela1.close()
+        criar_tela()
 
 
 def verificar_produto():
     global mnum_ped, infor_pedido
-    instancia = ConsultaProduto()
-    # ic()
     m_codigo = tela.mcodigo.text()
-    print(m_codigo)
-    if len(m_codigo) == 0:
-        instancia.listar_produto()
+    print(f"codigo: {m_codigo}")
+    # if len(m_codigo) == 0:
+    #     print("'lista de produto")
+    #     instancia.listar_produto()
+    #     return
+    if len(m_codigo.strip()) == 0:
+        atencao("Produto em branco....")
         return
-    if m_codigo[0] == "X":
+    elif m_codigo[0] == "X":
         tela.mquantidade.setValue(float(m_codigo[1:20]))
         tela.mcodigo.setText("")
         return
     else:
-        # print(infor_pedido[3][0:5])
+        print(infor_pedido[3][0:5])
         hg.conexao_cursor.execute(
             f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3][0:5]}"
         )
@@ -327,10 +334,14 @@ def verificar_produto():
             hg.conexao_cursor.execute(
                 f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'"
             )
-        else:
+        elif len(m_codigo) > 5:
             hg.conexao_cursor.execute(
                 f"SELECT * FROM sacmerc WHERE cod_barr = '{m_codigo}'"
             )
+        else:
+            atencao("Produto nao encontrado....")
+            return
+
         ver_produto = hg.conexao_cursor.fetchone()
         hg.conexao_bd.commit()
         if ver_produto is None:
@@ -353,7 +364,6 @@ def verificar_produto():
             m_codmerc = ver_produto[7]
             m_saldo_ant = float(ver_produto[55])
             m_saldo_pos = m_saldo_ant - m_quantidade
-            # m_data_f = datetime.strptime(data_atual.text(), "%d/%m/%Y").date()
             m_data_f = data_atual.toPyDateTime().date()
             data_formatada = m_data_f.strftime("%Y/%m/%d")
             # mhora = data_atual.toString("hh:mm:ss")
@@ -387,7 +397,7 @@ def verificar_produto():
                         "",
                         "",
                     ):
-                        mquantd = 1
+                        # mquantd = 1
                         return
                 elif ((mp_venda - mvlr_fat) / mp_venda) * 100 > ver_produto[79] > 0:
                     if not aut_sen(
@@ -671,11 +681,10 @@ def verificar_produto():
             )
             hg.conexao_bd.commit()
 
-    tela.mcodigo.returnPressed.disconnect()
     tela.mcodigo.setText("")
     tela.mcodigo.setFocus()
     tela.mpreco_venda.setValue(float(0))
-    mcomissao = mcomissao
+    # mcomissao = mcomissao
     msaldo = f"{0:,.3f}"
     lbl_saldo.setText(msaldo)
     criar_tela()
@@ -692,6 +701,7 @@ keyboard.add_hotkey("F10", fecha_pedido)
 
 def executar_consulta(m_informa_pedido):
     global mnum_ped, infor_pedido
+    instancia = ConsultaProduto()
     infor_pedido = m_informa_pedido
     tela.mcodigo.returnPressed.connect(verificar_produto)
     tela.mcodigo.setFocus()
@@ -704,6 +714,7 @@ def executar_consulta(m_informa_pedido):
     # lbl_cliente.setText(f"{m_informa_pedido[0]}<br/>{m_informa_pedido[1]}")
     # lbl_cliente.setText(f"{m_informa_pedido[0]}\n{m_informa_pedido[1]}")
     lbl_cliente.setText(m_informa_pedido[1])
+    tela.bt_buscar_produto.clicked.connect(instancia.listar_produto)
     tela.bt_fecha.clicked.connect(fecha_pedido)
     tela.bt_fecha.setIcon(icon_salvar)
     tela.bt_sair.clicked.connect(fecha_tela)
@@ -747,7 +758,6 @@ def pesquisa_produto():
 
 if __name__ == "__main__":
     conexao_banco()
-    m_informacao_pedido = []
     m_informacao_pedido.append("145082")
     m_informacao_pedido.append("")
     m_informacao_pedido.append("")

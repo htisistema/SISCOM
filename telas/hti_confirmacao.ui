@@ -30,8 +30,8 @@
    <widget class="QPushButton" name="bt_nao">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>110</y>
+      <x>290</x>
+      <y>100</y>
       <width>120</width>
       <height>30</height>
      </rect>
@@ -46,10 +46,10 @@
    <widget class="QLabel" name="empresa">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>20</x>
       <y>10</y>
-      <width>70</width>
-      <height>70</height>
+      <width>90</width>
+      <height>80</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -70,8 +70,8 @@ border-radius: 12px;</string>
    <widget class="QPushButton" name="bt_sim">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>110</y>
+      <x>130</x>
+      <y>100</y>
       <width>120</width>
       <height>30</height>
      </rect>
@@ -81,6 +81,22 @@ border-radius: 12px;</string>
     </property>
     <property name="text">
      <string>Sim</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_cancelar">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>100</y>
+      <width>120</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Cancelar</string>
     </property>
    </widget>
   </widget>

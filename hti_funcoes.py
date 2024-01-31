@@ -125,10 +125,10 @@ def gerar_numero_pedido():
     hg.conexao_cursor.execute("select numero from sacnoped where sr_recno = 1")
     arq_noped = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
-    print(arq_noped[0])
+    # print(arq_noped[0])
     mnum_ped = int(float(arq_noped[0]) + 1)
     mnum_pedido = str(mnum_ped)
-    print(f"update sacnoped set numero = {mnum_ped} where sr_recno = 1")
+    # print(f"update sacnoped set numero = {mnum_ped} where sr_recno = 1")
     hg.conexao_cursor.execute(f"update sacnoped set numero = '{mnum_pedido}' where sr_recno = 1")
     hg.conexao_bd.commit()
     return mnum_pedido

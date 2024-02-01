@@ -3,7 +3,7 @@
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtWidgets import QApplication, QButtonGroup, QMessageBox
-
+from PyQt6.QtCore import Qt
 # import keyboard
 from hti_funcoes import conexao_banco
 import hti_global as hg
@@ -122,6 +122,18 @@ mvendedor_aux = ""
 mpercentual = 0
 mlimite = 0
 mcompras = 0
+
+
+def keyPressEvent(event):
+    if event.key() == Qt.Key.Key_Enter or event.key() == Qt.Key.Key_Return:
+        # print("Enter pressionado")
+        salvar_informacao()
+    elif event.key() == Qt.Key.Key_Escape:
+        # print("Esc pressionado")
+        fecha_tela()
+
+
+tela.keyPressEvent = keyPressEvent
 
 
 def fecha_tela():

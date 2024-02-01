@@ -83,6 +83,7 @@ lbl_operador.setText(f" Operador: {hg.geral_cod_usuario}")
 lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
 lbl_cliente = tela.findChild(QtWidgets.QLabel, "lb_cliente")
 
+dados_lidos = []
 m_informacao_pedido = []
 mnum_ped = ""
 infor_pedido = []
@@ -117,7 +118,7 @@ tela1.empresa.setPixmap(pixmap_redimensionado)
 
 
 def criar_tela():
-    # print("criar tela")
+    print("criar tela")
     tela.textBrowser.clear()
     lbl_numero_pedido.setText(f" Numero Pedido: {mnum_ped}")
     lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
@@ -181,6 +182,8 @@ def criar_tela():
     else:
         lbl_produto.setText("C A I X A   L I V R E ")
 
+    tela.mcodigo.returnPressed.connect(verificar_produto)
+    # executar_consulta(infor_pedido)
     # except Exception as e:
     #     print(f"Erro ao executar a consulta: {e}")
 
@@ -199,11 +202,12 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         m_informa_pedido = ["145082", "", "", "6 - ACEROLANDIA LTDA"]
-        conexao_banco()
         executar_consulta(m_informa_pedido)
 
 
 def pesquisa_prod():
+    global dados_lidos
+    tela1.pesquisa.textChanged.disconnect()
     if hg.mtipo_temrinal == "L":
         valor_aprazo_calculado = "pr_venda * ((varejo / 100) + 1)"
     else:
@@ -211,7 +215,10 @@ def pesquisa_prod():
             "iif(pr_venda1 > 0, pr_venda1, pr_venda * ((varejo / 100) + 1))"
         )
 
-    nome_buscar = tela1.pesquisa.text()
+    nome_buscar = tela1.pesquisa.text().strip()
+    print(f"pesquisa_produto {nome_buscar}")
+    # or cod_merc LIKE UPPER('%{nome_buscar}%') or cod_barr LIKE UPPER('%{nome_buscar}%')
+    # or ref LIKE UPPER('%{nome_buscar}%'))
     hg.conexao_cursor.execute(
         f"SELECT CAST(cod_merc as char(5)) as cod_merc, COALESCE(merc, ' ') as merc, "
         f"REPLACE(CAST(saldo_mer AS DECIMAL(12, 2)), '.', ',') as saldomer, "
@@ -219,46 +226,12 @@ def pesquisa_prod():
         f"REPLACE(CAST({valor_aprazo_calculado} AS DECIMAL(12, 2)), '.', ','), "
         f"COALESCE(unidade, ' '), "
         f"COALESCE(cod_barr, ' '), COALESCE(ref, ' ') FROM sacmerc "
-        f"WHERE (cod_merc LIKE UPPER('%{nome_buscar}%') OR "
-        f"merc LIKE UPPER('%{nome_buscar}%') OR cod_barr LIKE UPPER('%{nome_buscar}%') "
-        f"OR ref LIKE UPPER('%{nome_buscar}%')) ORDER BY cod_merc"
+        f"WHERE merc LIKE UPPER('%{nome_buscar}%') ORDER BY merc"
     )
-    return
-
-
-# class ConsultaProduto(QMainWindow):
-#     def __init__(self):
-#         super().__init__()
-#         conexao_banco()
-#         tela1.show()
-#         # app.exec()
-
-# app1 = QtWidgets.QApplication([])
-# app1.setStyleSheet(hg.style_sheet)
-# tela1 = uic.loadUi(f"{hg.c_ui}\\f4_merc.ui")
-# tela1.setWindowTitle("PRODUTOS CADASTRADO")
-# icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
-# icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
-# icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
-# tela1.setWindowIcon(icon)
-# tabela1 = tela1.tableWidget
-
-# # PEGA O NOME DO ARQUIVO EM EXECUCAO
-# nome_file_com = os.path.basename(__file__)
-# nome_file, ext = os.path.splitext(nome_file_com)
-# # AJUSTAR A TELA EM RELACAO AO MONITOR
-# qt_rectangle = tela1.frameGeometry()
-# center_point = app.primaryScreen().availableGeometry().center()
-# qt_rectangle.moveCenter(center_point)
-
-# mconsulta_inclusao = ""
-
-# Define a função para ajustar as colunas da tabela
-# def ajustar_colunas_tabela(self, x):
-#     # print(x)
-#     header = tabela1.horizontalHeader()
-#     header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
-#     header.setStretchLastSection(False)
+    dados_lidos = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
+    tela1.pesquisa.textChanged.connect(pesquisa_prod)
+    listar_produto()
 
 
 def editar_prod(row):
@@ -274,14 +247,13 @@ def editar_prod(row):
     # tela.tableWidget.itemDoubleClicked.connect(lambda item: editar_prod(item.row()))
     # verificar_produto()
     # criar_tela()
+    tela.mcodigo.setFocus()
     tela1.close()
     return
 
 
 def listar_produto():
-    pesquisa_prod()
-    dados_lidos = hg.conexao_cursor.fetchall()
-    hg.conexao_bd.commit()
+    tela1.pesquisa.setFocus()
     tela1.tableWidget.setRowCount(len(dados_lidos))
     tela1.tableWidget.setColumnCount(8)
     for i, linha in enumerate(dados_lidos):
@@ -298,17 +270,15 @@ def listar_produto():
     )
     tela1.bt_sair.clicked.connect(fecha_tela1)
     tela1.bt_sair.setIcon(icon_sair)
-
     tela1.pesquisa.textChanged.connect(pesquisa_prod)
     tela1.tableWidget.cellActivated.connect(lambda row, col: editar_prod(item.row()))
     tela1.tableWidget.itemDoubleClicked.connect(lambda item: editar_prod(item.row()))
     # tela.mcodigo.returnPressed.connect(verificar_produto)
     tela1.show()
-    criar_tela()
 
 
 def confirma_produto():
-    print('confirma_produto')
+    print("confirma_produto")
     global mnum_ped, infor_pedido
     # hg.conexao_cursor.execute(
     #     f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3][0:5]}"
@@ -558,14 +528,14 @@ def confirma_produto():
     tela.mcodigo.setFocus()
     tela.mpreco_venda.setValue(float(0))
     tela.mquantidade.setValue(float(1))
-    # mcomissao = mcomissao
     msaldo = f"{0:,.3f}"
     lbl_saldo.setText(msaldo)
+
     criar_tela()
 
 
 def verificar_preco():
-    print('verificar_preco')
+    print("verificar_preco")
     hg.conexao_cursor.execute(
         f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3][0:5]}"
     )
@@ -577,8 +547,10 @@ def verificar_preco():
     ver_produto = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
     if ver_produto is None:
-        atencao(f"Produto nao encontrado Codigo: {m_codigo}")
-
+        return
+    # print(ver_produto)
+    print(f"codigo: {m_codigo}")
+    print(f"saldo {ver_produto[55]}")
     msaldo = f"{ver_produto[55]:,.3f}"
     lbl_saldo.setText(msaldo)
     m_quantidade = tela.mquantidade.value()
@@ -599,15 +571,14 @@ def verificar_preco():
     if msubtotal[0] is None:
         msub_total = 0
     else:
-        msub_total = msubtotal[0]
+        msub_total = float(msubtotal[0])
 
-    print(f"compras: {infor_pedido[9]} subtotal: {msub_total} vlr_fat {mvlr_fat} qtd: {m_quantidade}")
-    mvalor_somado = (infor_pedido[9] + msub_total + (mvlr_fat * m_quantidade))
+    print(
+        f"compras: {infor_pedido[9]} subtotal: {msub_total} vlr_fat {mvlr_fat} qtd: {m_quantidade}"
+    )
+    mvalor_somado = infor_pedido[9] + msub_total + (mvlr_fat * m_quantidade)
     if mvalor_somado >= infor_pedido[8] > 0:
-        atencao(
-            f"Limite do Cliente foi ultrapassado em R$: "
-            f"{mvalor_somado}"
-        )
+        atencao(f"Limite do Cliente foi ultrapassado em R$: " f"{mvalor_somado}")
         return
     # if hg.m_set[36] == 'S' and not hg.m_set[151] == 'S':
     #         mmontador = 0
@@ -702,9 +673,10 @@ def verificar_preco():
 
 
 def verificar_produto():
-    print('verificar_produto')
+    print("verificar_produto")
     global mnum_ped, infor_pedido
     m_codigo = tela.mcodigo.text()
+    tela.mcodigo.returnPressed.disconnect()
     # print(f"codigo: {m_codigo}")
     # if len(m_codigo) == 0:
     #     print("'lista de produto")
@@ -750,6 +722,7 @@ def verificar_produto():
         msaldo = f"{ver_produto[55]:,.3f}"
         lbl_saldo.setText(msaldo)
         lbl_produto.setText(ver_produto[8])
+        tela.mpreco_venda.setValue(float(ver_produto[45]))
 
         if ver_produto is None:
             atencao("Produto nao encontrado...")
@@ -765,242 +738,6 @@ def verificar_produto():
 
         if hg.m_indiv[25] == "S":
             verificar_preco()
-
-            # if hg.m_indiv[25] == "S":
-            #     tela.mpreco_venda.setValue(float(ver_produto[45]))
-
-            # msaldo = f"{ver_produto[55]:,.3f}".replace(",", " ").replace(".", ",")
-
-    #         mhora = datetime.now().strftime("%H:%M:%S")
-    #         hg.conexao_cursor.execute(
-    #             f"UPDATE sacmerc SET saldo_mer = {m_saldo_pos}, "
-    #             f"data_atu = '{data_formatada}' WHERE cod_merc = {m_codmerc}"
-    #         )
-    #         hg.conexao_bd.commit()
-    #
-    #         sql = (
-    #             "INSERT INTO logproduto ("
-    #             "data_sis, "
-    #             "data, "
-    #             "hora, "
-    #             "cod_prod, "
-    #             "quantd, "
-    #             "saldo_ant, "
-    #             "saldo_pos, "
-    #             "cod_oper, "
-    #             "prog, "
-    #             "terminal, "
-    #             "processo, "
-    #             "ent_sai, "
-    #             "PRECO_V, "
-    #             "PRECO_C, "
-    #             "SR_DELETED) "
-    #             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-    #         )
-    #
-    #         hg.conexao_cursor.execute(
-    #             sql,
-    #             (
-    #                 data_formatada,
-    #                 data_formatada,
-    #                 mhora,
-    #                 m_codmerc,
-    #                 m_quantidade,
-    #                 m_saldo_ant,
-    #                 m_saldo_pos,
-    #                 hg.geral_cod_usuario,
-    #                 "VENDA",
-    #                 hg.nome_computador,
-    #                 f"INCLUSAO PD: '{mnum_ped}'",
-    #                 "S",
-    #                 float(ver_produto[45]),
-    #                 float(ver_produto[43]),
-    #                 " ",
-    #             ),
-    #         )
-    #         hg.conexao_bd.commit()
-    #
-    #         sql = (
-    #             "INSERT INTO sacped_s ("
-    #             "pempresa, "
-    #             "pnum_ped, "
-    #             "ptermina, "
-    #             "pdat_ped, "
-    #             "pgru_sub, "
-    #             "pcod_merc, "
-    #             "pmerc, "
-    #             "punidade, "
-    #             "pespecie, "
-    #             "penvelope, "
-    #             "ppeso, "
-    #             "ppeso_liq, "
-    #             "pgramatura, "
-    #             "pquantd, "
-    #             "ppacote, "
-    #             "ppecas, "
-    #             "ppre_dig, "
-    #             "pdesc, "
-    #             "pvlr_fat, "
-    #             "ppre_venda, "
-    #             "ppr_venda1, "
-    #             "pcust_real, "
-    #             "pcust_merc, "
-    #             "pcod_cli, "
-    #             "pcgc, "
-    #             "pcpf, "
-    #             "pplaca, "
-    #             "pcarro, "
-    #             "pmodelo, "
-    #             "pkm, "
-    #             "pcod_fab, "
-    #             "pfabrica, "
-    #             "pcod_oper, "
-    #             "pcomi_oper, "
-    #             "pcod_vend, "
-    #             "pvendedor, "
-    #             "palimento, "
-    #             "pcod_fin, "
-    #             "pcod_tab, "
-    #             "pvlr_pres, "
-    #             "pcond_veze, "
-    #             "pcond_inte, "
-    #             "phora, "
-    #             "ptp_vend, "
-    #             "pvlr_ent, "
-    #             "pisento, "
-    #             "ppromocao, "
-    #             "pmontador, "
-    #             "pmontador1, "
-    #             "pcomissao, "
-    #             "pcom_mont, "
-    #             "pprazo, "
-    #             "pbebida, "
-    #             "pipi, "
-    #             "pobs_prod, "
-    #             "pind_icms, "
-    #             "pstat_item, "
-    #             "psit_trib, "
-    #             "pobs1, "
-    #             "pobs2, "
-    #             "pobs3, "
-    #             "pobs4, "
-    #             "plocal, "
-    #             "chassis, "
-    #             "descri1, "
-    #             "descri2, "
-    #             "descri3, "
-    #             "descri4, "
-    #             "descri5, "
-    #             "pproducao, "
-    #             "pcod_tran, "
-    #             "pos, "
-    #             "data_so, "
-    #             "convidado, "
-    #             "cod_pres, "
-    #             "tipo_ped, "
-    #             "SR_DELETED) "
-    #             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-    #             "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-    #             "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-    #             "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-    #             "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-    #             "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-    #             "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-    #             "?, ?, ?, ?, ?, ?, ?) "
-    #         )
-    #
-    #         hg.conexao_cursor.execute(
-    #             sql,
-    #             (
-    #                 hg.mcodempresa,
-    #                 mnum_ped,
-    #                 hg.nome_computador,
-    #                 data_formatada,
-    #                 ver_produto[6],
-    #                 m_codmerc,
-    #                 ver_produto[8],
-    #                 ver_produto[13],
-    #                 ver_produto[14],
-    #                 "",
-    #                 ver_produto[16],
-    #                 ver_produto[15],
-    #                 ver_produto[73],
-    #                 m_quantidade,
-    #                 0,
-    #                 0,
-    #                 mp_venda,
-    #                 0,
-    #                 mp_venda * 1,
-    #                 mp_venda,
-    #                 float(ver_produto[46]),
-    #                 float(ver_produto[44]),
-    #                 float(ver_produto[43]),
-    #                 0,
-    #                 "",
-    #                 "",
-    #                 "",
-    #                 "",
-    #                 "",
-    #                 "",
-    #                 ver_produto[29],
-    #                 ver_produto[30],
-    #                 hg.geral_cod_usuario,
-    #                 0,
-    #                 0,
-    #                 "",
-    #                 ver_produto[20],
-    #                 "",
-    #                 "",
-    #                 0,
-    #                 0,
-    #                 "",
-    #                 mhora,
-    #                 "",
-    #                 0,
-    #                 ver_produto[60],
-    #                 float(ver_produto[22]),
-    #                 "",
-    #                 "",
-    #                 mcomissao,
-    #                 ver_produto[26],
-    #                 float(ver_produto[74]),
-    #                 float(ver_produto[61]),
-    #                 float(ver_produto[64]),
-    #                 "",
-    #                 ver_produto[81],
-    #                 "",
-    #                 ver_produto[82],
-    #                 "",
-    #                 "",
-    #                 "",
-    #                 "",
-    #                 ver_produto[72][:2],
-    #                 "",
-    #                 "",
-    #                 "",
-    #                 "",
-    #                 "",
-    #                 "",
-    #                 "",
-    #                 "",
-    #                 "",
-    #                 None,
-    #                 "",
-    #                 "",
-    #                 1,
-    #                 " ",
-    #             ),
-    #         )
-    #         hg.conexao_bd.commit()
-    #
-    # tela.mcodigo.setText("")
-    # tela.mcodigo.setFocus()
-    # tela.mpreco_venda.setValue(float(0))
-    # tela.mquantidade.setValue(float(1))
-    # # mcomissao = mcomissao
-    # msaldo = f"{0:,.3f}"
-    # lbl_saldo.setText(msaldo)
-    # criar_tela()
 
 
 def fecha_pedido():
@@ -1036,7 +773,7 @@ def executar_consulta(m_informa_pedido):
     # tela.recupera_pedido.setGeometry(500, 500, 140, 40)
     # tela.textBrowser.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
     tela.show()
-    app.exec()
+    # app.exec()
     criar_tela()
 
 

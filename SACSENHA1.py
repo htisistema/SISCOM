@@ -288,9 +288,9 @@ def inclusao_usuario():
     tela.msenha_atual.setDisabled(True)
 
     tela.show()
-    app.exec()
 
 
 if __name__ == '__main__':
     inclusao_usuario()
+    app.exec()
     hg.conexao_bd.close()

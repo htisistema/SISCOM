@@ -263,7 +263,6 @@ def alteracao_fornecedor(codigo_fornecedor):
     tela.bt_sair.setIcon(icon_sair)
     tela.bt_salvar.setIcon(icon_salvar)
     tela.show()
-    app.exec()
 
 
 def fecha_tela():
@@ -274,5 +273,6 @@ def fecha_tela():
 
 if __name__ == '__main__':
     alteracao_fornecedor('0001')
+    app.exec()
     hg.conexao_cursor.close()
     hg.conexao_bd.close()

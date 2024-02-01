@@ -197,11 +197,11 @@ def listar_ncm():
     tela.bt_cancelar.setIcon(icon_cancelar)
 
     tela.show()
-    app.exec()
 
 
 if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_ncm()
+    app.exec()
     hg.conexao_bd.close()

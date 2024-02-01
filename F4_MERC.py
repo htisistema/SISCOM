@@ -170,7 +170,7 @@ def listar_produto():
     tela.bt_inclusao.setIcon(icon_incluir)
 
     tela.show()
-    app.exec()
+    # app.exec()
 
 
 # tela.incl_produto.clicked.connect(f_incl_produto)
@@ -194,6 +194,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     MainWindow()
+    app.exec()
     hg.conexao_bd.close()
     hg.conexao_cursor.close()
     tela.close()

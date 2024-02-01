@@ -613,7 +613,6 @@ def inclusao_produto():
     # tela.bt_orcamentos.setEnabled(False)
 
     tela.show()
-    app.exec()
 
 
 def fecha_tela():
@@ -624,4 +623,5 @@ def fecha_tela():
 
 if __name__ == '__main__':
     inclusao_produto()
+    app.exec()
     hg.conexao_bd.close()

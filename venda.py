@@ -118,7 +118,7 @@ tela1.empresa.setPixmap(pixmap_redimensionado)
 
 
 def criar_tela():
-    print("criar tela")
+    # print("criar tela")
     tela.textBrowser.clear()
     lbl_numero_pedido.setText(f" Numero Pedido: {mnum_ped}")
     lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
@@ -180,7 +180,7 @@ def criar_tela():
         lbl_sub_total.setText(linha1)
         lbl_produto.setText(descricao)
     else:
-        lbl_produto.setText("C A I X A   L I V R E ")
+        lbl_produto.setText("        C A I X A   L I V R E ")
 
     tela.mcodigo.returnPressed.connect(verificar_produto)
     # executar_consulta(infor_pedido)
@@ -766,8 +766,9 @@ def executar_consulta(m_informa_pedido):
     lbl_cliente.setText(m_informa_pedido[1])
     tela.bt_buscar_produto.clicked.connect(listar_produto)
     tela.bt_fecha.clicked.connect(fecha_pedido)
-    tela.bt_fecha.setIcon(icon_salvar)
     tela.bt_sair.clicked.connect(fecha_tela)
+
+    tela.bt_fecha.setIcon(icon_salvar)
     tela.bt_sair.setIcon(icon_sair)
     # tela.recupera_pedido = QLineEdit(tela)
     # tela.recupera_pedido.setGeometry(500, 500, 140, 40)

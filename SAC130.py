@@ -638,7 +638,6 @@ def inclusao_cliente():
     tela.bt_salvar.setIcon(icon_salvar)
 
     tela.show()
-    app.exec()
 
 
 def fecha_tela():
@@ -651,4 +650,5 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     inclusao_cliente()
+    app.exec()
     hg.conexao_bd.close()

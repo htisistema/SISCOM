@@ -170,7 +170,6 @@ def listar_despesa():
     tela.bt_cancelar.setIcon(icon_cancelar)
 
     tela.show()
-    app.exec()
 
 
 tela.tableWidget.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
@@ -180,4 +179,5 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_despesa()
+    app.exec()
     hg.conexao_bd.close()

@@ -130,11 +130,11 @@ def inclusao_aliquota(codigo_aliq):
     tela.bt_salvar.setIcon(icon_salvar)
 
     tela.show()
-    app.exec()
 
 
 if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     inclusao_aliquota('001')
+    app.exec()
     hg.conexao_bd.close()

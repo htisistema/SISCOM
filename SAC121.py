@@ -224,7 +224,6 @@ def alteracao_transportadora(codigo_transp):
     tela.bt_sair.setIcon(icon_sair)
     tela.bt_salvar.setIcon(icon_salvar)
     tela.show()
-    app.exec()
 
 
 def fecha_tela():
@@ -237,4 +236,5 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     alteracao_transportadora('0001')
+    app.exec()
     hg.conexao_bd.close()

@@ -962,11 +962,11 @@ def alteracao_produto(codigo_produto):
     # tela.bt_orcamentos.setEnabled(False)
 
     tela.show()
-    app.exec()
 
 
 if __name__ == '__main__':
     alteracao_produto('00001')
+    app.exec()
     hg.conexao_bd.close()
     hg.conexao_cursor.close()
     tela.close()

@@ -219,19 +219,11 @@ def consulta_usuario(codigo_usuario):
     tela.bt_sair.setIcon(icon_sair)
 
     tela.show()
-    app.exec()
 
 
 if __name__ == '__main__':
-    # CONEXAO COM O BANCO DE DADOS FIREBIRD
-    # lendo o arquivo sisconfig.ini
-    config = configparser.ConfigParser()
-    config.read('sisconfig.ini')
-    host = config.get('banco', 'host')
-    # Conecte-se ao banco de dados
-    conexao_bd = fdb.connect(dsn=host, user='SYSDBA', password='masterkey')
-    # Crie o cursor
-    cursor = hg.conexao_bd.cursor()
-    # listar_dados()
+    from hti_funcoes import conexao_banco
+    conexao_banco()
     consulta_usuario('002')
+    app.exec()
     hg.conexao_bd.close()

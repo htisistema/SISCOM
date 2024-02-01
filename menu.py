@@ -233,13 +233,13 @@ def criar_menu():
     # tela.actionTipos_de_Documentos.triggered.connect(m_documento)
     tela.actionSAIR.triggered.connect(sair)
     tela.show()
-    app.exec()
 
 
 if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     criar_menu()
+    app.exec()
     hg.conexao_cursor.close()
     tela.close()
     hg.conexao_bd.close()

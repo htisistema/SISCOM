@@ -132,11 +132,11 @@ def inclusao_financiamento():
     tela.bt_salvar.setIcon(icon_salvar)
 
     tela.show()
-    app.exec()
 
 
 if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     inclusao_financiamento()
+    app.exec()
     hg.conexao_bd.close()

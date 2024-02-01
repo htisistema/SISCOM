@@ -472,7 +472,6 @@ def listar_cond_pag():
     tela.bt_cancelar.setIcon(icon_cancelar)
 
     tela.show()
-    app.exec()
 
 
 tela.tableWidget.itemDoubleClicked.connect(lambda items: editar_item(items.row()))
@@ -481,4 +480,5 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_cond_pag()
+    app.exec()
     hg.conexao_bd.close()

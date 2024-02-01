@@ -145,11 +145,11 @@ def inclusao_banco():
     tela.bt_sair.setIcon(icon_sair)
     tela.bt_salvar.setIcon(icon_salvar)
     tela.show()
-    app.exec()
 
 
 if __name__ == '__main__':
     conexao_banco()
     verificar_conexao()
     inclusao_banco()
+    app.exec()
     hg.conexao_bd.close()

@@ -125,11 +125,11 @@ def alteracao_aliquota(codigo_finan, tipo_finan):
     tela.bt_salvar.setIcon(icon_salvar)
 
     tela.show()
-    app.exec()
 
 
 if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     alteracao_aliquota('0001', '002')
+    app.exec()
     hg.conexao_bd.close()

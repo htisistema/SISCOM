@@ -163,7 +163,6 @@ def listar_observacao():
     tela.bt_cancelar.setIcon(icon_cancelar)
 
     tela.show()
-    app.exec()
 
 
 # tela.incl_grupo.clicked.connect(f_incl_grupo)
@@ -178,4 +177,5 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_observacao()
+    app.exec()
     hg.conexao_bd.close()

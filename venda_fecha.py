@@ -574,12 +574,12 @@ def fechar_pedido(mnum_pedido):
     liberar_campos()
     verifica_condicao()
     tela.show()
-    app.exec()
 
 
 if __name__ == "__main__":
     mnum_ped = "145082"
     fechar_pedido(mnum_ped)
+    app.exec()
     hg.conexao_bd.close()
 
                 # IF hg.m_set[1,37] = 'S'

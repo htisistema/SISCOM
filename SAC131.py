@@ -684,7 +684,6 @@ def alteracao_cliente(codigo_cliente):
     tela.bt_sair.setIcon(icon_sair)
     tela.bt_salvar.setIcon(icon_salvar)
     tela.show()
-    app.exec()
 
 
 def fecha_tela():
@@ -698,4 +697,5 @@ if __name__ == '__main__':
     conexao_banco()
     # listar_dados()
     alteracao_cliente(10)
+    app.exec()
     hg.conexao_bd.close()

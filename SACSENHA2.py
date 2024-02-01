@@ -369,9 +369,9 @@ def alteracao_usuario(codigo_usuario):
     tela.bt_alterar_senha.clicked.connect(alterar_senha)
 
     tela.show()
-    app.exec()
 
 
 if __name__ == '__main__':
     alteracao_usuario('999')
+    app.exec()
     hg.conexao_bd.close()

@@ -116,11 +116,11 @@ def listar_banco():
     tela.bt_inclusao.setIcon(icon_incluir)
 
     tela.show()
-    app.exec()
 
 
 if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_banco()
+    app.exec()
     hg.conexao_bd.close()

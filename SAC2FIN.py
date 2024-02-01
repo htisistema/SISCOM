@@ -154,7 +154,6 @@ def listar_aliquota():
     tela.bt_sair.setIcon(icon_sair)
 
     tela.show()
-    app.exec()
 
 
 tela.tableWidget.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
@@ -164,4 +163,5 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_aliquota()
+    app.exec()
     hg.conexao_bd.close()

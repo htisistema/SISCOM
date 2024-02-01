@@ -159,7 +159,6 @@ def listar_especie():
     tela.bt_cancelar.setIcon(icon_cancelar)
 
     tela.show()
-    app.exec()
 
 
 tela.tableWidget.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
@@ -168,4 +167,5 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_especie()
+    app.exec()
     hg.conexao_bd.close()

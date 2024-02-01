@@ -240,10 +240,10 @@ def cadastro_empresa():
     tela.bt_salvar.clicked.connect(salvar_empresa)
     tela.bt_sair.clicked.connect(fecha_tela)
     tela.show()
-    app.exec()
 
 
 if __name__ == '__main__':
     # listar_dados()
     cadastro_empresa()
+    app.exec()
     hg.conexao_bd.close()

@@ -4,6 +4,7 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtWidgets import QApplication, QButtonGroup, QMessageBox
 from PyQt6.QtCore import Qt
+
 # import keyboard
 from hti_funcoes import conexao_banco
 import hti_global as hg
@@ -122,6 +123,7 @@ mvendedor_aux = ""
 mpercentual = 0
 mlimite = 0
 mcompras = 0
+informacao_pedido = []
 
 
 def keyPressEvent(event):
@@ -192,7 +194,8 @@ def buscar_os():
 
 def salvar_informacao():
     # adicionar item no final da lista
-    mav_ap = ''
+    mav_ap = ""
+    global informacao_pedido
     informacao_pedido = []
     index = tela.cb_pedido.currentIndex()
     mop = tela.cb_pedido.itemText(index)
@@ -313,7 +316,7 @@ def ver_cond_pagamento():
     global mpercentual
     index = tela.cb_cond_pagamento.currentIndex()
     mop = tela.cb_cond_pagamento.itemText(index)
-    mcond = '000'
+    mcond = "000"
     m_cod_cond_pg = mop[0:3]
     lbl_forma_pagamento.clear()
     if m_cod_cond_pg == "000":
@@ -406,9 +409,9 @@ def ver_cond_pagamento():
 
 def ver_cliente():
     global mvendedor_aux, mlimite, mcompras
-    mcod_vendedor = ''
-    op_cartao = ''
-    mvarejo = ''
+    mcod_vendedor = ""
+    op_cartao = ""
+    mvarejo = ""
     index = tela.cb_cliente.currentIndex()
     mop = tela.cb_cliente.itemText(index)
     mcodigo_cliente = mop[0:5]
@@ -557,10 +560,13 @@ def pedido_inicial():
             tela.cb_vendedor.setCurrentIndex(i)
             break
 
-    tela.show()
-    app.exec()
+    if hg.m_indiv[25] == "S":
+        salvar_informacao()
+    else:
+        tela.show()
 
 
 if __name__ == "__main__":
     pedido_inicial()
+    app.exec()
     hg.conexao_bd.close()

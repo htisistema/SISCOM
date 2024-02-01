@@ -154,7 +154,6 @@ def listar_usuario():
     tela.bt_inclusao.setIcon(icon_incluir)
 
     tela.show()
-    app.exec()
 
 
 # tela.consulta_usuario.clicked.connect(botao_item)
@@ -167,4 +166,5 @@ if __name__ == '__main__':
     from hti_funcoes import conexao_banco
     conexao_banco()
     listar_usuario()
+    app.exec()
     hg.conexao_bd.close()

@@ -117,6 +117,30 @@ pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100
 tela1.empresa.setPixmap(pixmap_redimensionado)
 
 
+# tela do montador
+tela_mont = uic.loadUi(f"{hg.c_ui}\\montador.ui")
+tela_mont.setWindowTitle("Inclusao de Montadores")
+# icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+# icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+# icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
+tela_mont.setWindowIcon(icon)
+if hg.mtp_tela == "G":
+    primary_screen = QGuiApplication.primaryScreen()
+    if primary_screen is not None:
+        screen_geometry = primary_screen.geometry()
+        tela_mont.setGeometry(screen_geometry)
+
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
+else:
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
+
+pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
+tela_mont.empresa.setPixmap(pixmap_redimensionado)
+mmontador = ''
+mmontador1 = ''
+
+
 def criar_tela():
     # print("criar tela")
     tela.textBrowser.clear()
@@ -277,9 +301,43 @@ def listar_produto():
     tela1.show()
 
 
+def confirma_montador():
+    global mmontador, mmontador1
+    index = tela_mont.cb_montador.currentIndex()
+    mop = tela_mont.cb_montador.itemText(index)
+    mmontador = mop[0:3]
+    index = tela_mont.cb_montador1.currentIndex()
+    mop = tela_mont.cb_montador1.itemText(index)
+    mmontador1 = mop[0:3]
+    print(mmontador, mmontador1)
+
+    tela_mont.close()
+
+
+def informa_montador():
+    tela_mont.pb_confirma.clicked.connect(confirma_montador)
+    # print(tela.pb_confirma)
+    hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
+    arq_usuario = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
+    item = "000 - "
+    tela_mont.cb_montador.addItem(item)
+    tela_mont.cb_montador1.addItem(item)
+    for ret_usuario in arq_usuario:
+        item = f"{ret_usuario[0]} - {ret_usuario[1]}".strip("(),")
+        tela_mont.cb_montador.addItem(item)
+        tela_mont.cb_montador1.addItem(item)
+    tela_mont.cb_montador.setCurrentIndex(0)
+    tela_mont.cb_montador1.setCurrentIndex(0)
+    tela_mont.show()
+
+
 def confirma_produto():
     print("confirma_produto")
     global mnum_ped, infor_pedido
+    if hg.m_set[36] == "S" and not hg.m_set[151] == "S":
+        informa_montador()
+
     # hg.conexao_cursor.execute(
     #     f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3][0:5]}"
     # )
@@ -300,7 +358,6 @@ def confirma_produto():
     m_data_f = data_atual.toPyDateTime().date()
     data_formatada = m_data_f.strftime("%Y/%m/%d")
     mcomissao = ver_produto[25]
-
     tela.mcodigo.setText(ver_produto[7])
     mhora = datetime.now().strftime("%H:%M:%S")
     hg.conexao_cursor.execute(
@@ -439,6 +496,7 @@ def confirma_produto():
         "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
         "?, ?, ?, ?, ?, ?, ?) "
     )
+    # print(mmontador, mmontador1, mcomissao)
 
     hg.conexao_cursor.execute(
         sql,
@@ -490,8 +548,8 @@ def confirma_produto():
             0,
             ver_produto[60],
             float(ver_produto[22]),
-            "",
-            "",
+            mmontador,
+            mmontador1,
             mcomissao,
             ver_produto[26],
             float(ver_produto[74]),
@@ -580,19 +638,7 @@ def verificar_preco():
     if mvalor_somado >= infor_pedido[8] > 0:
         atencao(f"Limite do Cliente foi ultrapassado em R$: " f"{mvalor_somado}")
         return
-    # if hg.m_set[36] == 'S' and not hg.m_set[151] == 'S':
-    #         mmontador = 0
-    #         op_tela(22,25,27,75,' Informe os Montadores ')
-    #         DEVPOS(01,00);DEVOUT('Montador 1:')
-    #         DEVPOS(02,00);DEVOUT('Montador 2:')
-    #         @ 01,12 GET mmontador PICT '999' VALID ven(mmontador,01,16)
-    #         @ 02,12 GET mmontador1 PICT '999'
-    #         VALID IF(mmontador1 = mmontador,.F.,ven(mmontador1,02,16)) WHEN ! EMPTY(mmontador)
-    #         READ
-    #         opcao := op_simnao('S','Confirma os Montador:')
-    #         if opcao == 'N'
-    #                 LOOP
-    #         ENDIF
+
     if mp_venda > mvlr_fat:
         mdesconto = ((mp_venda - mvlr_fat) / mp_venda) * 100
         if hg.m_set[112] > 0 and mdesconto >= hg.m_set[113]:

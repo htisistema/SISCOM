@@ -137,8 +137,8 @@ else:
 
 pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
 tela_mont.empresa.setPixmap(pixmap_redimensionado)
-mmontador = ''
-mmontador1 = ''
+mmontador = ""
+mmontador1 = ""
 
 
 def criar_tela():
@@ -310,33 +310,31 @@ def confirma_montador():
     mop = tela_mont.cb_montador1.itemText(index)
     mmontador1 = mop[0:3]
     print(mmontador, mmontador1)
-
     tela_mont.close()
+    confirma_produto()
 
 
 def informa_montador():
-    tela_mont.pb_confirma.clicked.connect(confirma_montador)
-    # print(tela.pb_confirma)
-    hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
-    arq_usuario = hg.conexao_cursor.fetchall()
-    hg.conexao_bd.commit()
-    item = "000 - "
-    tela_mont.cb_montador.addItem(item)
-    tela_mont.cb_montador1.addItem(item)
-    for ret_usuario in arq_usuario:
-        item = f"{ret_usuario[0]} - {ret_usuario[1]}".strip("(),")
-        tela_mont.cb_montador.addItem(item)
-        tela_mont.cb_montador1.addItem(item)
-    tela_mont.cb_montador.setCurrentIndex(0)
-    tela_mont.cb_montador1.setCurrentIndex(0)
+    # tela_mont.pb_confirma.clicked.connect(confirma_montador)
+    # # print(tela.pb_confirma)
+    # hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
+    # arq_usuario = hg.conexao_cursor.fetchall()
+    # hg.conexao_bd.commit()
+    # item = "000 - "
+    # tela_mont.cb_montador.addItem(item)
+    # tela_mont.cb_montador1.addItem(item)
+    # for ret_usuario in arq_usuario:
+    #     item = f"{ret_usuario[0]} - {ret_usuario[1]}".strip("(),")
+    #     tela_mont.cb_montador.addItem(item)
+    #     tela_mont.cb_montador1.addItem(item)
+    # tela_mont.cb_montador.setCurrentIndex(0)
+    # tela_mont.cb_montador1.setCurrentIndex(0)
     tela_mont.show()
 
 
 def confirma_produto():
     print("confirma_produto")
-    global mnum_ped, infor_pedido
-    if hg.m_set[36] == "S" and not hg.m_set[151] == "S":
-        informa_montador()
+    global mnum_ped, infor_pedido, mmontador, mmontador1
 
     # hg.conexao_cursor.execute(
     #     f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3][0:5]}"
@@ -360,6 +358,14 @@ def confirma_produto():
     mcomissao = ver_produto[25]
     tela.mcodigo.setText(ver_produto[7])
     mhora = datetime.now().strftime("%H:%M:%S")
+    # index = tela_mont.cb_montador.currentIndex()
+    # mop = tela_mont.cb_montador.itemText(index)
+    # mmontador = mop[0:3]
+    # index = tela_mont.cb_montador1.currentIndex()
+    # mop = tela_mont.cb_montador1.itemText(index)
+    # mmontador1 = mop[0:3]
+    print(f"montador: {mmontador}  {mmontador1}")
+
     hg.conexao_cursor.execute(
         f"UPDATE sacmerc SET saldo_mer = {m_saldo_pos}, "
         f"data_atu = '{data_formatada}' WHERE cod_merc = {m_codmerc}"
@@ -496,7 +502,7 @@ def confirma_produto():
         "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
         "?, ?, ?, ?, ?, ?, ?) "
     )
-    # print(mmontador, mmontador1, mcomissao)
+    print(mmontador, mmontador1, mcomissao)
 
     hg.conexao_cursor.execute(
         sql,
@@ -708,6 +714,8 @@ def verificar_preco():
                 "",
             ):
                 return
+    if hg.m_set[36] == "S" and not hg.m_set[151] == "S":
+        informa_montador()
 
     if hg.m_indiv[25] == "N":
         if confirma("S", "Confirma Inclusao da Mercadoria:"):
@@ -822,6 +830,21 @@ def executar_consulta(m_informa_pedido):
     tela.show()
     # app.exec()
     criar_tela()
+
+    tela_mont.pb_confirma.clicked.connect(confirma_montador)
+    # print(tela.pb_confirma)
+    hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
+    arq_usuario = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
+    item = "000 - "
+    tela_mont.cb_montador.addItem(item)
+    tela_mont.cb_montador1.addItem(item)
+    for ret_usuario in arq_usuario:
+        item = f"{ret_usuario[0]} - {ret_usuario[1]}".strip("(),")
+        tela_mont.cb_montador.addItem(item)
+        tela_mont.cb_montador1.addItem(item)
+    tela_mont.cb_montador.setCurrentIndex(0)
+    tela_mont.cb_montador1.setCurrentIndex(0)
 
 
 def pesquisa_produto():

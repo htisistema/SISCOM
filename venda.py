@@ -117,35 +117,36 @@ pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100
 tela1.empresa.setPixmap(pixmap_redimensionado)
 
 
-# tela do montador
-tela_mont = uic.loadUi(f"{hg.c_ui}\\montador.ui")
-tela_mont.setWindowTitle("Inclusao de Montadores")
-# icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
-# icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
-# icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
-tela_mont.setWindowIcon(icon)
-if hg.mtp_tela == "G":
-    primary_screen = QGuiApplication.primaryScreen()
-    if primary_screen is not None:
-        screen_geometry = primary_screen.geometry()
-        tela_mont.setGeometry(screen_geometry)
-
-if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
-    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
-else:
-    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
-
-pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
-tela_mont.empresa.setPixmap(pixmap_redimensionado)
+# # tela do montador
+# tela_mont = uic.loadUi(f"{hg.c_ui}\\montador.ui")
+# tela_mont.setWindowTitle("Inclusao de Montadores")
+# # icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+# # icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+# # icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
+# tela_mont.setWindowIcon(icon)
+# if hg.mtp_tela == "G":
+#     primary_screen = QGuiApplication.primaryScreen()
+#     if primary_screen is not None:
+#         screen_geometry = primary_screen.geometry()
+#         tela_mont.setGeometry(screen_geometry)
+#
+# if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+#     imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
+# else:
+#     imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
+#
+# pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
+# tela_mont.empresa.setPixmap(pixmap_redimensionado)
 mmontador = ""
 mmontador1 = ""
 
 
 def criar_tela():
-    # print("criar tela")
-    tela.textBrowser.clear()
+    # print(mnum_ped)
+    # tela.textBrowser.clear()
     lbl_numero_pedido.setText(f" Numero Pedido: {mnum_ped}")
     lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
+    print("criar tela")
     # try:
     hg.conexao_cursor.execute(
         f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{mnum_ped}' order by sr_recno"
@@ -207,6 +208,14 @@ def criar_tela():
         lbl_produto.setText("        C A I X A   L I V R E ")
 
     tela.mcodigo.returnPressed.connect(verificar_produto)
+    tela.mcodigo.setText("")
+    print('h1')
+    tela.mcodigo.setFocus()
+    print('h2')
+    tela.mpreco_venda.setValue(float(0))
+    tela.mquantidade.setValue(float(1))
+    msaldo = f"{0:,.3f}"
+    lbl_saldo.setText(msaldo)
     # executar_consulta(infor_pedido)
     # except Exception as e:
     #     print(f"Erro ao executar a consulta: {e}")
@@ -301,35 +310,35 @@ def listar_produto():
     tela1.show()
 
 
-def confirma_montador():
-    global mmontador, mmontador1
-    index = tela_mont.cb_montador.currentIndex()
-    mop = tela_mont.cb_montador.itemText(index)
-    mmontador = mop[0:3]
-    index = tela_mont.cb_montador1.currentIndex()
-    mop = tela_mont.cb_montador1.itemText(index)
-    mmontador1 = mop[0:3]
-    print(mmontador, mmontador1)
-    tela_mont.close()
-    confirma_produto()
-
-
-def informa_montador():
-    # tela_mont.pb_confirma.clicked.connect(confirma_montador)
-    # # print(tela.pb_confirma)
-    # hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
-    # arq_usuario = hg.conexao_cursor.fetchall()
-    # hg.conexao_bd.commit()
-    # item = "000 - "
-    # tela_mont.cb_montador.addItem(item)
-    # tela_mont.cb_montador1.addItem(item)
-    # for ret_usuario in arq_usuario:
-    #     item = f"{ret_usuario[0]} - {ret_usuario[1]}".strip("(),")
-    #     tela_mont.cb_montador.addItem(item)
-    #     tela_mont.cb_montador1.addItem(item)
-    # tela_mont.cb_montador.setCurrentIndex(0)
-    # tela_mont.cb_montador1.setCurrentIndex(0)
-    tela_mont.show()
+# def confirma_montador():
+#     global mmontador, mmontador1
+#     index = tela_mont.cb_montador.currentIndex()
+#     mop = tela_mont.cb_montador.itemText(index)
+#     mmontador = mop[0:3]
+#     index = tela_mont.cb_montador1.currentIndex()
+#     mop = tela_mont.cb_montador1.itemText(index)
+#     mmontador1 = mop[0:3]
+#     print(mmontador, mmontador1)
+#     tela_mont.close()
+#     # confirma_produto()
+#
+#
+# def informa_montador():
+#     # tela_mont.pb_confirma.clicked.connect(confirma_montador)
+#     # # print(tela.pb_confirma)
+#     # hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
+#     # arq_usuario = hg.conexao_cursor.fetchall()
+#     # hg.conexao_bd.commit()
+#     # item = "000 - "
+#     # tela_mont.cb_montador.addItem(item)
+#     # tela_mont.cb_montador1.addItem(item)
+#     # for ret_usuario in arq_usuario:
+#     #     item = f"{ret_usuario[0]} - {ret_usuario[1]}".strip("(),")
+#     #     tela_mont.cb_montador.addItem(item)
+#     #     tela_mont.cb_montador1.addItem(item)
+#     # tela_mont.cb_montador.setCurrentIndex(0)
+#     # tela_mont.cb_montador1.setCurrentIndex(0)
+#     tela_mont.show()
 
 
 def confirma_produto():
@@ -345,6 +354,10 @@ def confirma_produto():
     hg.conexao_cursor.execute(f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'")
     ver_produto = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
+    if ver_produto is None:
+        atencao("Produto nao encontrado ou estar em branco...")
+        return
+
     msaldo = f"{ver_produto[55]:,.3f}"
     lbl_saldo.setText(msaldo)
     m_quantidade = tela.mquantidade.value()
@@ -364,7 +377,6 @@ def confirma_produto():
     # index = tela_mont.cb_montador1.currentIndex()
     # mop = tela_mont.cb_montador1.itemText(index)
     # mmontador1 = mop[0:3]
-    print(f"montador: {mmontador}  {mmontador1}")
 
     hg.conexao_cursor.execute(
         f"UPDATE sacmerc SET saldo_mer = {m_saldo_pos}, "
@@ -502,7 +514,7 @@ def confirma_produto():
         "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
         "?, ?, ?, ?, ?, ?, ?) "
     )
-    print(mmontador, mmontador1, mcomissao)
+    # print(mmontador, mmontador1, mcomissao)
 
     hg.conexao_cursor.execute(
         sql,
@@ -587,14 +599,16 @@ def confirma_produto():
         ),
     )
     hg.conexao_bd.commit()
-
-    tela.mcodigo.setText("")
-    tela.mcodigo.setFocus()
-    tela.mpreco_venda.setValue(float(0))
-    tela.mquantidade.setValue(float(1))
-    msaldo = f"{0:,.3f}"
-    lbl_saldo.setText(msaldo)
-
+    # tela.mcodigo.setText("")
+    # print('h1')
+    # tela.mcodigo.setFocus()
+    # print('h2')
+    # tela.mpreco_venda.setValue(float(0))
+    # tela.mquantidade.setValue(float(1))
+    # msaldo = f"{0:,.3f}"
+    # lbl_saldo.setText(msaldo)
+    # tela.close()
+    # return
     criar_tela()
 
 
@@ -714,16 +728,15 @@ def verificar_preco():
                 "",
             ):
                 return
-    if hg.m_set[36] == "S" and not hg.m_set[151] == "S":
-        informa_montador()
+    # if hg.m_set[36] == "S" and not hg.m_set[151] == "S":
+    #     informa_montador()
 
-    if hg.m_indiv[25] == "N":
-        if confirma("S", "Confirma Inclusao da Mercadoria:"):
-            tela.mpreco_venda.setValue(float(ver_produto[45]))
-            confirma_produto()
-    else:
+    if hg.m_indiv[25] == "S":
         tela.mpreco_venda.setValue(float(ver_produto[45]))
         confirma_produto()
+
+    # tela.confirma_produto.setFocus()
+    keyboard.add_hotkey("F5", confirma_produto)
 
 
 def verificar_produto():
@@ -777,6 +790,7 @@ def verificar_produto():
         lbl_saldo.setText(msaldo)
         lbl_produto.setText(ver_produto[8])
         tela.mpreco_venda.setValue(float(ver_produto[45]))
+        tela.mcodigo.returnPressed.connect(verificar_produto)
 
         if ver_produto is None:
             atencao("Produto nao encontrado...")
@@ -788,10 +802,71 @@ def verificar_produto():
             if hg.m_indiv[25] == "S":
                 verificar_preco()
             else:
+                tela.mquantidade.setFocus()
+                tela.mquantidade.selectAll()
+
                 return
 
-        if hg.m_indiv[25] == "S":
-            verificar_preco()
+        # if hg.m_indiv[25] == "S":
+        #     verificar_preco()
+
+
+def verificar_quantidade():
+    print("verificar_quantidade")
+    m_codigo = tela.mcodigo.text()
+    hg.conexao_cursor.execute(f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'")
+    ver_produto = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
+    if ver_produto is None:
+        return
+
+    m_quantidade = tela.mquantidade.value()
+    if ver_produto[102] == "S" and m_quantidade > ver_produto[55]:
+        atencao("MERCADORIA BLOQUEADA para nao vender com SALDO A MENOR")
+        return
+
+    if (
+        ver_produto[27] > 0
+        and ver_produto[27] >= (ver_produto[55] - m_quantidade)
+        and not ver_produto[8] == "DIVERSOS"
+        and (hg.m_set[106] == "P" or hg.m_set[106] == "2")
+        and not hg.m_indiv[25] == "T"
+    ):
+        atencao(
+            f"'SALDO esta menor que o ESTOQUE MINIMO: {ver_produto[27]} estipulado !!!"
+        )
+
+    if (
+        m_quantidade > ver_produto[55]
+        and not ver_produto[8] == "DIVERSOS"
+        and (hg.m_set[106] == "P" or hg.m_set[106] == "2")
+        and not ver_produto[8][0:1] == "@"
+    ):
+        if not aut_sen(
+            f"Quantidade Solicitada: {m_quantidade}\n Maior que saldo......: {ver_produto[55]}",
+            "LIB_SALDO",
+            "",
+            m_codigo,
+            "",
+            "",
+        ):
+            return
+
+        mlibera = "S"
+
+    if 0 < hg.m_set[152] < m_quantidade:
+        if not aut_sen(
+            f"Quantidade Solicitada: {m_quantidade} maior que Permitido pela ADM: {hg.m_set[152]} "
+            f"... Senha de autorizacao:",
+            "LIB_SALDOADM",
+            "",
+            m_codigo,
+            "",
+            "",
+        ):
+            return
+    tela.mpreco_venda.setFocus()
+    tela.mpreco_venda.selectAll()
 
 
 def fecha_pedido():
@@ -805,8 +880,13 @@ keyboard.add_hotkey("F10", fecha_pedido)
 
 def executar_consulta(m_informa_pedido):
     global mnum_ped, infor_pedido
+    keyboard.add_hotkey("ESC", fecha_tela)
     # instancia = ConsultaProduto()
     infor_pedido = m_informa_pedido
+    tela.mquantidade.editingFinished.connect(verificar_quantidade)
+    tela.mpreco_venda.editingFinished.connect(verificar_preco)
+    # tela.mquantidade.valueChanged.connect(verificar_quantidade)
+    # tela.mpreco_venda.valueChanged.connect(verificar_preco)
     tela.mcodigo.returnPressed.connect(verificar_produto)
     tela.mcodigo.setFocus()
     mnum_ped = m_informa_pedido[0]
@@ -819,6 +899,7 @@ def executar_consulta(m_informa_pedido):
     # lbl_cliente.setText(f"{m_informa_pedido[0]}\n{m_informa_pedido[1]}")
     lbl_cliente.setText(m_informa_pedido[1])
     tela.bt_buscar_produto.clicked.connect(listar_produto)
+    tela.bt_confirma.clicked.connect(confirma_produto)
     tela.bt_fecha.clicked.connect(fecha_pedido)
     tela.bt_sair.clicked.connect(fecha_tela)
 
@@ -831,20 +912,20 @@ def executar_consulta(m_informa_pedido):
     # app.exec()
     criar_tela()
 
-    tela_mont.pb_confirma.clicked.connect(confirma_montador)
-    # print(tela.pb_confirma)
-    hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
-    arq_usuario = hg.conexao_cursor.fetchall()
-    hg.conexao_bd.commit()
-    item = "000 - "
-    tela_mont.cb_montador.addItem(item)
-    tela_mont.cb_montador1.addItem(item)
-    for ret_usuario in arq_usuario:
-        item = f"{ret_usuario[0]} - {ret_usuario[1]}".strip("(),")
-        tela_mont.cb_montador.addItem(item)
-        tela_mont.cb_montador1.addItem(item)
-    tela_mont.cb_montador.setCurrentIndex(0)
-    tela_mont.cb_montador1.setCurrentIndex(0)
+    # tela_mont.pb_confirma.clicked.connect(confirma_montador)
+    # # print(tela.pb_confirma)
+    # hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
+    # arq_usuario = hg.conexao_cursor.fetchall()
+    # hg.conexao_bd.commit()
+    # item = "000 - "
+    # tela_mont.cb_montador.addItem(item)
+    # tela_mont.cb_montador1.addItem(item)
+    # for ret_usuario in arq_usuario:
+    #     item = f"{ret_usuario[0]} - {ret_usuario[1]}".strip("(),")
+    #     tela_mont.cb_montador.addItem(item)
+    #     tela_mont.cb_montador1.addItem(item)
+    # tela_mont.cb_montador.setCurrentIndex(0)
+    # tela_mont.cb_montador1.setCurrentIndex(0)
 
 
 def pesquisa_produto():

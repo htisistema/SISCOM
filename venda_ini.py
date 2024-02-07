@@ -244,7 +244,7 @@ def salvar_informacao():
     informacao_pedido.append(mlimite)
     informacao_pedido.append(mcompras)
     # print(informacao_pedido)
-    tela.close()
+    # tela.close()
     executar_consulta(informacao_pedido)
     # return
 

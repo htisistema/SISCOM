@@ -81,25 +81,6 @@ border-radius: 12px;</string>
      <string/>
     </property>
    </widget>
-   <widget class="QTextBrowser" name="textBrowser">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>140</y>
-      <width>420</width>
-      <height>470</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(253, 255, 216);
-color: rgb(0, 0, 0);
-border-color: rgb(132, 168, 163);
-border-style: Outset;
-border-width: 2px;
-border-radius: 4px;
-</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="bt_fecha">
     <property name="geometry">
      <rect>
@@ -424,6 +405,21 @@ border-radius: 0px;
      <string>&lt;F5&gt;CONFIRMA</string>
     </property>
    </widget>
+   <widget class="QListView" name="listView">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>140</y>
+      <width>420</width>
+      <height>468</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(253, 255, 216);
+font: 9pt &quot;Courier&quot;;
+color: rgb(0, 0, 0);</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
@@ -435,7 +431,6 @@ border-radius: 0px;
   <tabstop>bt_confirma</tabstop>
   <tabstop>bt_fecha</tabstop>
   <tabstop>bt_sair</tabstop>
-  <tabstop>textBrowser</tabstop>
  </tabstops>
  <resources/>
  <connections/>

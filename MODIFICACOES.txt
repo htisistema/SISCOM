@@ -19,6 +19,10 @@ update sacmerc set bebida = 0 where bebida IS NULL
 update sacmerc set ipi = 0 where ipi IS NULL
 update sacmerc set local = '' where local IS NULL
 update sacmerc set chv_cript = ''
+update sacmerc set est_min = 0 where est_min IS NULL
+update sacmerc set est_max = 0 where est_max IS NULL
+update sacmerc set com_mont = 0 where com_mont IS NULL
+
 update sacsetup set desc_com = 0 where desc_com IS NULL
 update sacsetup set tole_com = 0 where desc_com IS NULL
 

@@ -13,6 +13,7 @@ import hti_global as hg
 import os
 from ATENCAO import atencao
 from consulta_produto import listar_produto
+# import time
 
 app = QApplication([])
 app.setStyleSheet(hg.style_sheet)
@@ -119,16 +120,17 @@ mcomissao = 0
 
 def criar_tela():
     print("criar tela")
+    # time.sleep(1)
     lbl_numero_pedido.setText(f" Numero Pedido: {mnum_ped}")
-    lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
     hg.conexao_cursor.execute(
         f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{mnum_ped}' order by sr_recno"
     )
     resultados = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()
-    lbl_sub_total = tela.findChild(QtWidgets.QLabel, "sub_total")
+    # resultados = []
     model = QtGui.QStandardItemModel()
     mtotal_geral = i = 0
+    lbl_sub_total = tela.findChild(QtWidgets.QLabel, "sub_total")
     descricao = ""
     if len(resultados) > 0:
         for resultado in resultados:
@@ -165,14 +167,17 @@ def criar_tela():
     else:
         lbl_produto.setText("        C A I X A   L I V R E ")
 
-    tela.mcodigo.returnPressed.connect(verificar_produto)
-    tela.mcodigo.setText("")
+    # tela.mcodigo.returnPressed.connect(verificar_produto)
+    # tela.mcodigo.returnPressed.connect(verificar_quantidade)
+    # tela.mcodigo.returnPressed.connect(verificar_preco)
+    # tela.mcodigo.setText("")
     tela.mcodigo.setFocus()
-    tela.mpreco_venda.setValue(float(0))
-    tela.mquantidade.setValue(float(1))
-    msaldo = f"{0:,.3f}"
-    lbl_saldo.setText(msaldo)
+    # tela.mpreco_venda.setValue(float(0))
+    # tela.mquantidade.setValue(float(1))
+    # msaldo = f"{0:,.3f}"
+    # lbl_saldo.setText(msaldo)
     # tela.show()
+    # verificar_produto()
     print("h2")
 
 
@@ -501,7 +506,8 @@ def verificar_preco():
     )
     ver_cliente = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
-
+    if ver_cliente is None:
+        atencao(f"Cliente nao Encontrado Codigo: {infor_pedido[3][0:5]}")
     m_codigo = tela.mcodigo.text()
     hg.conexao_cursor.execute(f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'")
     ver_produto = hg.conexao_cursor.fetchone()
@@ -634,7 +640,6 @@ def verificar_produto():
     #     instancia.listar_produto()
     #     return
     if len(m_codigo.strip()) == 0:
-        atencao("Produto em branco....")
         return
     elif m_codigo[0] == "X" or m_codigo[0] == "x":
         if len(m_codigo[1:20]) > 0:
@@ -801,6 +806,8 @@ def executar_consulta(m_informa_pedido):
 
     tela.bt_fecha.setIcon(icon_salvar)
     tela.bt_sair.setIcon(icon_sair)
+    # criando tela
+    lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
     tela.show()
     criar_tela()
 

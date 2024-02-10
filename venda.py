@@ -13,6 +13,7 @@ import hti_global as hg
 import os
 from ATENCAO import atencao
 from consulta_produto import listar_produto
+
 # import time
 
 app = QApplication([])
@@ -82,16 +83,16 @@ tela.usuario.setPixmap(pixmap_redimensionado)
 lbl_operador.setText(f" Operador: {hg.geral_cod_usuario}")
 lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
 lbl_cliente = tela.findChild(QtWidgets.QLabel, "lb_cliente")
-
-dados_lidos = []
-m_informacao_pedido = []
-mnum_ped = ""
-infor_pedido = []
 tela.mquantidade.setValue(1)
 lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
 lbl_cabecalho = tela.findChild(QtWidgets.QLabel, "cabecalho")
 lbl_saldo = tela.findChild(QtWidgets.QLabel, "saldo")
 data_atual = QDateTime.currentDateTime()
+lbl_sub_total = tela.findChild(QtWidgets.QLabel, "sub_total")
+lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
+m_informacao_pedido = []
+mnum_ped = ""
+infor_pedido = []
 
 # # tela do montador
 # tela_mont = uic.loadUi(f"{hg.c_ui}\\montador.ui")
@@ -130,12 +131,12 @@ def criar_tela():
     # resultados = []
     model = QtGui.QStandardItemModel()
     mtotal_geral = i = 0
-    lbl_sub_total = tela.findChild(QtWidgets.QLabel, "sub_total")
-    descricao = ""
+    descricao = codigo_produto = ""
     if len(resultados) > 0:
         for resultado in resultados:
             i += 1
             pcod_merc, pmerc, pquantd, pvlr_fat = resultado
+            codigo_produto = pcod_merc
             mquantd = "{:9,.3f}".format(pquantd)
             mvalor = "{:10,.2f}".format(pvlr_fat)
             soma = pquantd * pvlr_fat
@@ -149,16 +150,16 @@ def criar_tela():
             item = QtGui.QStandardItem(linha1)
             model.appendRow(item)
             # print(f"{hg.c_produto}\\{mcodigo}.jpg")
-        # if os.path.exists(f"{hg.c_produto}\\{codigo_produto}.jpg"):
-        #     imagem1 = QPixmap(f"{hg.c_produto}\\{codigo_produto}.jpg")
-        # else:
-        #     if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
-        #         imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
-        #     else:
-        #         imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
-        #
-        # pixmap_redim = imagem1.scaled(500, 350)  # redimensiona a imagem para 100x100
-        # tela.foto_produto.setPixmap(pixmap_redim)
+        if os.path.exists(f"{hg.c_produto}\\{codigo_produto}.jpg"):
+            imagem1 = QPixmap(f"{hg.c_produto}\\{codigo_produto}.jpg")
+        else:
+            if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+                imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
+            else:
+                imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
+
+        pixmap_redim = imagem1.scaled(500, 350)  # redimensiona a imagem para 100x100
+        tela.foto_produto.setPixmap(pixmap_redim)
         tela.listView.setModel(model)
         mtotal_g = "{:12,.2f}".format(mtotal_geral)
         linha1 = f"SUB-TOTAL: {mtotal_g}"
@@ -171,7 +172,7 @@ def criar_tela():
     # tela.mcodigo.returnPressed.connect(verificar_quantidade)
     # tela.mcodigo.returnPressed.connect(verificar_preco)
     # tela.mcodigo.setText("")
-    tela.mcodigo.setFocus()
+    # tela.mcodigo.setFocus()
     # tela.mpreco_venda.setValue(float(0))
     # tela.mquantidade.setValue(float(1))
     # msaldo = f"{0:,.3f}"
@@ -238,6 +239,7 @@ def confirma_produto():
     hg.conexao_bd.commit()
     if ver_produto is None:
         atencao("Produto nao encontrado ou estar em branco...")
+        tela.mcodigo.setFocus()
         return
 
     msaldo = f"{ver_produto[55]:,.3f}"
@@ -396,8 +398,6 @@ def confirma_produto():
         "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
         "?, ?, ?, ?, ?, ?, ?) "
     )
-    # print(mmontador, mmontador1, mcomissao)
-
     hg.conexao_cursor.execute(
         sql,
         (
@@ -482,17 +482,12 @@ def confirma_produto():
     )
     hg.conexao_bd.commit()
 
-    # tela.mcodigo.setText("")
-    # print('h1')
-    # tela.mcodigo.setFocus()
-    # print('h2')
-    # tela.mpreco_venda.setValue(float(0))
-    # tela.mquantidade.setValue(float(1))
-    # msaldo = f"{0:,.3f}"
-    # lbl_saldo.setText(msaldo)
-    # tela.close()
-    # return
-
+    tela.mcodigo.clear()
+    tela.mcodigo.setFocus()
+    tela.mpreco_venda.setValue(float(0))
+    tela.mquantidade.setValue(float(1))
+    msaldo = f"{0:,.3f}"
+    lbl_saldo.setText(msaldo)
     criar_tela()
 
 
@@ -769,13 +764,12 @@ def fecha_pedido():
 keyboard.add_hotkey("F10", fecha_pedido)
 
 
-def inicio_produto():
-    pass
-
-
 def buscar_produto():
     mcodigo_produto = listar_produto()
     tela.mcodigo.setText(mcodigo_produto)
+
+
+def inclusao_produto():
 
 
 def executar_consulta(m_informa_pedido):
@@ -785,8 +779,6 @@ def executar_consulta(m_informa_pedido):
     infor_pedido = m_informa_pedido
     tela.mquantidade.editingFinished.connect(verificar_quantidade)
     tela.mpreco_venda.editingFinished.connect(verificar_preco)
-    # tela.mquantidade.valueChanged.connect(verificar_quantidade)
-    # tela.mpreco_venda.valueChanged.connect(verificar_preco)
     tela.mcodigo.returnPressed.connect(verificar_produto)
     tela.mcodigo.setFocus()
     mnum_ped = m_informa_pedido[0]
@@ -806,8 +798,6 @@ def executar_consulta(m_informa_pedido):
 
     tela.bt_fecha.setIcon(icon_salvar)
     tela.bt_sair.setIcon(icon_sair)
-    # criando tela
-    lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
     tela.show()
     criar_tela()
 

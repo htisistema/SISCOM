@@ -27,10 +27,6 @@ icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 # AJUSTAR A TELA EM RELACAO AO MONITOR
-qt_rectangle = tela.frameGeometry()
-center_point = app.primaryScreen().availableGeometry().center()
-qt_rectangle.moveCenter(center_point)
-tela.move(qt_rectangle.topLeft())
 
 if hg.mtp_tela == "G":
     primary_screen = QGuiApplication.primaryScreen()
@@ -193,7 +189,6 @@ def salva_pedido():
     qt_rectangle.moveCenter(center_point)
     tela1.move(qt_rectangle.topLeft())
     tela1.show()
-    app1.exec()
     ic()
 
 

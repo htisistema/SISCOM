@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (
     QApplication,
     QGroupBox,
 )
-from PyQt6.QtCore import QDateTime
+from PyQt6.QtCore import QDateTime, Qt
 from datetime import datetime
 import keyboard
 from hti_funcoes import conexao_banco, gerar_numero_pedido
@@ -93,7 +93,7 @@ lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
 m_informacao_pedido = []
 mnum_ped = ""
 infor_pedido = []
-
+key_f5 = 0
 # # tela do montador
 # tela_mont = uic.loadUi(f"{hg.c_ui}\\montador.ui")
 # tela_mont.setWindowTitle("Inclusao de Montadores")
@@ -233,6 +233,7 @@ def confirma_produto():
     # )
     # ver_cliente = hg.conexao_cursor.fetchone()
     # hg.conexao_bd.commit()
+    tela.bt_confirma.setEnabled(False)
     m_codigo = tela.mcodigo.text()
     hg.conexao_cursor.execute(f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'")
     ver_produto = hg.conexao_cursor.fetchone()
@@ -492,9 +493,11 @@ def confirma_produto():
 
 
 def verificar_preco():
-    global mcomissao
+    global mcomissao, key_f5
     print("verificar_preco")
     # tela.mpreco_venda.editingFinished.disconnect()
+    key_f5 = 1
+    tela.bt_confirma.setEnabled(True)
 
     hg.conexao_cursor.execute(
         f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3][0:5]}"
@@ -620,8 +623,23 @@ def verificar_preco():
         tela.mpreco_venda.setValue(float(ver_produto[45]))
         confirma_produto()
 
-    keyboard.add_hotkey("F5", confirma_produto)
-    tela.bt_confirma.setEnabled(True)
+    # keyboard.add_hotkey("F5", confirma_produto)
+
+
+def keyPressEvent(event):
+    global key_f5
+    if (event.key() == Qt.Key.Key_Enter or event.key() == Qt.Key.Key_Return) and key_f5 == 1:
+        confirma_produto()
+        key_f5 = 0
+    elif event.key() == Qt.Key.Key_Escape:
+        # print("Esc pressionado")
+        fecha_tela()
+    elif event.key() == Qt.Key.Key_F5 and key_f5 == 1:
+        confirma_produto()
+        key_f5 = 0
+
+
+tela.keyPressEvent = keyPressEvent
 
 
 def verificar_produto():
@@ -769,9 +787,6 @@ def buscar_produto():
     tela.mcodigo.setText(mcodigo_produto)
 
 
-def inclusao_produto():
-
-
 def executar_consulta(m_informa_pedido):
     global mnum_ped, infor_pedido
     keyboard.add_hotkey("ESC", fecha_tela)
@@ -789,7 +804,13 @@ def executar_consulta(m_informa_pedido):
     # quebra de linha em uma string
     # lbl_cliente.setText(f"{m_informa_pedido[0]}<br/>{m_informa_pedido[1]}")
     # lbl_cliente.setText(f"{m_informa_pedido[0]}\n{m_informa_pedido[1]}")
-    lbl_cliente.setText(m_informa_pedido[1])
+    if m_informa_pedido[6] == 'A':
+        tipo_venda = 'Avista'
+    else:
+        tipo_venda = 'Aprazo'
+
+    lbl_cliente.setText(f"Vendedor: {m_informa_pedido[4]} \nForma de pagamento: {m_informa_pedido[5]}\n"
+                        f"Tipo de Venda: {tipo_venda}")
     tela.bt_buscar_produto.clicked.connect(buscar_produto)
     tela.bt_confirma.setEnabled(False)
     tela.bt_confirma.clicked.connect(confirma_produto)

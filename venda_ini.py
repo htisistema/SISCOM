@@ -133,6 +133,8 @@ def keyPressEvent(event):
     elif event.key() == Qt.Key.Key_Escape:
         # print("Esc pressionado")
         fecha_tela()
+    elif event.key() == Qt.Key.Key_F5:
+        print("F5 pressionado")
 
 
 tela.keyPressEvent = keyPressEvent

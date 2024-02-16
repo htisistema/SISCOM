@@ -21,9 +21,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>120</y>
+      <y>140</y>
       <width>1220</width>
-      <height>530</height>
+      <height>510</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -84,7 +84,7 @@
      <rect>
       <x>100</x>
       <y>10</y>
-      <width>1130</width>
+      <width>930</width>
       <height>60</height>
      </rect>
     </property>
@@ -243,6 +243,19 @@ border-radius: 12px;</string>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="imagem_produto">
+    <property name="geometry">
+     <rect>
+      <x>1060</x>
+      <y>10</y>
+      <width>170</width>
+      <height>120</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
     </property>
    </widget>
   </widget>

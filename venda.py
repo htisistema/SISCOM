@@ -122,6 +122,8 @@ mcomissao = 0
 def criar_tela():
     print("criar tela")
     # time.sleep(1)
+    model = QtGui.QStandardItemModel()
+    # model.clear()
     lbl_numero_pedido.setText(f" Numero Pedido: {mnum_ped}")
     hg.conexao_cursor.execute(
         f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{mnum_ped}' order by sr_recno"
@@ -129,7 +131,6 @@ def criar_tela():
     resultados = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()
     # resultados = []
-    model = QtGui.QStandardItemModel()
     mtotal_geral = i = 0
     descricao = codigo_produto = ""
     if len(resultados) > 0:
@@ -150,16 +151,11 @@ def criar_tela():
             item = QtGui.QStandardItem(linha1)
             model.appendRow(item)
             # print(f"{hg.c_produto}\\{mcodigo}.jpg")
-        if os.path.exists(f"{hg.c_produto}\\{codigo_produto}.jpg"):
-            imagem1 = QPixmap(f"{hg.c_produto}\\{codigo_produto}.jpg")
+        if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+            imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
         else:
-            if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
-                imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
-            else:
-                imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
+            imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
-        pixmap_redim = imagem1.scaled(500, 350)  # redimensiona a imagem para 100x100
-        tela.foto_produto.setPixmap(pixmap_redim)
         tela.listView.setModel(model)
         mtotal_g = "{:12,.2f}".format(mtotal_geral)
         linha1 = f"SUB-TOTAL: {mtotal_g}"
@@ -168,24 +164,20 @@ def criar_tela():
     else:
         lbl_produto.setText("        C A I X A   L I V R E ")
 
-    # tela.mcodigo.returnPressed.connect(verificar_produto)
-    # tela.mcodigo.returnPressed.connect(verificar_quantidade)
-    # tela.mcodigo.returnPressed.connect(verificar_preco)
-    # tela.mcodigo.setText("")
-    # tela.mcodigo.setFocus()
-    # tela.mpreco_venda.setValue(float(0))
-    # tela.mquantidade.setValue(float(1))
-    # msaldo = f"{0:,.3f}"
-    # lbl_saldo.setText(msaldo)
-    # tela.show()
-    # verificar_produto()
-    print("h2")
-
 
 def fecha_tela():
+    print('fecha')
     tela.close()
     return
 
+
+def on_close_event(event):
+    print('esc')
+    tela.close()
+    event.accept()
+
+
+tela.closeEvent = on_close_event
 
 # class MainWindow(QMainWindow):
 #     def __init__(self):
@@ -565,11 +557,11 @@ def verificar_preco():
             and ver_cliente[0] == 0
         ):
             if not aut_sen(
-                f"Cod.Prod..: {ver_produto[7]} - {ver_produto[8]}\n"
-                f"Vlr.Solic.: {mvlr_fat}\n"
-                f"Pr.Venda .: {mp_venda}\n"
-                f"Desc.Soli.: {((mp_venda - mvlr_fat) / mp_venda)*100} %"
-                f"Desc.Aut..: {hg.m_set[32]} %",
+                f"Codigo Produto.....: {ver_produto[7]} - {ver_produto[8]}\n"
+                f"Valor Solicitado...: {mvlr_fat}\n"
+                f"Preco de Venda.....: {mp_venda}\n"
+                f"Desconto Solicitado: {((mp_venda - mvlr_fat) / mp_venda)*100} %"
+                f"Desconto Autorizado: {hg.m_set[32]} %",
                 "LIB_DESC",
                 "",
                 ver_produto[8],
@@ -645,8 +637,22 @@ tela.keyPressEvent = keyPressEvent
 def verificar_produto():
     print("verificar_produto")
     global mnum_ped, infor_pedido
-    m_codigo = tela.mcodigo.text()
+    m_codigo = tela.mcodigo.text().zfill(5)
     tela.mcodigo.returnPressed.disconnect()
+    print(f"{hg.c_produto}\\{m_codigo}.jpg")
+    if os.path.exists(f"{hg.c_produto}\\{m_codigo}.jpg"):
+        imagem1 = QPixmap(f"{hg.c_produto}\\{m_codigo}.jpg")
+    elif os.path.exists(f"{hg.c_produto}\\{m_codigo}.png"):
+        imagem1 = QPixmap(f"{hg.c_produto}\\{m_codigo}.png")
+    else:
+        if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+            imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
+        else:
+            imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
+
+    pixmap_redim = imagem1.scaled(500, 350)  # redimensiona a imagem para 100x100
+    tela.foto_produto.setPixmap(pixmap_redim)
+
     # print(f"codigo: {m_codigo}")
     # if len(m_codigo) == 0:
     #     print("'lista de produto")
@@ -693,7 +699,7 @@ def verificar_produto():
             atencao("Produto nao encontrado...")
             return
         else:
-            print(ver_produto[55])
+            # print(ver_produto[55])
             msaldo = f"{ver_produto[55]:,.3f}"
             lbl_saldo.setText(msaldo)
             lbl_produto.setText(ver_produto[8])
@@ -775,8 +781,7 @@ def verificar_quantidade():
 
 def fecha_pedido():
     from venda_fecha import fechar_pedido
-
-    fechar_pedido(mnum_ped)
+    fechar_pedido(infor_pedido)
 
 
 keyboard.add_hotkey("F10", fecha_pedido)

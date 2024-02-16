@@ -2,7 +2,7 @@
 import os
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
-from PyQt6.QtWidgets import QButtonGroup, QMainWindow
+from PyQt6.QtWidgets import QButtonGroup, QMainWindow, QLabel
 from hti_funcoes import conexao_banco
 import hti_global as hg
 
@@ -140,6 +140,29 @@ def incluir_produto():
     inclusao_produto()
 
 
+def atualizar_imagem_produto():
+    # Obter a linha selecionada
+    linha_selecionada = tela.tableWidget.currentRow()
+
+    # Verificar se uma linha foi selecionada
+    if linha_selecionada != -1:
+        # Obter o caminho da imagem do produto da célula correspondente na tabela
+        m_codigo = tela.tableWidget.item(linha_selecionada, 0).text()  # Supondo que a coluna da imagem seja a última (índice 8)
+        # mcam = f"{hg.c_produto}\\{m_codigo_produto}.jpg"
+        if os.path.exists(f"{hg.c_produto}\\{m_codigo}.jpg"):
+            imagem1 = QPixmap(f"{hg.c_produto}\\{m_codigo}.jpg")
+        elif os.path.exists(f"{hg.c_produto}\\{m_codigo}.png"):
+            imagem1 = QPixmap(f"{hg.c_produto}\\{m_codigo}.png")
+        else:
+            imagem1 = QPixmap(f"{hg.c_produto}\\{m_codigo}.png")
+
+        # mcam = f"{hg.c_produto}\\{m_codigo_produto}.png"
+        # # Carregar a imagem e exibi-la no QLabel
+        # imagem1 = QPixmap(mcam)
+        pixmap = imagem1.scaled(170, 130)  # redimensiona a imagem para 100x100
+        tela.imagem_produto.setPixmap(pixmap)
+
+
 def listar_produto():
     pesquisa()
     dados_lidos = hg.conexao_cursor.fetchall()
@@ -153,6 +176,14 @@ def listar_produto():
             tela.tableWidget.setItem(i, j, item)
             # item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter | QtCore.Qt.AlignmentFlag.AlignVCenter)
             # print(item.text())
+
+        caminho_da_imagem = f"{hg.c_produto}\\{item}.jpg"
+        pixmap = QPixmap(caminho_da_imagem)
+        label = QLabel()
+        label.setPixmap(pixmap)
+        tela.tableWidget.setCellWidget(i, j + 1, label)
+
+    tela.tableWidget.currentItemChanged.connect(atualizar_imagem_produto)
     ajustar_colunas_tabela(tela.tableWidget)
 
     rb_tipo_group = QButtonGroup()

@@ -248,7 +248,9 @@ def salvar_informacao():
     # print(informacao_pedido)
     # tela.close()
     executar_consulta(informacao_pedido)
-    # return
+    tela.close()
+    # pedido_inicial()
+    return
 
 
 def ver_pedido():

@@ -6,6 +6,7 @@ from PyQt6.QtCore import QDateTime, Qt
 # import keyboard
 from datetime import date, datetime
 from hti_funcoes import conexao_banco, ver_serie
+from autorizacao_senha import aut_sen
 import hti_global as hg
 import os
 
@@ -100,7 +101,7 @@ tela.cb_cliente.setCurrentIndex(0)
 
 mcli_aux = 0
 data_vazia = date(1900, 1, 1)
-
+info_inicial_pedido = []
 tela.cb_forma_pg.addItems(
     [
         "1->Dinheiro",
@@ -448,6 +449,35 @@ def ver_entrega():
                 return
 
 
+def verifica_vendedor():
+    index = tela.cb_vendedor.currentIndex()
+    mop = tela.cb_vendedor.itemText(index)
+    mcod_ven = mop[0:3]
+    index = tela.cb_cliente.currentIndex()
+    mop = tela.cb_cliente.itemText(index)
+    mcod_cli = mop[0:5]
+
+    if (
+        hg.m_set[9] == "S"
+        and not mcod_ven == info_inicial_pedido[4]
+        and not mcod_cli == hg.m_set[83]
+    ):
+        if not aut_sen(
+            "Cod. Vend. Diferente do Vend. Resp.CLIENTE, Senha autorizacao:",
+            "LIBCLIVEN",
+            mcod_cli,
+            "",
+            "",
+            "",
+        ):
+            tela.cb_vendedor.setFocus()
+
+    if hg.m_set[152] == "S" and not mcod_ven == hg.geral_cod_usuario:
+        tela.cb_vendedor.setFocus()
+        tela.rb_telemarketing.setEnabled(True)
+        tela.rb_vendanormal.setEnabled(True)
+
+
 def liberar_campos():
     # tela.ds_entrada.setEnabled(False)
     # tela.ds_qtd_dias.setEnabled(False)
@@ -554,14 +584,19 @@ def liberar_campos():
             tela.ds_desconto.setEnabled(True)
         if hg.m_set[91] == "S":
             tela.data_previsao.setEnabled(True)
+        if hg.m_set[107] == "S":
+            tela.cb_vendedor.setEnabled(True)
 
 
 def fechar_pedido(m_informa_pedido):
-    global mcli_aux
+    global mcli_aux, info_inicial_pedido
     info_inicial_pedido = m_informa_pedido
     VariavelP.numero_pedido = info_inicial_pedido[0]
     tela.cb_cliente.setEnabled(False)
     tela.cb_forma_pg.setEnabled(False)
+    tela.cb_vendedor.setEnabled(False)
+    tela.rb_telemarketing.setEnabled(False)
+    tela.rb_vendanormal.setEnabled(False)
     tela.rb_percentual.setEnabled(False)
     tela.rb_valor.setEnabled(False)
     tela.ds_desconto.setEnabled(False)
@@ -609,8 +644,20 @@ def fechar_pedido(m_informa_pedido):
             tela.cb_forma_pg.setCurrentIndex(i)
             break
 
+    for i in range(tela.cb_vendedor.count()):
+        item_text = tela.cb_vendedor.itemText(i)
+        if str(info_inicial_pedido[4]).strip() in item_text:
+            tela.cb_vendedor.setCurrentIndex(i)
+            break
+
+    rb_app_group = QButtonGroup()
+    rb_app_group.addButton(tela.rb_telemarketing, id=1)
+    rb_app_group.addButton(tela.rb_vendanormal, id=2)
+    tela.rb_vendanormal.setChecked(True)
+
     liberar_campos()
     tela.cb_forma_pg.currentIndexChanged.connect(verifica_condicao)
+    tela.data_previsao.dateChanged.connect(ver_entrega)
     tela.ds_qtd_dias.valueChanged.connect(liberar_campos)
     tela.ds_desconto.valueChanged.connect(atualizar_pedido)
 

@@ -9,7 +9,7 @@ import hti_global as hg
 app = QtWidgets.QApplication([])
 tela = uic.loadUi("C:\BACKUP_HTI\TELASREMOTA(PYTHON)\lista_documento.ui")
 tela.setWindowTitle('TIPOS DE DOCUMENTOS CADASTRADAS')
-icon = QIcon('C:\HTI\PYTHON\SISCOM\imagem\htiico.jpg')
+icon = QIcon('C:\HTI\PYTHON\SISCOM\imagem\htiico.ico')
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()

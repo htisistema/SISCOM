@@ -34,5 +34,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['C:\\hti\\PYTHON\\SISCOM\\imagem\\hti.ico'],
+    icon=['C:\\HTI\\PYTHON\\SISCOM\\imagem\\htiico.ico'],
 )

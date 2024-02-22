@@ -17,7 +17,7 @@ from ATENCAO import atencao
 app = QApplication([])
 app.setStyleSheet(hg.style_sheet)
 tela = uic.loadUi(f"{hg.c_ui}\\venda_fecha.ui")
-icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
 tela.setWindowIcon(icon)
 tela.setWindowTitle(
     f"FECHAMENTO DO PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}"
@@ -193,7 +193,7 @@ def salva_pedido():
     app1 = QApplication([])
     app1.setStyleSheet(hg.style_sheet)
     tela1 = uic.loadUi(f"{hg.c_ui}\\venda_ini.ui")
-    icon1 = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+    icon1 = QIcon(f"{hg.c_imagem}\\htiico.ico")
     tela1.setWindowIcon(icon)
     tela1.setWindowTitle(
         f"FECHAMENTO DO PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}"

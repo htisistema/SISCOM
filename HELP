@@ -1,5 +1,5 @@
 GERAR O EXECUTAVEL
-pyinstaller --onefile -w --icon=C:\HTI\SISCOM\imagem\htiico.jpg --name=SISCOM siscom.py
+pyinstaller --onefile -w --icon=C:\HTI\PYTHON\SISCOM\imagem\htiico.ico --name=SISCOMpy siscom.py
 
 # Método append():
 O método append() é usado para adicionar um item ao final da lista.

@@ -19,7 +19,7 @@ from consulta_produto import listar_produto
 app = QApplication([])
 app.setStyleSheet(hg.style_sheet)
 tela = uic.loadUi(f"{hg.c_ui}\\venda_pdv.ui")
-icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
 tela.setWindowIcon(icon)
 tela.setWindowTitle(f"PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}")
 # Centraliza a janela na tela
@@ -97,7 +97,7 @@ key_f5 = 0
 # # tela do montador
 # tela_mont = uic.loadUi(f"{hg.c_ui}\\montador.ui")
 # tela_mont.setWindowTitle("Inclusao de Montadores")
-# # icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+# # icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
 # # icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
 # # icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
 # tela_mont.setWindowIcon(icon)
@@ -166,13 +166,13 @@ def criar_tela():
 
 
 def fecha_tela():
-    print('fecha')
+    print("fecha")
     tela.close()
     return
 
 
 def on_close_event(event):
-    print('esc')
+    print("esc")
     tela.close()
     event.accept()
 
@@ -620,7 +620,9 @@ def verificar_preco():
 
 def keyPressEvent(event):
     global key_f5
-    if (event.key() == Qt.Key.Key_Enter or event.key() == Qt.Key.Key_Return) and key_f5 == 1:
+    if (
+        event.key() == Qt.Key.Key_Enter or event.key() == Qt.Key.Key_Return
+    ) and key_f5 == 1:
         confirma_produto()
         key_f5 = 0
     elif event.key() == Qt.Key.Key_Escape:
@@ -652,6 +654,7 @@ def verificar_produto():
 
     pixmap_redim = imagem1.scaled(500, 350)  # redimensiona a imagem para 100x100
     tela.foto_produto.setPixmap(pixmap_redim)
+    tela.mcodigo.returnPressed.connect(verificar_produto)
 
     # print(f"codigo: {m_codigo}")
     # if len(m_codigo) == 0:
@@ -704,7 +707,6 @@ def verificar_produto():
             lbl_saldo.setText(msaldo)
             lbl_produto.setText(ver_produto[8])
             tela.mpreco_venda.setValue(float(ver_produto[45]))
-            tela.mcodigo.returnPressed.connect(verificar_produto)
             tela.mcodigo.setText(ver_produto[7])
             if mnum_ped == "":
                 mnum_ped = gerar_numero_pedido()
@@ -781,6 +783,7 @@ def verificar_quantidade():
 
 def fecha_pedido():
     from venda_fecha import fechar_pedido
+
     fechar_pedido(infor_pedido)
 
 
@@ -809,13 +812,15 @@ def executar_consulta(m_informa_pedido):
     # quebra de linha em uma string
     # lbl_cliente.setText(f"{m_informa_pedido[0]}<br/>{m_informa_pedido[1]}")
     # lbl_cliente.setText(f"{m_informa_pedido[0]}\n{m_informa_pedido[1]}")
-    if m_informa_pedido[6] == 'A':
-        tipo_venda = 'Avista'
+    if m_informa_pedido[6] == "A":
+        tipo_venda = "Avista"
     else:
-        tipo_venda = 'Aprazo'
+        tipo_venda = "Aprazo"
 
-    lbl_cliente.setText(f"Vendedor: {m_informa_pedido[4]} \nForma de pagamento: {m_informa_pedido[5]}\n"
-                        f"Tipo de Venda: {tipo_venda}")
+    lbl_cliente.setText(
+        f"Vendedor: {m_informa_pedido[4]} \nForma de pagamento: {m_informa_pedido[5]}\n"
+        f"Tipo de Venda: {tipo_venda}"
+    )
     tela.bt_buscar_produto.clicked.connect(buscar_produto)
     tela.bt_confirma.setEnabled(False)
     tela.bt_confirma.clicked.connect(confirma_produto)

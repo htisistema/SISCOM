@@ -5,6 +5,9 @@ from PyQt6.QtCore import QDateTime, Qt
 
 # import keyboard
 from datetime import date, datetime
+
+from icecream import ic
+
 from hti_funcoes import conexao_banco, ver_serie
 from autorizacao_senha import aut_sen
 import hti_global as hg
@@ -17,7 +20,7 @@ from ATENCAO import atencao
 app = QApplication([])
 app.setStyleSheet(hg.style_sheet)
 tela = uic.loadUi(f"{hg.c_ui}\\venda_fecha.ui")
-icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
 tela.setWindowIcon(icon)
 tela.setWindowTitle(
     f"FECHAMENTO DO PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}"
@@ -107,9 +110,10 @@ tela.cb_forma_pg.addItems(
         "1->Dinheiro",
         "2->PIX",
         "3->Cartao",
-        "4->Duplicata",
-        "5->Cheque",
-        "6->Financiamento",
+        "4->Cartao Debito",
+        "5->Duplicata",
+        "6->Cheque",
+        "7->Financiamento",
     ]
 )
 tela.cb_forma_pg.setCurrentIndex(0)  # coloca o focus no index
@@ -193,7 +197,7 @@ def salva_pedido():
     app1 = QApplication([])
     app1.setStyleSheet(hg.style_sheet)
     tela1 = uic.loadUi(f"{hg.c_ui}\\venda_ini.ui")
-    icon1 = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+    icon1 = QIcon(f"{hg.c_imagem}\\htiico.ico")
     tela1.setWindowIcon(icon)
     tela1.setWindowTitle(
         f"FECHAMENTO DO PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}"

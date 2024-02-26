@@ -12,7 +12,7 @@ titulo = "INCLUSÃO DE BANCO"
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hg.style_sheet)
 tela = uic.loadUi(f"{hg.c_ui}\\htibanco.ui")
-icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
 icon_cancelar = QIcon(f"{hg.c_imagem}\\cancelar.png")
 icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
 icon_salvar = QIcon(f"{hg.c_imagem}\\salvar.png")

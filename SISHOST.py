@@ -60,7 +60,7 @@ endereco_ip = socket.gethostbyname(nome_computador)
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hg.style_sheet)
 tela = uic.loadUi(f"{hg.c_ui}\\sishost.ui")
-icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
 tela.setWindowIcon(icon)
 tela.setWindowTitle(f"LOGIN         {SISTEMA}  Versao: {VERSAO}")
 # Centraliza a janela na tela

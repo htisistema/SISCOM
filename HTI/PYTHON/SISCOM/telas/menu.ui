@@ -1,0 +1,986 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1250</width>
+    <height>680</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="imagem_menu">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>80</y>
+      <width>540</width>
+      <height>430</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: Outset;
+background-color: rgb(255, 255, 255);
+border-width: 2px;
+border-radius: 20px;
+</string>
+    </property>
+    <property name="text">
+     <string>imagem da empresa</string>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="versao_menu">
+    <property name="geometry">
+     <rect>
+      <x>1020</x>
+      <y>522</y>
+      <width>201</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: Outset;
+font: 75 12pt &quot;MS Shell Dlg 2&quot;;
+
+background-color: rgb(255, 255, 255);
+border-width: 2px;
+border-radius: 2px;
+</string>
+    </property>
+    <property name="text">
+     <string>VERSAO</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="logohti">
+    <property name="geometry">
+     <rect>
+      <x>1020</x>
+      <y>331</y>
+      <width>201</width>
+      <height>190</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: Outset;
+
+background-color: rgb(255, 255, 255);
+border-width: 2px;
+border-radius: 2px;
+</string>
+    </property>
+    <property name="text">
+     <string>Logo da HTI</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="usuario">
+    <property name="geometry">
+     <rect>
+      <x>1100</x>
+      <y>20</y>
+      <width>121</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: Outset;
+background-color: rgb(255, 255, 255);
+border-width: 2px;
+
+</string>
+    </property>
+    <property name="text">
+     <string>usuario</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="nome_usuario">
+    <property name="geometry">
+     <rect>
+      <x>1100</x>
+      <y>130</y>
+      <width>120</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>codigo do susario</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_venda">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>120</width>
+      <height>110</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Vendas</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1250</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuArquivo">
+    <property name="title">
+     <string>Arquivo</string>
+    </property>
+    <addaction name="actionProduto"/>
+    <addaction name="actionCliente"/>
+    <addaction name="actionUsuarios"/>
+    <addaction name="actionFornecedor"/>
+    <addaction name="actionCartoes"/>
+    <addaction name="actionCondicoes_de_Pagamento"/>
+    <addaction name="actionDespesas"/>
+    <addaction name="actionTransportadora"/>
+    <addaction name="actionFinanceira"/>
+    <addaction name="actionCadastro_de_Bancos_Boletos"/>
+    <addaction name="actionBancos_conta_corrente_int"/>
+    <addaction name="actionEspecie_do_Produto"/>
+    <addaction name="actionConta_Despesas_plano_de_conta"/>
+    <addaction name="actionEstados_Imposto"/>
+    <addaction name="actionCadastro_de_Cidade"/>
+    <addaction name="actionMensagem_para_Observacao"/>
+    <addaction name="actionProfissao_Ramo_Atividade"/>
+    <addaction name="actionCFOP"/>
+    <addaction name="actionNCM"/>
+    <addaction name="actionCST_CSOSN"/>
+    <addaction name="actionTipos_de_Documentos"/>
+    <addaction name="actionGrupos_Sub_Grupo"/>
+    <addaction name="actionRegiao_vendedor"/>
+   </widget>
+   <widget class="QMenu" name="menuMovimento">
+    <property name="title">
+     <string>Movimento</string>
+    </property>
+    <widget class="QMenu" name="menuPedido_de_Venda">
+     <property name="title">
+      <string>Pedido de Venda</string>
+     </property>
+     <addaction name="actionEmissao_de_Pedidos"/>
+     <addaction name="actionAlteracao_de_Pedidos"/>
+     <addaction name="action2a_Via_de_Pedidos"/>
+     <addaction name="actionCancelamento_Pedidos"/>
+     <addaction name="actionEstorno"/>
+     <addaction name="actionEmitir_varios_PEDIDOS_ORCAMENTO"/>
+     <addaction name="actionAgrupamento_de_PEDIDOS_2"/>
+    </widget>
+    <addaction name="menuPedido_de_Venda"/>
+    <addaction name="actionNF_e_Nota_fiscal_eletronica"/>
+    <addaction name="actionNFC_e_Nota_fiscal_consumidor_eletronica"/>
+    <addaction name="actionCTE_Controle_de_transporte_eletronico"/>
+    <addaction name="actionMDF_Manifesto_eletronico_de_documentos_fiscais"/>
+    <addaction name="actionOrcamento"/>
+    <addaction name="actionEntrada_de_Mercadoria"/>
+    <addaction name="actionPedido_de_Compra"/>
+    <addaction name="actionCheque_sem_fundo"/>
+    <addaction name="actionDocumentos_a_PAGAR"/>
+    <addaction name="actionDocumentos_a_RECEBER"/>
+    <addaction name="actionBalanco"/>
+    <addaction name="actionDevolucao_de_mercadoria_TROCA"/>
+    <addaction name="actionBoleto_bancario_Promissoria"/>
+    <addaction name="actionConta_corrente_Bancaria"/>
+    <addaction name="actionRomaneio_de_carga"/>
+    <addaction name="actionLista_de_FALTA_DE_PRODUTO"/>
+    <addaction name="actionCredito_de_CLIENTE"/>
+    <addaction name="actionOrdem_de_servicos"/>
+    <addaction name="actionMenu_APP_CNNT"/>
+    <addaction name="actionMenu_APP_da_HTI_Sistemas"/>
+    <addaction name="actionColocar_e_retirar_PRODUTOS_EM_PROMOCAO"/>
+    <addaction name="actionGerar_mensalidade_dos_Clientes"/>
+    <addaction name="actionDetalhe_do_Produto"/>
+    <addaction name="actionExpedicao_de_Pedidos"/>
+    <addaction name="actionProtocolo_NOTAS_DE_ENTRADA"/>
+   </widget>
+   <widget class="QMenu" name="menuCaixa">
+    <property name="title">
+     <string>Caixa</string>
+    </property>
+    <addaction name="actionRecebimento_de_Pedidos"/>
+    <addaction name="actionRecebimento_Diversos"/>
+    <addaction name="actionVales"/>
+    <addaction name="actionDespesas_2"/>
+    <addaction name="actionCancelar_e_Alterar_Despesas"/>
+    <addaction name="actionFechamento_do_Caixa"/>
+    <addaction name="actionCancelar_Pedidos"/>
+    <addaction name="actionFaturamento_por_Periodo"/>
+    <addaction name="actionFundo_Caixa"/>
+    <addaction name="actionRetirada_para_Deposito"/>
+    <addaction name="actionBaixa_Documento_a_Receber"/>
+    <addaction name="actionEstorno_de_Recebimento"/>
+    <addaction name="actionDespesas_Administrativa"/>
+    <addaction name="actionBaixa_de_Documento_Apagar"/>
+    <addaction name="actionEmisso_de_RECIBOS"/>
+    <addaction name="actionPreenchimento_de_Cheques"/>
+    <addaction name="actionEmissao_de_CARNES"/>
+    <addaction name="actionEmissao_de_CREDITO"/>
+    <addaction name="actionConsulta_de_CEP_s"/>
+    <addaction name="actionAlterar_Lancamento_do_CAIXA"/>
+    <addaction name="actionRelatorio_do_CAIXA_por_PERIODO"/>
+   </widget>
+   <widget class="QMenu" name="menuRelatorio">
+    <property name="title">
+     <string>Relatorio</string>
+    </property>
+    <addaction name="actionTabela_de_Precos"/>
+    <addaction name="actionTabela_de_Custo"/>
+    <addaction name="actionMovimento_de_Produtos"/>
+    <addaction name="actionEstatisticas"/>
+    <addaction name="actionComissoes"/>
+    <addaction name="actionCheque_sem_Fundo"/>
+    <addaction name="actionEmissao_de_RECIBOS"/>
+    <addaction name="actionProdutos_Abixo_do_minimo_ou_Maximo"/>
+    <addaction name="actionDepesas_Vales_Recibos_Retirada_para_Deposito"/>
+    <addaction name="actionCliente_Estatistica_Ativo_Inativos_Limites"/>
+    <addaction name="actionDocumentos_a_PAGAR_3"/>
+    <addaction name="actionDocumentos_a_RECEBER_3"/>
+    <addaction name="actionRelatorio_de_Consultas"/>
+    <addaction name="actionListagem_para_BALANCO"/>
+    <addaction name="actionRelatorio_de_PEDIDOS_ORCAMENTOS"/>
+    <addaction name="actionNotas_Fiscais"/>
+    <addaction name="actionEtiquetas"/>
+    <addaction name="actionEmissao_de_CARNES_2"/>
+    <addaction name="actionTEXTTO"/>
+    <addaction name="actionRelatorio_de_Produtos_com_precos_alterados"/>
+    <addaction name="actionRelatorio_de_Devolucao_de_Produtos"/>
+    <addaction name="actionRelatorio_de_Credito_de_Clientes"/>
+    <addaction name="actionRelatoriio_de_INVENTARIO_DOS_PRODUTOS"/>
+    <addaction name="actionPlanilha_para_cadastro_clientes"/>
+   </widget>
+   <widget class="QMenu" name="menuUtilitario">
+    <property name="title">
+     <string>Utilitario</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuAPP_FORCA_DE_VENDA">
+    <property name="title">
+     <string>APP FORCA DE VENDA</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuSuporte_Tecnico">
+    <property name="title">
+     <string>Suporte Tecnico</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuMudar_de_Empresa">
+    <property name="title">
+     <string>Mudar de Empresa</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuMensagem_Interna">
+    <property name="title">
+     <string>Mensagem Interna</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuAbre_GAVETA">
+    <property name="title">
+     <string>Abre GAVETA</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuSAIR">
+    <property name="title">
+     <string>SAIR</string>
+    </property>
+    <addaction name="actionSAIR"/>
+   </widget>
+   <widget class="QMenu" name="menuConsulta">
+    <property name="title">
+     <string>Consulta</string>
+    </property>
+    <addaction name="actionProduto_2"/>
+    <addaction name="actionMovimento_2"/>
+    <addaction name="actionCliente_2"/>
+    <addaction name="actionFornecedor_Outras_Despesas"/>
+    <addaction name="actionCheque"/>
+    <addaction name="actionDocumentos"/>
+    <addaction name="actionPedidos"/>
+    <addaction name="actionDocumentos_a_RECEBER_2"/>
+    <addaction name="actionDocumentos_a_PAGAR_2"/>
+    <addaction name="actionNF_s_Emitidas_Recebidas"/>
+    <addaction name="actionFaturamento_por_Periodo_2"/>
+    <addaction name="actionDespesas_Vales_Retiradas"/>
+    <addaction name="actionFluxo_de_Caixa"/>
+    <addaction name="actionCalculo_de_Financiamento"/>
+    <addaction name="actionCalulo_de_Custo_Produto"/>
+    <addaction name="actionConta_Corrente_Banco"/>
+    <addaction name="actionConsulta_por_Telefone_Clientes"/>
+    <addaction name="actionConsulta_de_Juros_por_Documento"/>
+    <addaction name="actionConsulta_Recebimento"/>
+    <addaction name="actionFechamento_Financeiro_do_Mes"/>
+    <addaction name="actionESTATISTICA_de_Vendedor"/>
+   </widget>
+   <addaction name="menuArquivo"/>
+   <addaction name="menuMovimento"/>
+   <addaction name="menuCaixa"/>
+   <addaction name="menuConsulta"/>
+   <addaction name="menuRelatorio"/>
+   <addaction name="menuUtilitario"/>
+   <addaction name="menuAPP_FORCA_DE_VENDA"/>
+   <addaction name="menuSuporte_Tecnico"/>
+   <addaction name="menuMudar_de_Empresa"/>
+   <addaction name="menuMensagem_Interna"/>
+   <addaction name="menuAbre_GAVETA"/>
+   <addaction name="menuSAIR"/>
+  </widget>
+  <action name="actionMovimento">
+   <property name="text">
+    <string>Movimento</string>
+   </property>
+  </action>
+  <action name="actionProduto">
+   <property name="text">
+    <string>Produto</string>
+   </property>
+  </action>
+  <action name="actionCliente">
+   <property name="text">
+    <string>Cliente</string>
+   </property>
+  </action>
+  <action name="actionUsuarios">
+   <property name="text">
+    <string>Usuarios</string>
+   </property>
+  </action>
+  <action name="actionFornecedor">
+   <property name="text">
+    <string>Fornecedor</string>
+   </property>
+  </action>
+  <action name="actionSAIR">
+   <property name="text">
+    <string>SAIR</string>
+   </property>
+  </action>
+  <action name="actionUsuario_Vendedor">
+   <property name="text">
+    <string>Usuario / Vendedor</string>
+   </property>
+  </action>
+  <action name="actionEstados_Imposto">
+   <property name="text">
+    <string>Estados / Imposto</string>
+   </property>
+  </action>
+  <action name="actionCartoes">
+   <property name="text">
+    <string>Cartoes</string>
+   </property>
+  </action>
+  <action name="actionDespesas">
+   <property name="text">
+    <string>Despesas</string>
+   </property>
+  </action>
+  <action name="actionTransportadora">
+   <property name="text">
+    <string>Transportadora</string>
+   </property>
+  </action>
+  <action name="actionCFOP">
+   <property name="text">
+    <string>CFOP</string>
+   </property>
+  </action>
+  <action name="actionFinanceira">
+   <property name="text">
+    <string>Financeira</string>
+   </property>
+  </action>
+  <action name="actionBancos_conta_corrente_int">
+   <property name="text">
+    <string>Bancos (conta corrente int.)</string>
+   </property>
+  </action>
+  <action name="actionEspecie_do_Produto">
+   <property name="text">
+    <string>Especie do Produto</string>
+   </property>
+  </action>
+  <action name="actionConta_Despesas_plano_de_conta">
+   <property name="text">
+    <string>Conta Despesas (plano de conta)</string>
+   </property>
+  </action>
+  <action name="actionRegiao_vendedor">
+   <property name="text">
+    <string>Regiao (vendedor)</string>
+   </property>
+  </action>
+  <action name="actionCadastro_de_Cidade">
+   <property name="text">
+    <string>Cadastro de Cidade</string>
+   </property>
+  </action>
+  <action name="actionCondicoes_de_Pagamento">
+   <property name="text">
+    <string>Condicoes de Pagamento</string>
+   </property>
+  </action>
+  <action name="actionMensagem_para_Observacao">
+   <property name="text">
+    <string>Mensagem para Observacao</string>
+   </property>
+  </action>
+  <action name="actionProfissao_Ramo_Atividade">
+   <property name="text">
+    <string>Profissao / Ramo Atividade</string>
+   </property>
+  </action>
+  <action name="actionCadastro_de_Bancos_Boletos">
+   <property name="text">
+    <string>Cadastro de Bancos (Boletos)</string>
+   </property>
+  </action>
+  <action name="actionNCM">
+   <property name="text">
+    <string>NCM</string>
+   </property>
+  </action>
+  <action name="actionCST_CSOSN">
+   <property name="text">
+    <string>CST / CSOSN</string>
+   </property>
+  </action>
+  <action name="actionTipos_de_Documentos">
+   <property name="text">
+    <string>Tipos de Documentos</string>
+   </property>
+  </action>
+  <action name="actionGrupos_Sub_Grupo">
+   <property name="text">
+    <string>Grupos / Sub-Grupo</string>
+   </property>
+  </action>
+  <action name="actionNF_e_Nota_fiscal_eletronica">
+   <property name="text">
+    <string>NF-e - Nota fiscal eletronica</string>
+   </property>
+  </action>
+  <action name="actionNFC_e_Nota_fiscal_consumidor_eletronica">
+   <property name="text">
+    <string>NFC-e Nota fiscal consumidor eletronica</string>
+   </property>
+  </action>
+  <action name="actionEntrada_de_Mercadoria">
+   <property name="text">
+    <string>Entrada de Mercadoria</string>
+   </property>
+  </action>
+  <action name="actionPedido_de_Compra">
+   <property name="text">
+    <string>Pedido de Compra</string>
+   </property>
+  </action>
+  <action name="actionOrcamento">
+   <property name="text">
+    <string>Orcamento</string>
+   </property>
+  </action>
+  <action name="actionCheque_sem_fundo">
+   <property name="text">
+    <string>Cheque sem fundo</string>
+   </property>
+  </action>
+  <action name="actionCTE_Controle_de_transporte_eletronico">
+   <property name="text">
+    <string>CTE - Controle de transporte eletronico</string>
+   </property>
+  </action>
+  <action name="actionMDF_Manifesto_eletronico_de_documentos_fiscais">
+   <property name="text">
+    <string>MDF - Manifesto eletronico de documentos fiscais</string>
+   </property>
+  </action>
+  <action name="actionDocumentos_a_PAGAR">
+   <property name="text">
+    <string>Documentos a PAGAR</string>
+   </property>
+  </action>
+  <action name="actionDocumentos_a_RECEBER">
+   <property name="text">
+    <string>Documentos a RECEBER</string>
+   </property>
+  </action>
+  <action name="actionBalanco">
+   <property name="text">
+    <string>Balanco</string>
+   </property>
+  </action>
+  <action name="actionDevolucao_de_mercadoria_TROCA">
+   <property name="text">
+    <string>Devolucao de mercadoria (TROCA)</string>
+   </property>
+  </action>
+  <action name="actionBoleto_bancario_Promissoria">
+   <property name="text">
+    <string>Boleto bancario / Promissoria</string>
+   </property>
+  </action>
+  <action name="actionConta_corrente_Bancaria">
+   <property name="text">
+    <string>Conta corrente Bancaria</string>
+   </property>
+  </action>
+  <action name="actionAgrupamento_de_PEDIDOS">
+   <property name="text">
+    <string>Agrupamento de PEDIDOS</string>
+   </property>
+  </action>
+  <action name="actionRomaneio_de_carga">
+   <property name="text">
+    <string>Romaneio de carga</string>
+   </property>
+  </action>
+  <action name="actionLista_de_FALTA_DE_PRODUTO">
+   <property name="text">
+    <string>Lista de FALTA DE PRODUTO</string>
+   </property>
+  </action>
+  <action name="actionCredito_de_CLIENTE">
+   <property name="text">
+    <string>Credito de CLIENTE</string>
+   </property>
+  </action>
+  <action name="actionOrdem_de_servicos">
+   <property name="text">
+    <string>Ordem de servicos</string>
+   </property>
+  </action>
+  <action name="actionMenu_APP_CNNT">
+   <property name="text">
+    <string>Menu APP CNNT</string>
+   </property>
+  </action>
+  <action name="actionMenu_APP_da_HTI_Sistemas">
+   <property name="text">
+    <string>Menu APP da HTI Sistemas</string>
+   </property>
+  </action>
+  <action name="actionColocar_e_retirar_PRODUTOS_EM_PROMOCAO">
+   <property name="text">
+    <string>Colocar e retirar PRODUTOS EM PROMOCAO</string>
+   </property>
+  </action>
+  <action name="actionGerar_mensalidade_dos_Clientes">
+   <property name="text">
+    <string>Gerar mensalidade dos Clientes</string>
+   </property>
+  </action>
+  <action name="actionDetalhe_do_Produto">
+   <property name="text">
+    <string>Detalhe do Produto</string>
+   </property>
+  </action>
+  <action name="actionExpedicao_de_Pedidos">
+   <property name="text">
+    <string>Expedicao de Pedidos</string>
+   </property>
+  </action>
+  <action name="actionProtocolo_NOTAS_DE_ENTRADA">
+   <property name="text">
+    <string>Protocolo NOTAS DE ENTRADA</string>
+   </property>
+  </action>
+  <action name="actionRecebimento_de_Pedidos">
+   <property name="text">
+    <string>Recebimento de Pedidos</string>
+   </property>
+  </action>
+  <action name="actionRecebimento_Diversos">
+   <property name="text">
+    <string>Recebimento Diversos</string>
+   </property>
+  </action>
+  <action name="actionVales">
+   <property name="text">
+    <string>Vales</string>
+   </property>
+  </action>
+  <action name="actionDespesas_2">
+   <property name="text">
+    <string>Despesas</string>
+   </property>
+  </action>
+  <action name="actionCancelar_e_Alterar_Despesas">
+   <property name="text">
+    <string>Cancelar e Alterar Despesas</string>
+   </property>
+  </action>
+  <action name="actionFechamento_do_Caixa">
+   <property name="text">
+    <string>Fechamento do Caixa</string>
+   </property>
+  </action>
+  <action name="actionCancelar_Pedidos">
+   <property name="text">
+    <string>Cancelar Pedidos</string>
+   </property>
+  </action>
+  <action name="actionFaturamento_por_Periodo">
+   <property name="text">
+    <string>Faturamento por Periodo</string>
+   </property>
+  </action>
+  <action name="actionFundo_Caixa">
+   <property name="text">
+    <string>Fundo Caixa</string>
+   </property>
+  </action>
+  <action name="actionRetirada_para_Deposito">
+   <property name="text">
+    <string>Retirada para Deposito</string>
+   </property>
+  </action>
+  <action name="actionBaixa_Documento_a_Receber">
+   <property name="text">
+    <string>Baixa Documento a Receber</string>
+   </property>
+  </action>
+  <action name="actionEstorno_de_Recebimento">
+   <property name="text">
+    <string>Estorno de Recebimento</string>
+   </property>
+  </action>
+  <action name="actionDespesas_Administrativa">
+   <property name="text">
+    <string>Despesas Administrativa</string>
+   </property>
+  </action>
+  <action name="actionBaixa_de_Documento_Apagar">
+   <property name="text">
+    <string>Baixa de Documento Apagar</string>
+   </property>
+  </action>
+  <action name="actionEmisso_de_RECIBOS">
+   <property name="text">
+    <string>Emisso de RECIBOS</string>
+   </property>
+  </action>
+  <action name="actionPreenchimento_de_Cheques">
+   <property name="text">
+    <string>Preenchimento de Cheques</string>
+   </property>
+  </action>
+  <action name="actionEmissao_de_CARNES">
+   <property name="text">
+    <string>Emissao de CARNES</string>
+   </property>
+  </action>
+  <action name="actionEmissao_de_CREDITO">
+   <property name="text">
+    <string>Emissao de CREDITO</string>
+   </property>
+  </action>
+  <action name="actionConsulta_de_CEP_s">
+   <property name="text">
+    <string>Consulta de CEP's</string>
+   </property>
+  </action>
+  <action name="actionAlterar_Lancamento_do_CAIXA">
+   <property name="text">
+    <string>Alterar Lancamento do CAIXA</string>
+   </property>
+  </action>
+  <action name="actionRelatorio_do_CAIXA_por_PERIODO">
+   <property name="text">
+    <string>Relatorio do CAIXA por PERIODO</string>
+   </property>
+  </action>
+  <action name="actionProduto_2">
+   <property name="text">
+    <string>Produto</string>
+   </property>
+  </action>
+  <action name="actionMovimento_2">
+   <property name="text">
+    <string>Movimento</string>
+   </property>
+  </action>
+  <action name="actionCliente_2">
+   <property name="text">
+    <string>Cliente</string>
+   </property>
+  </action>
+  <action name="actionFornecedor_Outras_Despesas">
+   <property name="text">
+    <string>Fornecedor / Outras Despesas</string>
+   </property>
+  </action>
+  <action name="actionCheque">
+   <property name="text">
+    <string>Cheques</string>
+   </property>
+  </action>
+  <action name="actionDocumentos">
+   <property name="text">
+    <string>Documentos</string>
+   </property>
+  </action>
+  <action name="actionPedidos">
+   <property name="text">
+    <string>Pedidos</string>
+   </property>
+  </action>
+  <action name="actionDocumentos_a_RECEBER_2">
+   <property name="text">
+    <string>Documentos a RECEBER</string>
+   </property>
+  </action>
+  <action name="actionDocumentos_a_PAGAR_2">
+   <property name="text">
+    <string>Documentos a PAGAR</string>
+   </property>
+  </action>
+  <action name="actionNF_s_Emitidas_Recebidas">
+   <property name="text">
+    <string>NF's Emitidas / Recebidas</string>
+   </property>
+  </action>
+  <action name="actionFaturamento_por_Periodo_2">
+   <property name="text">
+    <string>Faturamento por Periodo</string>
+   </property>
+  </action>
+  <action name="actionDespesas_Vales_Retiradas">
+   <property name="text">
+    <string>Despesas / Vales / Retiradas</string>
+   </property>
+  </action>
+  <action name="actionFluxo_de_Caixa">
+   <property name="text">
+    <string>Fluxo de Caixa</string>
+   </property>
+  </action>
+  <action name="actionCalculo_de_Financiamento">
+   <property name="text">
+    <string>Calculo de Financiamento</string>
+   </property>
+  </action>
+  <action name="actionCalulo_de_Custo_Produto">
+   <property name="text">
+    <string>Calulo de Custo Produto</string>
+   </property>
+  </action>
+  <action name="actionConta_Corrente_Banco">
+   <property name="text">
+    <string>Conta Corrente Banco</string>
+   </property>
+  </action>
+  <action name="actionConsulta_por_Telefone_Clientes">
+   <property name="text">
+    <string>Consulta por Telefone Clientes</string>
+   </property>
+  </action>
+  <action name="actionConsulta_de_Juros_por_Documento">
+   <property name="text">
+    <string>Consulta de Juros por Documento</string>
+   </property>
+  </action>
+  <action name="actionConsulta_Recebimento">
+   <property name="text">
+    <string>Consulta Recebimento</string>
+   </property>
+  </action>
+  <action name="actionFechamento_Financeiro_do_Mes">
+   <property name="text">
+    <string>Fechamento Financeiro do Mes</string>
+   </property>
+  </action>
+  <action name="actionESTATISTICA_de_Vendedor">
+   <property name="text">
+    <string>ESTATISTICA de Vendedor</string>
+   </property>
+  </action>
+  <action name="actionTabela_de_Precos">
+   <property name="text">
+    <string>Tabela de Precos</string>
+   </property>
+  </action>
+  <action name="actionTabela_de_Custo">
+   <property name="text">
+    <string>Tabela de Custo</string>
+   </property>
+  </action>
+  <action name="actionMovimento_de_Produtos">
+   <property name="text">
+    <string>Movimento de Produtos</string>
+   </property>
+  </action>
+  <action name="actionEstatisticas">
+   <property name="text">
+    <string>Estatisticas</string>
+   </property>
+  </action>
+  <action name="actionComissoes">
+   <property name="text">
+    <string>Comissoes</string>
+   </property>
+  </action>
+  <action name="actionCheque_sem_Fundo">
+   <property name="text">
+    <string>Cheque sem Fundo</string>
+   </property>
+  </action>
+  <action name="actionEmissao_de_RECIBOS">
+   <property name="text">
+    <string>Emissao de RECIBOS</string>
+   </property>
+  </action>
+  <action name="actionProdutos_Abixo_do_minimo_ou_Maximo">
+   <property name="text">
+    <string>Produtos Abixo do minimo ou Maximo*</string>
+   </property>
+  </action>
+  <action name="actionDepesas_Vales_Recibos_Retirada_para_Deposito">
+   <property name="text">
+    <string>Depesas / Vales / Recibos / Retirada para Deposito</string>
+   </property>
+  </action>
+  <action name="actionCliente_Estatistica_Ativo_Inativos_Limites">
+   <property name="text">
+    <string>Cliente(Estatistica / Ativo / Inativos / Limites)*</string>
+   </property>
+  </action>
+  <action name="actionDocumentos_a_PAGAR_3">
+   <property name="text">
+    <string>Documentos a PAGAR</string>
+   </property>
+  </action>
+  <action name="actionDocumentos_a_RECEBER_3">
+   <property name="text">
+    <string>Documentos a RECEBER</string>
+   </property>
+  </action>
+  <action name="actionRelatorio_de_Consultas">
+   <property name="text">
+    <string>Relatorio de Consultas*</string>
+   </property>
+  </action>
+  <action name="actionListagem_para_BALANCO">
+   <property name="text">
+    <string>Relatorio para BALANCO</string>
+   </property>
+  </action>
+  <action name="actionRelatorio_de_PEDIDOS_ORCAMENTOS">
+   <property name="text">
+    <string>Relatorio de PEDIDOS / ORCAMENTOS</string>
+   </property>
+  </action>
+  <action name="actionNotas_Fiscais">
+   <property name="text">
+    <string>Notas Fiscais</string>
+   </property>
+  </action>
+  <action name="actionEtiquetas">
+   <property name="text">
+    <string>Etiquetas*</string>
+   </property>
+  </action>
+  <action name="actionEmissao_de_CARNES_2">
+   <property name="text">
+    <string>Emissao de Cadastro*</string>
+   </property>
+  </action>
+  <action name="actionTEXTTO">
+   <property name="text">
+    <string>TEXTO</string>
+   </property>
+  </action>
+  <action name="actionRelatorio_de_Produtos_com_precos_alterados">
+   <property name="text">
+    <string>Relatorio de Produtos com precos alterados*</string>
+   </property>
+  </action>
+  <action name="actionRelatorio_de_Devolucao_de_Produtos">
+   <property name="text">
+    <string>Relatorio de Devolucao de Produtos*</string>
+   </property>
+  </action>
+  <action name="actionRelatorio_de_Credito_de_Clientes">
+   <property name="text">
+    <string>Relatorio de Credito de Clientes*</string>
+   </property>
+  </action>
+  <action name="actionRelatoriio_de_INVENTARIO_DOS_PRODUTOS">
+   <property name="text">
+    <string>Relatoriio de INVENTARIO DOS PRODUTOS</string>
+   </property>
+  </action>
+  <action name="actionPlanilha_para_cadastro_clientes">
+   <property name="text">
+    <string>Planilha para cadastro clientes *</string>
+   </property>
+  </action>
+  <action name="actionEmissao_de_Pedidos">
+   <property name="text">
+    <string>Emissao de Pedidos</string>
+   </property>
+  </action>
+  <action name="actionAlteracao_de_Pedidos">
+   <property name="text">
+    <string>Alteracao de Pedidos</string>
+   </property>
+  </action>
+  <action name="action2a_Via_de_Pedidos">
+   <property name="text">
+    <string>2a.Via de Pedidos</string>
+   </property>
+  </action>
+  <action name="actionCancelamento_Pedidos">
+   <property name="text">
+    <string>Cancelamento Pedidos</string>
+   </property>
+  </action>
+  <action name="actionEstorno">
+   <property name="text">
+    <string>Estorno de Cancelamento</string>
+   </property>
+  </action>
+  <action name="actionEmitir_varios_PEDIDOS_ORCAMENTO">
+   <property name="text">
+    <string>Emitir varios PEDIDOS/ORCAMENTO</string>
+   </property>
+  </action>
+  <action name="actionAgrupamento_de_PEDIDOS_2">
+   <property name="text">
+    <string>Agrupamento de PEDIDOS</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

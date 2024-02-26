@@ -16,7 +16,7 @@ import os
 app = QApplication([])
 app.setStyleSheet(hg.style_sheet)
 tela = uic.loadUi(f"{hg.c_ui}\\venda_ini.ui")
-icon = QIcon(f"{hg.c_imagem}\\htiico.jpg")
+icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
 tela.setWindowIcon(icon)
 tela.setWindowTitle(f"PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}")
 # Centraliza a janela na tela

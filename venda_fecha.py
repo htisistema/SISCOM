@@ -1,16 +1,14 @@
 from PyQt6 import uic, QtWidgets, QtGui
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QButtonGroup
-from PyQt6.QtCore import QDateTime, Qt
-
+from PyQt6.QtWidgets import QApplication, QMainWindow, QButtonGroup
+from PyQt6.QtCore import QDateTime
 # import keyboard
 from datetime import date, datetime
 from hti_funcoes import conexao_banco, ver_serie
 from autorizacao_senha import aut_sen
 import hti_global as hg
 import os
-
-# from icecream import ic
+from icecream import ic
 from ATENCAO import atencao
 
 
@@ -32,7 +30,7 @@ icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 # AJUSTAR A TELA EM RELACAO AO MONITOR
-
+ic()
 if hg.mtp_tela == "G":
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
@@ -192,17 +190,17 @@ def criar_tela(mnum_pedido):
 def salva_pedido():
     app1 = QApplication([])
     app1.setStyleSheet(hg.style_sheet)
-    tela1 = uic.loadUi(f"{hg.c_ui}\\venda_ini.ui")
+    tela1 = uic.loadUi(f"{hg.c_ui}\\info_carro.ui")
     icon1 = QIcon(f"{hg.c_imagem}\\htiico.ico")
-    tela1.setWindowIcon(icon)
+    tela1.setWindowIcon(icon1)
     tela1.setWindowTitle(
-        f"FECHAMENTO DO PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}"
+        f"INFORMACAO DO CARRO         {hg.SISTEMA}  Versao: {hg.VERSAO}"
     )
     # Centraliza a janela na tela
     qt_rectangle1 = tela1.frameGeometry()
     center_point1 = app1.primaryScreen().availableGeometry().center()
-    qt_rectangle.moveCenter(center_point)
-    tela1.move(qt_rectangle.topLeft())
+    qt_rectangle.moveCenter(center_point1)
+    tela1.move(qt_rectangle1.topLeft())
     tela1.show()
     ic()
 
@@ -657,6 +655,7 @@ def fechar_pedido(m_informa_pedido):
 
     liberar_campos()
     tela.cb_forma_pg.currentIndexChanged.connect(verifica_condicao)
+    tela.cb_vendedor.currentIndexChanged.connect(verifica_vendedor)
     tela.data_previsao.dateChanged.connect(ver_entrega)
     tela.ds_qtd_dias.valueChanged.connect(liberar_campos)
     tela.ds_desconto.valueChanged.connect(atualizar_pedido)

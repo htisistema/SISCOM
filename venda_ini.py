@@ -4,8 +4,6 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtWidgets import QApplication, QButtonGroup, QMessageBox
 from PyQt6.QtCore import Qt
-
-# import keyboard
 from hti_funcoes import conexao_banco
 import hti_global as hg
 from venda import executar_consulta
@@ -35,7 +33,7 @@ center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
-lbl_produto.setText("C A I X A   L I V R E ")
+lbl_produto.setText("T E R M I N A L   L I V R E ")
 if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
     imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
 else:
@@ -48,7 +46,7 @@ lbl_forma_pagamento = tela.findChild(QtWidgets.QLabel, "lb_forma_pagamento")
 
 conexao_banco()
 
-hg.conexao_cursor.execute(f"SELECT cod_cli, razao, nome FROM saccli order by razao")
+hg.conexao_cursor.execute("SELECT cod_cli, razao, nome FROM saccli order by razao")
 arq_cli = hg.conexao_cursor.fetchall()
 hg.conexao_bd.commit()
 for ret_cli in arq_cli:
@@ -56,7 +54,7 @@ for ret_cli in arq_cli:
     tela.cb_cliente.addItem(item)
 tela.cb_cliente.setCurrentIndex(0)
 
-hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
+hg.conexao_cursor.execute("SELECT scod_op, snome FROM insopera ORDER BY snome")
 # Recupere o resultado
 arq_usuario = hg.conexao_cursor.fetchall()
 hg.conexao_bd.commit()
@@ -72,12 +70,11 @@ for ret_usuario in arq_usuario:
     tela.cb_representante.addItem(item)
 tela.cb_representante.setCurrentIndex(0)
 
-hg.conexao_cursor.execute(
-    f"SELECT codigo, descri, percent, cond, COALESCE(dia1, 0), COALESCE(dia2, 0) , "
-    f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), COALESCE(dia7, 0), "
-    f"COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), COALESCE(dia11, 0), COALESCE(dia12, 0), "
-    f"COALESCE(dia13, 0), COALESCE(dia14, 0), COALESCE(dia15, 0) FROM sactabpg ORDER BY codigo"
-)
+hg.conexao_cursor.execute("SELECT codigo, descri, percent, cond, COALESCE(dia1, 0), COALESCE(dia2, 0) , "
+                          "COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
+                          "COALESCE(dia7, 0), COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), "
+                          "COALESCE(dia11, 0), COALESCE(dia12, 0), COALESCE(dia13, 0), COALESCE(dia14, 0), "
+                          "COALESCE(dia15, 0) FROM sactabpg ORDER BY codigo")
 # Recupere o resultado
 arq_sactabpg = hg.conexao_cursor.fetchall()
 hg.conexao_bd.commit()

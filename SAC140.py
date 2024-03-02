@@ -5,7 +5,7 @@ from PyQt6 import uic, QtWidgets, QtCore
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox
 from datetime import datetime, date
-from hti_funcoes import ver_nivel, conexao_banco, verificar_conexao
+from hti_funcoes import conexao_banco
 import hti_global as hg
 
 
@@ -289,7 +289,6 @@ def inclusao_fornecedor():
 
 if __name__ == '__main__':
     conexao_banco()
-    verificar_conexao()
     sac140()
     app.exec()
     hg.conexao_bd.close()

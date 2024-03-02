@@ -1,5 +1,11 @@
 import configparser
+import socket
+import os
 # from PyQt6 import QtWidgets
+# PEGA O NOME DO ARQUIVO EM EXECUCAO
+nome_file = os.path.basename(__file__)
+nome_computador = socket.gethostname()
+endereco_ip = socket.gethostbyname(nome_computador)
 
 VERSAO = 'v23.04.13'
 SISTEMA = '.: SISCOM :. Sistema Automacao Comercial'
@@ -157,8 +163,3 @@ QTableWidget {
 }
 
 """
-
-if __name__ == '__main__':
-    conexao_cursor.close()
-    conexao_bd.close()
-

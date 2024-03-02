@@ -1,12 +1,13 @@
 # PRINCIPAL
 
 import os
-import socket
+# import socket
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QPixmap, QIcon
 from PyQt6.QtWidgets import QMessageBox
-from hti_funcoes import criar_tabelas
+from hti_funcoes import criar_tabelas, conexao_banco
 import hti_global as hg
+from menu import criar_menu
 
 # from pyshortcuts import make_shortcut
 #
@@ -23,27 +24,10 @@ import hti_global as hg
 # # Cria o atalho
 # make_shortcut(caminho_sistema, caminho_atalho, icon=caminho_imagem)
 
-
-# VERSAO = 'v23.04.13'
-# SIT_TIP = 'SISCOM'
-# SISTEMA = '.: SISCOM :. Sistema Automacao Comercial'
-# HTISISTEMA = '.: HTI Sistemas Ltda :.'
-# CNPJ_HTI = '24494200000106'
-# INSC_MUNCI = '066728339'
-# RAZAO_HTI = 'M. EDUARDA B. B. CINTRA'
-# END_HTI = 'Rua Cicero Monteiro'
-# MNUM_HTI = '1040'
-# COMP_HTI = ''
-# BAIRRO_HTI = 'Centro'
-# CIDADE_HTI = 'Tacaimbo'
-# UF_HTI = 'PE'
-# CEP_HTI = '55140000'
-# FONE_HTI = '993127894'
-
-# PEGA O NOME DO ARQUIVO EM EXECUCAO
-nome_file = os.path.basename(__file__)
-nome_computador = socket.gethostname()
-endereco_ip = socket.gethostbyname(nome_computador)
+# # PEGA O NOME DO ARQUIVO EM EXECUCAO
+# nome_file = os.path.basename(__file__)
+# nome_computador = socket.gethostname()
+# endereco_ip = socket.gethostbyname(nome_computador)
 
 # print(ip_address)
 
@@ -56,7 +40,7 @@ app.setStyleSheet(hg.style_sheet)
 tela = uic.loadUi(f"{hg.c_ui}\\siscom.ui")
 icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
 tela.setWindowIcon(icon)
-tela.setWindowTitle(f'LOGIN         {hg.SISTEMA}  Versao: {hg.VERSAO}')
+tela.setWindowTitle(f"LOGIN         {hg.SISTEMA}  Versao: {hg.VERSAO}")
 # Centraliza a janela na tela
 qt_rectangle = tela.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
@@ -75,11 +59,13 @@ tela.lb_imagem.setPixmap(pixmap_redimensionado)
 
 logohti = QPixmap(f"{hg.c_imagem}\\logoHTI.png")
 pixmap_redimensionado = logohti.scaled(150, 150)  # redimensiona a imagem para 100x100
-tela.logohti.setStyleSheet("background-color: rgb(190, 216, 255);border-width: 0px;border-radius: 0px;")
+tela.logohti.setStyleSheet(
+    "background-color: rgb(190, 216, 255);border-width: 0px;border-radius: 0px;"
+)
 tela.logohti.setPixmap(pixmap_redimensionado)
 
 lbl_nome_cliente = tela.findChild(QtWidgets.QLabel, "versao")
-lbl_nome_cliente.setText(f'Versao: {hg.VERSAO}')
+lbl_nome_cliente.setText(f"Versao: {hg.VERSAO}")
 
 # tela.statusBar.showMessage("Mensagem de status")
 
@@ -124,15 +110,16 @@ def verificar_senha():
     mop = tela.comboBox.itemText(index)
     mcod_op = mop[0:3]
     entry_senha_editado = str(tela.inp_senha.text().upper().strip())
-    hg.conexao_cursor.execute(f"SELECT * FROM insopera WHERE scod_op = '{mcod_op}' "
-                              f"and plug = '{entry_senha_editado}'")
+    hg.conexao_cursor.execute(
+        f"SELECT * FROM insopera WHERE scod_op = '{mcod_op}' "
+        f"and plug = '{entry_senha_editado}'"
+    )
     # Recupere o resultado
     arq_senha = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
     if arq_senha is not None:
         hg.geral_cod_usuario = arq_senha[0]
         hg.geral_nivel_usuario = arq_senha[12]
-        from menu import criar_menu
         tela.close()
         criar_menu()
     else:
@@ -164,7 +151,7 @@ def dados_login():
     hg.conexao_bd.commit()
 
     for ret_insopera in arq_insopera:
-        item = f'{ret_insopera[0]} - {ret_insopera[1]}'.strip('(),')
+        item = f"{ret_insopera[0]} - {ret_insopera[1]}".strip("(),")
         tela.comboBox.addItem(item)
     tela.inp_senha.setReadOnly(False)
     tela.inp_senha.returnPressed.connect(verificar_senha)
@@ -178,10 +165,8 @@ def dados_login():
     app.exec()
 
 
-if __name__ == '__main__':
-    from hti_funcoes import conexao_banco, verificar_conexao
+if __name__ == "__main__":
     conexao_banco()
-    verificar_conexao()
     dados_login()
     # Feche a conexão
     tela.close()

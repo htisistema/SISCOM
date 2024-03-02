@@ -4,8 +4,8 @@ import os
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QMessageBox
-from hti_funcoes import ver_nivel
-from hti_funcoes import conexao_banco, verificar_conexao
+# from hti_funcoes import ver_nivel
+from hti_funcoes import conexao_banco
 import hti_global as hg
 
 titulo = "ALTERACAO DE BANCO"
@@ -146,7 +146,6 @@ def alteracao_banco(mcodigo):
 
 if __name__ == '__main__':
     conexao_banco()
-    verificar_conexao()
     alteracao_banco('002')
     app.exec()
     hg.conexao_bd.close()

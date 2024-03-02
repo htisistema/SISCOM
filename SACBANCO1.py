@@ -4,8 +4,8 @@ import os
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QMessageBox
-from hti_funcoes import ver_nivel
-from hti_funcoes import conexao_banco, verificar_conexao
+# from hti_funcoes import ver_nivel
+from hti_funcoes import conexao_banco
 import hti_global as hg
 
 titulo = "INCLUSÃO DE BANCO"
@@ -149,7 +149,6 @@ def inclusao_banco():
 
 if __name__ == '__main__':
     conexao_banco()
-    verificar_conexao()
     inclusao_banco()
     app.exec()
     hg.conexao_bd.close()

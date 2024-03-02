@@ -50,23 +50,19 @@ tela.empresa.setPixmap(pixmap_redimensionado)
 # m_set = hg.conexao_cursor.fetchone()
 # hg.conexao_bd.commit()
 
-hg.conexao_cursor.execute(f"SELECT cidade FROM saccid ORDER BY cidade")
-# Recupere o resultado
+hg.conexao_cursor.execute("SELECT cidade FROM saccid ORDER BY cidade")
 arq_cidade = hg.conexao_cursor.fetchall()
 hg.conexao_bd.commit()
 
 hg.conexao_cursor.execute(f"SELECT cod_profi, profi FROM sacprofi")
-# Recupere o resultado
 arq_profi = hg.conexao_cursor.fetchall()
 hg.conexao_bd.commit()
 
 hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
-# Recupere o resultado
 arq_usuario = hg.conexao_cursor.fetchall()
 hg.conexao_bd.commit()
 
 hg.conexao_cursor.execute(f"SELECT codigo, descri FROM sactabpg ORDER BY codigo")
-# Recupere o resultado
 arq_sactabpg = hg.conexao_cursor.fetchall()
 hg.conexao_bd.commit()
 

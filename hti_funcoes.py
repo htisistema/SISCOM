@@ -12,6 +12,7 @@ def conexao_banco():
     # print('conexao')
     hg.conexao_bd = fdb.connect(dsn=hg.host, user='SYSDBA', password='masterkey')
     hg.conexao_cursor = hg.conexao_bd.cursor()
+    verificar_conexao()
     hg.conexao_cursor.execute("SELECT * FROM sacsetup")
     hg.m_set = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
@@ -22,7 +23,7 @@ def conexao_banco():
 
 
 def verificar_conexao():
-    conexao_banco()
+    # conexao_banco()
     hg.conexao_cursor.execute("SELECT rdb$get_context('SYSTEM', 'ENGINE_VERSION') FROM rdb$database;")
     resultado = hg.conexao_cursor.fetchone()
     if resultado:

@@ -1,6 +1,18 @@
 GERAR O EXECUTAVEL
 pyinstaller --onefile -w --icon=C:\HTI\PYTHON\SISCOM\imagem\htiico.ico --name=SISCOMpy siscom.py
 
+# CONVERTER CAMPOS NULL EM CAMPO EM BRANCO
+for linha in resultados:
+    nova_linha = []
+    for valor in linha:
+        if valor is None:
+            nova_linha.append('')
+        else:
+            nova_linha.append(valor)
+    # Faça algo com a nova linha, como imprimir ou processar
+    print(nova_linha)
+
+
 # Método append():
 O método append() é usado para adicionar um item ao final da lista.
 minha_lista = [1, 2, 3]

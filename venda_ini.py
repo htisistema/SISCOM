@@ -1,5 +1,5 @@
 # from typing import List, Any
-
+import os
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtWidgets import QApplication, QButtonGroup, QMessageBox
@@ -9,7 +9,6 @@ import hti_global as hg
 from venda import executar_consulta
 from autorizacao_senha import aut_sen
 from hti_funcoes import ver_compras
-import os
 
 app = QApplication([])
 app.setStyleSheet(hg.style_sheet)
@@ -560,7 +559,7 @@ def pedido_inicial():
         if str(hg.geral_cod_usuario).zfill(5) in item_text:
             tela.cb_vendedor.setCurrentIndex(i)
             break
-
+    # print(hg.m_indiv[25])
     if hg.m_indiv[25] == "S":
         salvar_informacao()
     else:

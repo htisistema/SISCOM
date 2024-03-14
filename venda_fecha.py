@@ -322,12 +322,38 @@ def atualizar_pedido():
                     values = (
                         cons_cli[31],
                         cons_cli[33],
-                        mplaca,
-                        m_carro,
-                        m_modelo,
-                        m_km,
-                        cons_cli[1],
-                        cons_oper[8],
+                        "",  # mplaca
+                        "",  # m_carro
+                        "",  # m_modelo,
+                        "",  # m_km,
+                        cons_cli[1],  # cod_cli
+                        cons_oper[8],  # comissao ooperador
+                        "",  # codigo finan
+                        "",  # cod tabela
+                        "",  # vlr presta
+                        "",  # cond vezes
+                        "",  # cond intenv
+                        "",  # tp_venda
+                        "",  # vlr_enta
+                        "",  # stat_itam
+                        "",  # cod_vend
+                        "",  # vendedor
+                        "",  # comissao
+                        "",  # desc
+                        "",  # desc_merc
+                        "",  # vlr_fat
+                        "",  # obs1
+                        "",  # obs2
+                        "",  # obs3
+                        "",  # obs4
+                        "",  # obs5
+                        "",  # obs6
+                        "",  # obs7
+                        "",  # obs8
+                        "",  # producao
+                        '',  # cod_tran
+                        '',  # d_entrega
+                        'F',  # fecha
                     )
 
                     print(sql, values)

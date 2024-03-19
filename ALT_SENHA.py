@@ -1,11 +1,13 @@
 # ALTERAR OPERADOR
 
 import os
+
 # import socket
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QPixmap, QIcon
 from PyQt6.QtWidgets import QMessageBox
 from hti_funcoes import conexao_banco
+from venda_pdv import executar_consulta
 import hti_global as hg
 
 # Crie a janela
@@ -30,6 +32,7 @@ else:
 pixmap_redimensionado = imagem.scaled(180, 180)  # redimensiona a imagem para 100x100
 tela.lb_imagem.setPixmap(pixmap_redimensionado)
 conexao_banco()
+mopcao = 0
 
 
 def on_close_event(event):
@@ -41,6 +44,7 @@ tela.closeEvent = on_close_event
 
 
 def verificar_senha():
+    global mopcao
     index = tela.comboBox.currentIndex()
     mop = tela.comboBox.itemText(index)
     mcod_op = mop[0:3]
@@ -56,6 +60,9 @@ def verificar_senha():
         hg.geral_cod_usuario = arq_senha[0]
         hg.geral_nivel_usuario = arq_senha[12]
         tela.close()
+        if mopcao == 1:
+            executar_consulta()
+
         return True
     else:
         QMessageBox.warning(tela, "Erro de login", "SENHA INCORRETA!")
@@ -72,7 +79,9 @@ def fecha_tela():
     app.quit()
 
 
-def dados_login():
+def dados_login(mop):
+    global mopcao
+    mopcao = mop
     # hg.conexao_cursor.execute("SELECT * FROM sacsetup")
     # # Recupere o resultado
     # m_set = hg.conexao_cursor.fetchall()
@@ -97,7 +106,7 @@ def dados_login():
 
 
 if __name__ == "__main__":
-    dados_login()
+    dados_login(1)
     # Feche a conexão
     tela.close()
     hg.conexao_cursor.close()

@@ -152,8 +152,10 @@ class VariavelP(QMainWindow):
         fechar_pedido(mnum_ped)
 
 
-def criar_tela(mnum_pedido):
+def criar_tela():
     global mtotal_pedido, resultados
+    mdin = 0
+    mpix = 0
     tela.textBrowser.clear()
     lbl_numero_pedido.setText(f" Numero Pedido: {mnumero_pedido}")
     lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
@@ -196,6 +198,20 @@ def criar_tela(mnum_pedido):
             # VariavelP.mtotal_g = "{:12,.2f}".format(mtotal_geral)
             linha1 = f"SUB-TOTAL: {mtotal_pedido}"
             lbl_sub_total.setText(linha1)
+
+        for recebe in m_recebe:
+            mtipo = recebe[0]
+            print(mtipo)
+            if mtipo == 'DN':
+                mdin += float(recebe[9])
+            if mtipo == 'PX':
+                mpix += float(recebe[9])
+
+        mdin_tx = f"{mdin}"
+        mpix_tx = f"{mpix}"
+        lbl_dinheiro.setText(mdin_tx)
+        lbl_pix.setText(mpix_tx)
+
     except Exception as e:
         print(f"Erro ao executar a consulta: {e}")
 
@@ -275,57 +291,78 @@ def salva_pedido():
 
 
 def verifica_condicao():
-    mdinheiro = tela.ds_dinheiro.Value()
-    mpix = tela.ds_pix.Value()
-    mcartao = tela.ds_cartao.Value()
-    mduplicata = tela.ds_duplicata.Value()
-    mcheque = tela.ds_cheque.Value()
+    global m_recebe
+    mdinheiro = tela.ds_dinheiro.value()
+    mpix = tela.ds_pix.value()
+    mcartao = tela.ds_cartao.value()
+    mduplicata = tela.ds_duplicata.value()
+    mcheque = tela.ds_cheque.value()
 
-    tela.ds_entrada.setValue(float(0))
-    tela.ds_qtd_dias.setValue(float(0))
+    # tela.ds_entrada.setValue(float(0))
+    # tela.ds_qtd_dias.setValue(float(0))
 
     index = tela.cb_cliente.currentIndex()
     mop = tela.cb_cliente.itemText(index)
     mcod_cli = mop[0:5]
-    index = tela.cb_forma_pg.currentIndex()
-    mop = tela.cb_forma_pg.itemText(index)
-    m_tipo_pag = mop[0:1]
-    # ic(m_tipo_pag)
-    if m_tipo_pag == "2":
-        tela.ds_dia1.setValue(float(1))
-        tela.ds_qtd_dias.setValue(float(1))
-    elif m_tipo_pag == "3":
-        tela.ds_qtd_dias.setEnabled(True)
-        tela.ds_qtd_dias.setFocus()
-        tela.ds_qtd_dias.selectAll()
-    elif m_tipo_pag == "4" or m_tipo_pag == "5":
-        tela.ds_entrada.setEnabled(True)
-        tela.ds_qtd_dias.setEnabled(True)
-        tela.ds_entrada.setFocus()
-        tela.ds_entrada.selectAll()
+    # index = tela.cb_forma_pg.currentIndex()
+    # mop = tela.cb_forma_pg.itemText(index)
+    # m_tipo_pag = mop[0:1]
+    # # ic(m_tipo_pag)
+    # if m_tipo_pag == "2":
+    #     tela.ds_dia1.setValue(float(1))
+    #     tela.ds_qtd_dias.setValue(float(1))
+    # elif m_tipo_pag == "3":
+    #     tela.ds_qtd_dias.setEnabled(True)
+    #     tela.ds_qtd_dias.setFocus()
+    #     tela.ds_qtd_dias.selectAll()
+    # elif m_tipo_pag == "4" or m_tipo_pag == "5":
+    #     tela.ds_entrada.setEnabled(True)
+    #     tela.ds_qtd_dias.setEnabled(True)
+    #     tela.ds_entrada.setFocus()
+    #     tela.ds_entrada.selectAll()
+    #
+    # hg.conexao_cursor.execute(f"SELECT * FROM saccli WHERE cod_cli = {mcod_cli}")
+    # cons_cli = hg.conexao_cursor.fetchone()
+    # hg.conexao_bd.commit()
+    # if len(cons_cli) > 0 and cons_cli[58] > 0 and m_tipo_pag != "3":
+    #     mdesc = cons_cli[58] / 100
+    #     atencao(
+    #         f"ESTE CLIENTE: {cons_cli[1]} - {cons_cli[2]} TERA UM DESCONTO DE: {cons_cli[58]}"
+    #     )
+    #
+    # elif (
+    #     (m_tipo_pag == "1" or m_tipo_pag == "2" or hg.m_set[34] == "S")
+    #     and hg.m_set[104] == "S"
+    #     or (m_tipo_pag == "6" and ver_serie() == "141416")
+    # ) and m_tipo_pag != "3":
+    #     tela.rb_percentual.setEnabled(True)
+    #     tela.rb_valor.setEnabled(True)
+    #     tela.ds_desconto.setEnabled(True)
 
-    # if not mcli_aux == mcod_cli and not m_tipo_pag == '3':
-    # ic(m_tipo_pag)
-    # if m_tipo_pag != '3':
-    hg.conexao_cursor.execute(f"SELECT * FROM saccli WHERE cod_cli = {mcod_cli}")
-    # # 145082Recupere o resultado
-    # ic(mcod_cli, mcli_aux)
-    cons_cli = hg.conexao_cursor.fetchone()
-    hg.conexao_bd.commit()
-    if len(cons_cli) > 0 and cons_cli[58] > 0 and m_tipo_pag != "3":
-        mdesc = cons_cli[58] / 100
-        atencao(
-            f"ESTE CLIENTE: {cons_cli[1]} - {cons_cli[2]} TERA UM DESCONTO DE: {cons_cli[58]}"
-        )
+    if mdinheiro > 0:
+        m_recebe.append("DN")
+        m_recebe.append("AV")
+        m_recebe.append("   ")
+        m_recebe.append("      ")
+        m_recebe.append("99999999")
+        m_recebe.append(data_atual)
+        m_recebe.append("C")
+        m_recebe.append("   ")
+        m_recebe.append('')  # cupom
+        m_recebe.append(mdinheiro)  # valor
+        m_recebe.append('')  # finan
+        m_recebe.append('')  # cartao
+        m_recebe.append("        ")
+        m_recebe.append("             ")
+        m_recebe.append('')  # corrente
+        m_recebe.append(" ")
+        m_recebe.append(" ")
+        m_recebe.append(" ")
+        mos = resultados[93]
+        if mos is not None:
+            m_recebe.append(" OS:" + resultados[93])
 
-    elif (
-        (m_tipo_pag == "1" or m_tipo_pag == "2" or hg.m_set[34] == "S")
-        and hg.m_set[104] == "S"
-        or (m_tipo_pag == "6" and ver_serie() == "141416")
-    ) and m_tipo_pag != "3":
-        tela.rb_percentual.setEnabled(True)
-        tela.rb_valor.setEnabled(True)
-        tela.ds_desconto.setEnabled(True)
+        print(m_recebe[1])
 
     # if mdinheiro == mtotal_pedido:
     #     mvalor = mdinheiro
@@ -453,34 +490,6 @@ def fechar_pedido(mnum_pedido):
             tela.cb_cliente.setCurrentIndex(i)
             break
 
-    mtot = f"{mtotal_pedido}"
-
-    lbl_dinheiro.setText(mtot)
-
-    # m_recebe.append("DN")
-    # m_recebe.append("AV")
-    # m_recebe.append("   ")
-    # m_recebe.append("      ")
-    # m_recebe.append("99999999")
-    # m_recebe.append(data_atual)
-    # m_recebe.append("C")
-    # m_recebe.append("   ")
-    # m_recebe.append(mn_cupom)
-    # m_recebe.append(mvalor)
-    # m_recebe.append(mn_fin)
-    # m_recebe.append(mcartao)
-    # m_recebe.append("        ")
-    # m_recebe.append("             ")
-    # m_recebe.append("mcorrente")
-    # m_recebe.append(" ")
-    # m_recebe.append(" ")
-    # m_recebe.append(" ")
-    # mos = resultados[93]
-    # if mos is not None:
-    #     m_recebe.append(" OS:" + resultados[93])
-    #
-    # print(m_recebe[1])
-
     tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
     tela.ds_pix.editingFinished.connect(verifica_condicao)
     tela.ds_cartao.editingFinished.connect(verifica_condicao)
@@ -496,7 +505,7 @@ def fechar_pedido(mnum_pedido):
     # tela.mcodigo.returnPressed.connect(verificar_produto)
     # tela.mcodigo.setFocus()
     # tela.textBrowser.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
-    criar_tela(mnumero_pedido)
+    criar_tela()
     tela.show()
 
 

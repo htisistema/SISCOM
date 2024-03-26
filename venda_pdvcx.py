@@ -5,9 +5,7 @@ from PyQt6.QtCore import QDateTime, Qt
 
 # import keyboard
 from datetime import date, datetime
-
 from icecream import ic
-
 from hti_funcoes import conexao_banco, ver_serie
 from autorizacao_senha import aut_sen
 import hti_global as hg
@@ -82,11 +80,15 @@ tela.empresa.setPixmap(pixmap_redimensionado)
 # lbl_operador.setText(f" Operador: {hg.geral_cod_usuario}")
 lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
 
-mnum_ped = ""
+lbl_dinheiro = tela.findChild(QtWidgets.QLabel, "lb_dinheiro")
+lbl_pix = tela.findChild(QtWidgets.QLabel, "lb_pix")
+lbl_cartao = tela.findChild(QtWidgets.QLabel, "lb_cartao")
+lbl_duplicata = tela.findChild(QtWidgets.QLabel, "lb_duplicata")
+lbl_cheque = tela.findChild(QtWidgets.QLabel, "lb_cheque")
+
 lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
 lbl_produto.setText("F E C H A M E N T O   D O   P E D I D O")
 lbl_cabecalho = tela.findChild(QtWidgets.QLabel, "cabecalho")
-data_atual = QDateTime.currentDateTime()
 
 conexao_banco()
 # hg.conexao_cursor.execute("SELECT * FROM sacsetup")
@@ -94,17 +96,21 @@ conexao_banco()
 # m_set = hg.conexao_cursor.fetchone()
 # hg.conexao_bd.commit()
 
-hg.conexao_cursor.execute(f"SELECT cod_cli, razao FROM saccli")
+hg.conexao_cursor.execute(f"SELECT razao, cod_cli FROM saccli ORDER BY razao")
 arq_cli = hg.conexao_cursor.fetchall()
 hg.conexao_bd.commit()
 for ret_cli in arq_cli:
-    item = f"{str(ret_cli[0]).zfill(5)} - {ret_cli[1]}".strip("(),")
+    item = f"{ret_cli[0]} - {str(ret_cli[1]).zfill(5)}".strip("(),")
     tela.cb_cliente.addItem(item)
 tela.cb_cliente.setCurrentIndex(0)
 
+data_atual = QDateTime.currentDateTime()
+mnumero_pedido = ""
 mcli_aux = 0
 data_vazia = date(1900, 1, 1)
-info_inicial_pedido = []
+mtotal_pedido = 0
+m_recebe = []
+resultados = []
 # tela.cb_forma_pg.addItems(
 #     [
 #         "1->Dinheiro",
@@ -147,12 +153,13 @@ class VariavelP(QMainWindow):
 
 
 def criar_tela(mnum_pedido):
+    global mtotal_pedido, resultados
     tela.textBrowser.clear()
-    lbl_numero_pedido.setText(f" Numero Pedido: {VariavelP.numero_pedido}")
+    lbl_numero_pedido.setText(f" Numero Pedido: {mnumero_pedido}")
     lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
     try:
         hg.conexao_cursor.execute(
-            f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{VariavelP.numero_pedido}'"
+            f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{mnumero_pedido}'"
         )
         # # 145082Recupere o resultado
         resultados = hg.conexao_cursor.fetchall()
@@ -185,228 +192,95 @@ def criar_tela(mnum_pedido):
                 tela.textBrowser.append(linha)
                 tela.textBrowser.append(linha1)
                 # print(f"{hg.c_produto}\\{mcodigo}.jpg")
-            VariavelP.mtotal_g = "{:12,.2f}".format(mtotal_geral)
-            linha1 = f"SUB-TOTAL: {VariavelP.mtotal_g}"
+            mtotal_pedido = "{:12,.2f}".format(mtotal_geral)
+            # VariavelP.mtotal_g = "{:12,.2f}".format(mtotal_geral)
+            linha1 = f"SUB-TOTAL: {mtotal_pedido}"
             lbl_sub_total.setText(linha1)
-
     except Exception as e:
         print(f"Erro ao executar a consulta: {e}")
 
 
 def salva_pedido():
-    app1 = QApplication([])
-    app1.setStyleSheet(hg.style_sheet)
-    tela1 = uic.loadUi(f"{hg.c_ui}\\venda_ini.ui")
-    icon1 = QIcon(f"{hg.c_imagem}\\htiico.ico")
-    tela1.setWindowIcon(icon)
-    tela1.setWindowTitle(
-        f"FECHAMENTO DO PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}"
+    index = tela.cb_cliente.currentIndex()
+    mop = tela.cb_cliente.itemText(index)
+    mcod_cli = mop[0:5]
+
+    hg.conexao_cursor.execute(f"SELECT * FROM saccli WHERE cod_cli = {mcod_cli}")
+    cons_cli = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
+    hg.conexao_cursor.execute(
+        f"SELECT * FROM insopera WHERE scod_op = {hg.geral_cod_usuario}"
     )
-    # Centraliza a janela na tela
-    qt_rectangle1 = tela1.frameGeometry()
-    center_point1 = app1.primaryScreen().availableGeometry().center()
-    qt_rectangle.moveCenter(center_point)
-    tela1.move(qt_rectangle.topLeft())
-    tela1.show()
-    ic()
+    cons_oper = hg.conexao_cursor.fetchone()
+    hg.conexao_bd.commit()
 
+    sql = (
+        f"UPDATE sacped_s SET "
+        f"pcgc = ?, "
+        f"pcpf = ?, "
+        f"pplaca = ?, "
+        f"pcarro = ?, "
+        f"pmodelo = ?, "
+        f"pkm = ?, "
+        f"pcod_cli = ?, "
+        f"pcomi_oper = ?, "
+        f"pcod_fin = ?, "
+        f"pcod_tab = ?, "
+        f"pvlr_pres = ?, "
+        f"pcond_veze = ?, "
+        f"pcond_inte = ?, "
+        f"ptp_vend = ?, "
+        f"pvlr_ent = ?, "
+        f"pstat_item = ?, "
+        f"pcod_vend = ?, "
+        f"pvendedor = ?, "
+        f"pcomissao = ?, "
+        f"pdesc = ?, "
+        f"pdesc_merc = ?, "
+        f"pvlr_fat = ?, "
+        f"pfecha = ? "
+        f"WHERE  WHERE SR_RECNO = {mnumero_pedido}"
+    )
 
-def atualizar_pedido():
-    mjuros = 0
-    mdesc_aux = tela.ds_desconto.value()
-    mcod_cli = tela.ds_desconto.value()
-    mdesc = 0
-    # ic(tela.rb_valor.isChecked())
-    if tela.rb_percentual.isChecked():
-        mdesc = mdesc_aux / 100
-    elif tela.rb_valor.isChecked():
-        mvalor_pedido_str = VariavelP.mtotal_g
-        mvalor_pedido_str = mvalor_pedido_str.replace(",", "").replace(",", ".")
-        mvalor_pedido = float(mvalor_pedido_str)
-        mdesc = mdesc_aux / mvalor_pedido
+    values = (
+        cons_cli[31],
+        cons_cli[33],
+        "",  # mplaca
+        "",  # m_carro
+        "",  # m_modelo,
+        "",  # m_km,
+        cons_cli[1],  # cod_cli
+        cons_oper[8],  # comissao ooperador
+        "",  # codigo finan
+        "",  # cod tabela
+        "",  # vlr presta
+        "",  # cond vezes
+        "",  # cond intenv
+        "",  # tp_venda
+        "",  # vlr_enta
+        "",  # stat_itam
+        "",  # cod_vend
+        "",  # vendedor
+        "",  # comissao
+        "",  # desc
+        "",  # desc_merc
+        "",  # vlr_fat
+        "F",  # fecha
+    )
 
-    mcomissao = 0
+    print(sql, values)
 
-    if mjuros > 1 or mdesc > 0:
-        ic("Atualizando e Recalculando o PEDIDO....")
-        if hg.m_set[112] > 0 and mdesc >= hg.m_set[113]:
-            if hg.m_set[112] > 1:
-                comissao = mcomissao * (hg.m_set[113] / 100)
-
-        # ic(VariavelP.numero_pedido)
-        index = tela.cb_cliente.currentIndex()
-        mop = tela.cb_cliente.itemText(index)
-        mcod_cli = mop[0:5]
-
-        hg.conexao_cursor.execute(f"SELECT * FROM saccli WHERE cod_cli = {mcod_cli}")
-        cons_cli = hg.conexao_cursor.fetchone()
-        hg.conexao_bd.commit()
-
-        hg.conexao_cursor.execute(
-            f"SELECT * FROM insopera WHERE cod_cli = {hg.geral_cod_usuario}"
-        )
-        cons_oper = hg.conexao_cursor.fetchone()
-        hg.conexao_bd.commit()
-
-        hg.conexao_cursor.execute(
-            # f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{VariavelP.numero_pedido}'"
-            f"SELECT * FROM sacped_s WHERE pnum_ped = {VariavelP.numero_pedido} AND SR_DELETED =' '"
-        )
-        cons_ped = hg.conexao_cursor.fetchall()
-        hg.conexao_bd.commit()
-        if len(cons_ped) > 0:
-            # ic(cons_ped)
-            for tupla in cons_ped:
-                promocao = float(tupla[51])
-                # ic(promocao)
-                if promocao > 0:
-                    pass
-                else:
-                    if tupla[16] < tupla[19]:
-                        valor_teste = float(tupla[19]) * (
-                            mdesc + (float(tupla[38] / 100))
-                        )
-                        if valor_teste > 0.01:
-                            # ic(valor_teste)
-                            valor = valor_teste - (
-                                valor_teste * (mdesc + (float(tupla[38]) / 100))
-                            )
-                            # ic(valor)
-                    else:
-                        valor_teste = float(tupla[17]) * mdesc
-                        if valor_teste > 0.01:
-                            # ic(mdesc)
-                            # ic(valor_teste)
-                            valor = valor_teste - (valor_teste * mdesc)
-                            # ic(valor)
-
-                    sql = (
-                        f"UPDATE sacped_s SET "
-                        f"pcgc = ?, "
-                        f"pcpf = ?, "
-                        f"pplaca = ?, "
-                        f"pcarro = ?, "
-                        f"pmodelo = ?, "
-                        f"pkm = ?, "
-                        f"pcod_cli = ?, "
-                        f"pcomi_oper = ?, "
-                        f"pcod_fin = ?, "
-                        f"pcod_tab = ?, "
-                        f"pvlr_pres = ?, "
-                        f"pcond_veze = ?, "
-                        f"pcond_inte = ?, "
-                        f"ptp_vend = ?, "
-                        f"pvlr_ent = ?, "
-                        f"pstat_item = ?, "
-                        f"pcod_vend = ?, "
-                        f"pvendedor = ?, "
-                        f"pcomissao = ?, "
-                        f"pdesc = ?, "
-                        f"pdesc_merc = ?, "
-                        f"pvlr_fat = ?, "
-                        f"pobs1 = ?, "
-                        f"pobs2 = ?, "
-                        f"pobs3 = ?, "
-                        f"pobs4 = ?, "
-                        f"pobs5 = ?, "
-                        f"pobs6 = ?, "
-                        f"pobs7 = ?, "
-                        f"pobs8 = ?, "
-                        f"pproducao = ?, "
-                        f"pcod_tran = ?, "
-                        f"pd_entrega = ?, "
-                        f"pfecha = ? "
-                        f"WHERE  WHERE SR_RECNO = {cons_ped[110]}"
-                    )
-
-                    values = (
-                        cons_cli[31],
-                        cons_cli[33],
-                        "",  # mplaca
-                        "",  # m_carro
-                        "",  # m_modelo,
-                        "",  # m_km,
-                        cons_cli[1],  # cod_cli
-                        cons_oper[8],  # comissao ooperador
-                        "",  # codigo finan
-                        "",  # cod tabela
-                        "",  # vlr presta
-                        "",  # cond vezes
-                        "",  # cond intenv
-                        "",  # tp_venda
-                        "",  # vlr_enta
-                        "",  # stat_itam
-                        "",  # cod_vend
-                        "",  # vendedor
-                        "",  # comissao
-                        "",  # desc
-                        "",  # desc_merc
-                        "",  # vlr_fat
-                        "",  # obs1
-                        "",  # obs2
-                        "",  # obs3
-                        "",  # obs4
-                        "",  # obs5
-                        "",  # obs6
-                        "",  # obs7
-                        "",  # obs8
-                        "",  # producao
-                        '',  # cod_tran
-                        '',  # d_entrega
-                        'F',  # fecha
-                    )
-
-                    print(sql, values)
-
-                    hg.conexao_cursor.execute(sql, values)
-                    hg.conexao_bd.commit()
-
-
-# SR_BEGINTRANSACTION()
-# ccomm := "UPDATE sacped_s SET pcgc = "+sr_cdbvalue(mcgc)
-# ccomm := ccomm + ",pcpf ="+sr_cdbvalue(mcpf)
-# ccomm := ccomm + ",pplaca = "+sr_cdbvalue(mplaca)
-# ccomm := ccomm + ",pcarro = "+sr_cdbvalue(mcarro)
-# ccomm := ccomm + ",pmodelo = "+sr_cdbvalue(mmodelo)
-# ccomm := ccomm + ",pkm = "+sr_cdbvalue(mkm)
-# ccomm := ccomm + ",pcod_cli = "+sr_cdbvalue(mcod_cli)
-# ccomm := ccomm + ",pcomi_oper ="+sr_cdbvalue(mcom_oper)
-# ccomm := ccomm + ",pcod_fin = "+sr_cdbvalue(STRZERO(mcod_fin,3))
-# ccomm := ccomm + ",pcod_tab = "+sr_cdbvalue(STRZERO(mcod_cond,3))
-# ccomm := ccomm + ",pvlr_pres = "+sr_cdbvalue(mvalor_pres)
-# ccomm := ccomm + ",pcond_veze = "+sr_cdbvalue(mcond_veze)
-# ccomm := ccomm + ",pcond_inte = "+sr_cdbvalue(IF(! EMPTY(mcond_int),mtipo_pg+STRZERO(VAL(mcond_int),3),mtipo_pg+STRZERO(m_dia[1],3)+STRZERO(m_dia[2],3)+STRZERO(m_dia[3],3)+STRZERO(m_dia[4],3)+STRZERO(m_dia[5],3)+STRZERO(m_dia[6],3)+STRZERO(m_dia[7],3)+STRZERO(m_dia[8],3)+STRZERO(m_dia[9],3)+STRZERO(m_dia[10],3)+STRZERO(m_dia[11],3)+STRZERO(m_dia[12],3)+STRZERO(m_dia[13],3)+STRZERO(m_dia[14],3)+STRZERO(m_dia[15],3)))
-# ccomm := ccomm + ",ptp_vend = "+sr_cdbvalue(mtp_venda)
-# ccomm := ccomm + ",pvlr_ent = "+sr_cdbvalue(mvlr_ent)
-# ccomm := ccomm + ",pstat_item = "+sr_cdbvalue(mtelemark)
-# ccomm := ccomm + ",pcod_vend = "+sr_cdbvalue(mcod_ven)
-# ccomm := ccomm + ",pvendedor = "+sr_cdbvalue(mnome_ven)
-# ccomm := ccomm + ",pcomissao = "+sr_cdbvalue(mcomissao)
-# ccomm := ccomm + ",pdesc = "+sr_cdbvalue(mdesc_aux * 100)
-# ccomm := ccomm + ",pdesc_merc = "+sr_cdbvalue(mvlr_desc)
-# ccomm := ccomm + ",pvlr_fat = "+sr_cdbvalue(cons_ped[i,18]*mjuros)
-# ccomm := ccomm + ",pobs1 = "+sr_cdbvalue(mobs1)
-# ccomm := ccomm + ",pobs2 = "+sr_cdbvalue(mobs2)
-# ccomm := ccomm + ",pobs3 = "+sr_cdbvalue(mobs3)
-# ccomm := ccomm + ",pobs4 = "+sr_cdbvalue(mobs4)
-# ccomm := ccomm + ",pobs5 = "+sr_cdbvalue(mobs5)
-# ccomm := ccomm + ",pobs6 = "+sr_cdbvalue(mobs6)
-# ccomm := ccomm + ",pobs7 = "+sr_cdbvalue(mobs7)
-# ccomm := ccomm + ",pobs8 = "+sr_cdbvalue(mobs8)
-# ccomm := ccomm + ",pproducao = "+sr_cdbvalue(mproducao)
-# ccomm := ccomm + ",pcod_tran = "+sr_cdbvalue(mcod_tran)
-# ccomm := ccomm + ",pd_entrega = "+IF(! EMPTY(mpd_entrega),sr_cdbvalue(mpd_entrega),'NULL')
-# ccomm := ccomm + ",pfecha = 'F' WHERE SR_RECNO = "+sr_cdbvalue(cons_ped[i,111])
-# //ccomm := ccomm + ",pfecha = 'F' WHERE pnum_ped = "+sr_cdbvalue(STRZERO(mnum_ped,6))+" AND pcod_merc = "+sr_cdbvalue(cons_ped[i,6])
-# sr_getconnection():exec(ccomm,,.f.)
-# sr_committransaction()
-# SR_ENDTRANSACTION()
-# NEXT
+    hg.conexao_cursor.execute(sql, values)
+    hg.conexao_bd.commit()
 
 
 def verifica_condicao():
-    tela.ds_desconto.setEnabled(False)
-    tela.ds_vlr_entrada.setValue(float(0))
+    mdinheiro = tela.ds_dinheiro.Value()
+    mpix = tela.ds_pix.Value()
+    mcartao = tela.ds_cartao.Value()
+    mduplicata = tela.ds_duplicata.Value()
+    mcheque = tela.ds_cheque.Value()
+
     tela.ds_entrada.setValue(float(0))
     tela.ds_qtd_dias.setValue(float(0))
 
@@ -453,78 +327,166 @@ def verifica_condicao():
         tela.rb_valor.setEnabled(True)
         tela.ds_desconto.setEnabled(True)
 
+    # if mdinheiro == mtotal_pedido:
+    #     mvalor = mdinheiro
+    #
+    #     m_recebe.append('DN')   # ,'AV','   ','      ','99999999',data_atual,'C','   ',mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94])))}
+    #     m_recebe.append('AV')   # ,'   ','      ','99999999',data_atual,'C','   ',mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94])))}
+    # elif mdinheiro == 0 and mn_banco ==  .AND. EMPTY(mn_cred) .AND. EMPTY(mn_pix) .AND. ;
+    #       EMPTY(mn_dup) .AND. EMPTY(mcod_cart) .AND. EMPTY(mn_fin) .AND. EMPTY(mn_trans) .AND. LEN(m_parcela) = 0);
+    #       .OR. mdinheiro = mtot_nota:
+    #   IF ! EMPTY(mdinheiro)   //.OR. mdinheiro = mtot_nota
+    #       IF mdinheiro + mtot_verif > mtot_nota
+    #           mvalor := mtot_nota - mtot_verif
+    #           mtroco := mdinheiro+mtot_verif - mtot_nota
+    #           SUB_BANNER(30,01,'Troco:'+TRANSFORM(mtroco,'999,999.99'))
+    #           INKEY(,10)
+    #           INKEY(30)
+    #       ELSE
+    #           mvalor := mdinheiro
+    #       ENDIF
+    #       AADD(m_alt,'DINHEIRO...: Valor: '+TRANSFORM(mdinheiro,'999,999.99'))
+    #       AADD(m_recebe,{'DN','AV',SPACE(3),SPACE(6),'99999999',mdata_sis,'C',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #   ELSE
+    #       IF ! EMPTY(mn_cheque)
+    #           IF (mvalor + mtot_verif) - mtot_nota > .01
+    #               mcred_cheq := op_simnao('S','O Valor de R$:'+TRANSFORM(mvalor+mtot_verif - mtot_nota,'999,999.99')+'  vai ser gerado um CREDITO para o cliente:')
+    #               IF  mcred_cheq = 'N'
+    #                   LOOP
+    #               ENDIF
+    #               mvlr_credcheq := mvalor+mtot_verif - mtot_nota
+    #               IF mvencimento > mdata_sis
+    # *       	                                                         1    2      3         4       5        6       7         8                 9      10     11     12       13     14      15        16   17  18       19
+    #                   AADD(m_recebe,{'CH','AP',mn_banco,mn_cheque,mn_dup,mvencimento,'B',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj,' ',' ','CREDITO P/ CLIENTE DE R$:'+TRANSFORM(mvalor+mtot_verif - mtot_nota,'999,999.99')+IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   mqtd_doc ++
+    #                   mqtd_dias := mqtd_dias + (mvencimento - mdata_sis)
+    #               ELSE
+    #                   AADD(m_recebe,{'CH','AV',mn_banco,mn_cheque,mn_dup,mvencimento,'B',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj,' ',' ','CREDITO P/ CLIENTE DE R$:'+TRANSFORM(mvalor+mtot_verif - mtot_nota,'999,999.99')+IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #               ENDIF
+    #           ELSE
+    #               IF mvencimento > mdata_sis
+    # *       	                                                         1    2      3         4       5        6       7         8                 9      10     11     12       13     14      15        16   17  18   19
+    #                   AADD(m_recebe,{'CH','AP',mn_banco,mn_cheque,mn_dup,mvencimento,'B',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj,' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   mqtd_doc ++
+    #                   mqtd_dias := mqtd_dias + (mvencimento - mdata_sis)
+    #               ELSE
+    #                   AADD(m_recebe,{'CH','AV',mn_banco,mn_cheque,mn_dup,mvencimento,'B',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj,' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #               ENDIF
+    #           ENDIF
+    #           AADD(m_alt,'CHEQUE.....: Bco.: '+mn_banco+' No: '+mn_cheque+' Venc: '+DTOC(mvencimento)+' Vlr:'+TRANSFORM(mvalor,'999,999.99'))
+    #       ELSEIF ! EMPTY(mn_dup)
+    #           i := 0
+    #           FOR i = 1 TO LEN(m_parcela)
+    #               IF EMPTY(m_parcela[i,1])
+    #                   LOOP
+    #               ENDIF
+    #               AADD(m_alt,'DUPLICATA..: No.:'+m_parcela[i,1]+' Venc:'+DTOC(m_parcela[i,2])+' Vlr:'+TRANSFORM(m_parcela[i,3],'999,999.99'))
+    #               IF m_parcela[i,2] > mdata_sis
+    #                   AADD(m_recebe,{'DU','AP',mn_banco,SPACE(6),m_parcela[i,1],m_parcela[i,2],mt_pag,STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   mqtd_doc ++
+    #                   mqtd_dias := mqtd_dias + (m_parcela[i,2] - mdata_sis)
+    #               ELSE
+    #                   AADD(m_recebe,{'DU','AV',mn_banco,SPACE(6),m_parcela[i,1],m_parcela[i,2],mt_pag,STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #               ENDIF
+    #           NEXT
+    #       ELSEIF ! EMPTY(mn_cupom)
+    #           i := 0
+    #           FOR i = 1 TO LEN(m_parcela)
+    #               IF EMPTY(m_parcela[i,1])
+    #                   LOOP
+    #               ENDIF
+    #               AADD(m_alt,'CARTAO.....: '+STRZERO(mcod_cart,3)+' Cupom No.: '+m_parcela[i,1]+' Valor: '+TRANSFORM(m_parcela[i,3],'999,999.99'))
+    #               IF m_parcela[i,2] > mdata_sis
+    # //               1    2       3      4         5       6          7           8                 9            10          11      12       13       14        15         16            17            18
+    #                   AADD(m_recebe,{'CT','AP',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   mqtd_doc ++
+    #                   mqtd_dias := mqtd_dias + (m_parcela[i,2] - mdata_sis)
+    #               ELSE
+    #
+    #                   AADD(m_recebe,{'CT','AV',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #               ENDIF
+    #           NEXT
+    #       ELSEIF ! EMPTY(mn_fin)  // .OR. LEN(m_parcela) > 0
+    #           i := 0
+    #           FOR i = 1 TO LEN(m_parcela)
+    #               IF EMPTY(m_parcela[i,1])
+    #                   LOOP
+    #               ENDIF
+    #               AADD(m_alt,'FINANCIAMEN: '+m_parcela[i,1]+' Venc.: '+DTOC(m_parcela[i,2])+' Vlr: '+TRANSFORM(m_parcela[i,3],'999,999.99'))
+    #               IF m_parcela[i,2] > mdata_sis
+    #                   AADD(m_recebe,{'FI','AP',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),mn_cupom,m_parcela[i,3],m_parcela[i,1],mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   mqtd_doc ++
+    #                   mqtd_dias := mqtd_dias + (m_parcela[i,2] - mdata_sis)
+    #               ELSE
+    #                   AADD(m_recebe,{'FI','AV',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),mn_cupom,m_parcela[i,3],m_parcela[i,1],mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #               ENDIF
+    #           NEXT
+    #       ELSEIF ! EMPTY(mn_trans)
+    #           AADD(m_alt,'TRANSFERENC: '+mn_trans+' Venc.: '+DTOC(mvencimento)+' Valor: '+TRANSFORM(mvalor,'999,999.99'))
+    #           AADD(m_recebe,{'TR','AP',SPACE(3),SPACE(6),mn_trans,mvencimento,mt_pag,STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #       ELSEIF ! EMPTY(mn_cred)
+    #           mtipo_pg := 1
+    #           mcredito := mcredito - mvalor
+    #           AADD(m_alt,'CREDITO....: '+mn_cred+' Venc.: '+DTOC(mvencimento)+' Valor: '+TRANSFORM(mvalor,'999,999.99'))
+    #           AADD(m_recebe,{'CR','AV',SPACE(3),SPACE(6),mn_cred,mvencimento,mt_pag,STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #       ELSEIF ! EMPTY(mn_pix)
+    #           AADD(m_alt,'No.PIX.....: '+mn_pix+' Venc.: '+DTOC(mvencimento)+' Valor: '+TRANSFORM(mvalor,'999,999.99'))
+    #           AADD(m_recebe,{'PX','AV',SPACE(3),SPACE(6),mn_pix,mvencimento,mt_pag,STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #       ENDIF
+    # ENDIF
+    # ENDIF
     return
 
 
-def ver_entrega():
-    m_data_ent_f = datetime.strptime(tela.data_previsao.text(), "%d/%m/%Y").date()
-    m_data_ent = m_data_ent_f.strftime("%Y-%m-%d")
-    if m_data_ent_f == data_vazia:
-        return
-
-    if hg.m_set[161] > 0 or hg.m_set[162] > 0 or hg.m_set[163] > 0:
-        hg.conexao_cursor.execute(
-            f"SELECT pnum_ped,sum(pquantd*pvlr_fat),sum(pquantd) FROM sacped_s "
-            f"WHERE sr_deleted = ' ' AND pd_entrega = {m_data_ent} "
-            f"and (ppag = '*' OR ppag IS NULL) GROUP BY pnum_ped"
-        )
-        mped_exp = hg.conexao_cursor.fetchone()
-        hg.conexao_bd.commit()
-        if hg.m_set[161] > 0:
-            if len(mped_exp) >= hg.m_set[161]:
-                atencao(
-                    "Para esse dia ja estar completo as Entregas favor verificar outro dia..."
-                )
-                tela.data_previsao.setFocus()
-                return
-
-
-def verifica_vendedor():
-    index = tela.cb_vendedor.currentIndex()
-    mop = tela.cb_vendedor.itemText(index)
-    mcod_ven = mop[0:3]
-    index = tela.cb_cliente.currentIndex()
-    mop = tela.cb_cliente.itemText(index)
-    mcod_cli = mop[0:5]
-
-    if (
-        hg.m_set[9] == "S"
-        and not mcod_ven == info_inicial_pedido[4]
-        and not mcod_cli == hg.m_set[83]
-    ):
-        if not aut_sen(
-            "Cod. Vend. Diferente do Vend. Resp.CLIENTE, Senha autorizacao:",
-            "LIBCLIVEN",
-            mcod_cli,
-            "",
-            "",
-            "",
-        ):
-            tela.cb_vendedor.setFocus()
-
-    if hg.m_set[152] == "S" and not mcod_ven == hg.geral_cod_usuario:
-        tela.cb_vendedor.setFocus()
-        tela.rb_telemarketing.setEnabled(True)
-        tela.rb_vendanormal.setEnabled(True)
-
-
-def fechar_pedido(m_informa_pedido):
-    global mcli_aux, info_inicial_pedido
-    info_inicial_pedido = m_informa_pedido
-    VariavelP.numero_pedido = info_inicial_pedido[0]
-    tela.cb_cliente.setEnabled(False)
-    if info_inicial_pedido[3] == 0:
-        mcod_cli = hg.m_set[83]
-        mcli_aux = hg.m_set[83]
-    else:
-        mcod_cli = info_inicial_pedido[3]
-        mcli_aux = info_inicial_pedido[3]
-
+def fechar_pedido(mnum_pedido):
+    global mcli_aux, mnumero_pedido
+    mnumero_pedido = mnum_pedido
+    # tela.cb_cliente.setEnabled(False)
+    mcod_cli = str(hg.m_set[83]).zfill(5)
+    mcli_aux = str(hg.m_set[83]).zfill(5)
+    # print(mcli_aux)
     for i in range(tela.cb_cliente.count()):
         item_text = tela.cb_cliente.itemText(i)
-        if str(mcod_cli).strip() in item_text:
+        # print(item_text)
+        # print(f"{mcod_cli} {item_text[43:48]}")
+        if str(mcod_cli).strip() == item_text[43:48]:
             tela.cb_cliente.setCurrentIndex(i)
             break
+
+    mtot = f"{mtotal_pedido}"
+
+    lbl_dinheiro.setText(mtot)
+
+    # m_recebe.append("DN")
+    # m_recebe.append("AV")
+    # m_recebe.append("   ")
+    # m_recebe.append("      ")
+    # m_recebe.append("99999999")
+    # m_recebe.append(data_atual)
+    # m_recebe.append("C")
+    # m_recebe.append("   ")
+    # m_recebe.append(mn_cupom)
+    # m_recebe.append(mvalor)
+    # m_recebe.append(mn_fin)
+    # m_recebe.append(mcartao)
+    # m_recebe.append("        ")
+    # m_recebe.append("             ")
+    # m_recebe.append("mcorrente")
+    # m_recebe.append(" ")
+    # m_recebe.append(" ")
+    # m_recebe.append(" ")
+    # mos = resultados[93]
+    # if mos is not None:
+    #     m_recebe.append(" OS:" + resultados[93])
+    #
+    # print(m_recebe[1])
+
+    tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
+    tela.ds_pix.editingFinished.connect(verifica_condicao)
+    tela.ds_cartao.editingFinished.connect(verifica_condicao)
+    tela.ds_duplicata.editingFinished.connect(verifica_condicao)
+    tela.ds_cheque.editingFinished.connect(verifica_condicao)
+    # tela.ds_pix.setEnabled(False)
 
     tela.bt_fecha.clicked.connect(salva_pedido)
     tela.bt_fecha.setIcon(icon_salvar)
@@ -534,7 +496,7 @@ def fechar_pedido(m_informa_pedido):
     # tela.mcodigo.returnPressed.connect(verificar_produto)
     # tela.mcodigo.setFocus()
     # tela.textBrowser.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
-    criar_tela(info_inicial_pedido[0])
+    criar_tela(mnumero_pedido)
     tela.show()
 
 
@@ -543,33 +505,3 @@ if __name__ == "__main__":
     fechar_pedido(mnum_ped)
     app.exec()
     hg.conexao_bd.close()
-
-    # IF hg.m_set[1,37] = 'S'
-    #         op_tela(10,35,13,75,' Dados do Carro ')
-    #         DEVPOS(00,00);DEVOUT('Placa No..:')
-    #         DEVPOS(01,00);DEVOUT('Marca.....:')
-    #         DEVPOS(02,00);DEVOUT('Modelo....:')
-    #         DEVPOS(03,00);DEVOUT('KM........:')
-    #         mensagem('Preencha os campos')
-    #         @ 00,12 GET mplaca PICT '@!'
-    #         READ
-    #         IF ! EMPTY(mplaca)
-    #                 m_envelope:={}
-    #                 sr_getconnection():exec("SELECT * FROM sacped_s WHERE sr_deleted = ' ' AND penvelope = "+sr_cdbvalue(mplaca),,.t.,@m_envelope)
-    #                 sr_getconnection():exec('COMMIT',,.f.)
-    #                 IF LEN(m_envelope) > 0
-    #                         mcarro  := m_envelope[1,27]
-    #                         mmodelo := m_envelope[1,28]
-    #                         mkm     := m_envelope[1,29]
-    #                 ENDIF
-    #         ENDIF
-    #         @ 01,12 GET mcarro PICT '@!'
-    #         @ 02,12 GET mmodelo PICT '@!'
-    #         @ 03,12 GET mkm PICT '@!'
-    #         READ
-    #         opcao := op_simnao('S','Confirma os dados digitados:')
-    # fecha_tela()
-    #         IF LASTKEY() = 27 .OR. opcao = 'N'
-    #                 LOOP
-    #         ENDIF
-    # ENDIF

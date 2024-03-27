@@ -1,19 +1,14 @@
-from PyQt6 import uic, QtWidgets, QtGui
+from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QButtonGroup
-from PyQt6.QtCore import QDateTime, Qt
-
-# import keyboard
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QDateTime
 from datetime import date, datetime
 from icecream import ic
 from hti_funcoes import conexao_banco, ver_serie
 from autorizacao_senha import aut_sen
 import hti_global as hg
 import os
-
-# from icecream import ic
-from ATENCAO import atencao
-
+# ic()
 
 app = QApplication([])
 app.setStyleSheet(hg.style_sheet)
@@ -33,7 +28,6 @@ icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 # AJUSTAR A TELA EM RELACAO AO MONITOR
-
 if hg.mtp_tela == "G":
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
@@ -136,42 +130,42 @@ def fecha_tela():
     return
 
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        conexao_banco()
-        fechar_pedido(mnum_ped)
-
-
-class VariavelP(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.numero_pedido = ""
-        self.mtotal_g = 0
-        conexao_banco()
-        fechar_pedido(mnum_ped)
+# class MainWindow(QMainWindow):
+#     def __init__(self):
+#         super().__init__()
+#         conexao_banco()
+#         fechar_pedido(mnum_ped)
+#
+#
+# class VariavelP(QMainWindow):
+#     def __init__(self):
+#         super().__init__()
+#         self.numero_pedido = ""
+#         self.mtotal_g = 0
+#         conexao_banco()
+#         fechar_pedido(mnum_ped)
 
 
 def criar_tela():
     global mtotal_pedido, resultados
-    mdin = 0
-    mpix = 0
     tela.textBrowser.clear()
     lbl_numero_pedido.setText(f" Numero Pedido: {mnumero_pedido}")
     lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
     try:
         hg.conexao_cursor.execute(
-            f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat FROM sacped_s WHERE pnum_ped = '{mnumero_pedido}'"
+            f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat, COALESCE(pos, ' ') as app FROM sacped_s "
+            f"WHERE pnum_ped = '{mnumero_pedido}'"
         )
         # # 145082Recupere o resultado
         resultados = hg.conexao_cursor.fetchall()
         hg.conexao_bd.commit()
+        # print(resultados)
 
         lbl_sub_total = tela.findChild(QtWidgets.QLabel, "sub_total")
-        fonte = QtGui.QFont()
-        fonte.setFamily("Courier")
-        fonte.setPointSize(9)
-        tela.textBrowser.setFont(fonte)
+        # fonte = QtGui.QFont()
+        # fonte.setFamily("Courier")
+        # fonte.setPointSize(9)
+        # tela.textBrowser.setFont(fonte)
         mtotal_geral = 0
         i = 0
         # ic(resultados)
@@ -180,12 +174,11 @@ def criar_tela():
             for resultado in resultados:
                 i += 1
                 # ic(resultado[2], resultado[0])
-                pcod_merc, pmerc, pquantd, pvlr_fat = resultado
+                pcod_merc, pmerc, pquantd, pvlr_fat, pos = resultado
                 # pcod_merc
                 mquantd = "{:9,.3f}".format(pquantd)
                 mvalor = "{:10,.2f}".format(pvlr_fat)
                 soma = pquantd * pvlr_fat
-                # ic(soma)
                 msoma = "{:12,.2f}".format(soma)
                 linha = f"  {i}   {pcod_merc}  {pmerc}"
                 linha1 = f"              {mquantd} x {mvalor} = {msoma}"
@@ -198,19 +191,6 @@ def criar_tela():
             # VariavelP.mtotal_g = "{:12,.2f}".format(mtotal_geral)
             linha1 = f"SUB-TOTAL: {mtotal_pedido}"
             lbl_sub_total.setText(linha1)
-
-        for recebe in m_recebe:
-            mtipo = recebe[0]
-            print(mtipo)
-            if mtipo == 'DN':
-                mdin += float(recebe[9])
-            if mtipo == 'PX':
-                mpix += float(recebe[9])
-
-        mdin_tx = f"{mdin}"
-        mpix_tx = f"{mpix}"
-        lbl_dinheiro.setText(mdin_tx)
-        lbl_pix.setText(mpix_tx)
 
     except Exception as e:
         print(f"Erro ao executar a consulta: {e}")
@@ -292,6 +272,14 @@ def salva_pedido():
 
 def verifica_condicao():
     global m_recebe
+    mdin = 0
+    mpx = 0
+    tela.ds_dinheiro.editingFinished.disconnect()
+    tela.ds_pix.editingFinished.disconnect()
+    tela.ds_cartao.editingFinished.disconnect()
+    tela.ds_duplicata.editingFinished.disconnect()
+    tela.ds_cheque.editingFinished.disconnect()
+
     mdinheiro = tela.ds_dinheiro.value()
     mpix = tela.ds_pix.value()
     mcartao = tela.ds_cartao.value()
@@ -348,22 +336,61 @@ def verifica_condicao():
         m_recebe.append(data_atual)
         m_recebe.append("C")
         m_recebe.append("   ")
-        m_recebe.append('')  # cupom
+        m_recebe.append("")  # cupom
         m_recebe.append(mdinheiro)  # valor
-        m_recebe.append('')  # finan
-        m_recebe.append('')  # cartao
+        m_recebe.append("")  # finan
+        m_recebe.append("")  # cartao
         m_recebe.append("        ")
         m_recebe.append("             ")
-        m_recebe.append('')  # corrente
+        m_recebe.append("")  # corrente
         m_recebe.append(" ")
         m_recebe.append(" ")
         m_recebe.append(" ")
-        mos = resultados[93]
-        if mos is not None:
-            m_recebe.append(" OS:" + resultados[93])
+        mos = str(resultados[5])
+        m_recebe.append(" OS:" + mos)
 
-        print(m_recebe[1])
+        tela.ds_dinheiro.setValue(float(0))
+        print(m_recebe)
+    if mpix > 0:
+        m_recebe.append("PX")
+        m_recebe.append("AV")
+        m_recebe.append("   ")
+        m_recebe.append("      ")
+        m_recebe.append("99999999")
+        m_recebe.append(data_atual)
+        m_recebe.append("C")
+        m_recebe.append("   ")
+        m_recebe.append("")  # cupom
+        m_recebe.append(mpix)  # valor
+        m_recebe.append("")  # finan
+        m_recebe.append("")  # cartao
+        m_recebe.append("        ")
+        m_recebe.append("             ")
+        m_recebe.append("")  # corrente
+        m_recebe.append(" ")
+        m_recebe.append(" ")
+        m_recebe.append(" ")
+        mos = str(resultados[4])
+        m_recebe.append(" OS:" + mos)
 
+        tela.ds_pix.setValue(float(0))
+        # print(m_recebe[0])
+    for recebe in m_recebe:
+        mtipo = m_recebe[0]
+        # print(mtipo)
+        if mtipo == "DN":
+            mdin += float(m_recebe[9])
+            print(mdin)
+        if mtipo == "PX":
+            mpx += float(m_recebe[9])
+            print(mpx)
+    mdin_f = "{:12,.2f}".format(mdin)
+    mdin_tx = f"{mdin_f}"
+    mpix_f = "{:12,.2f}".format(mpx)
+    mpix_tx = f"{mpix_f}"
+    lbl_dinheiro.setText(mdin_tx)
+    lbl_pix.setText(mpix_tx)
+    print(m_recebe)
     # if mdinheiro == mtotal_pedido:
     #     mvalor = mdinheiro
     #
@@ -472,7 +499,13 @@ def verifica_condicao():
     #       ENDIF
     # ENDIF
     # ENDIF
-    return
+    # tela.ds_dinheiro.setFocus()
+    # tela.ds_dinheiro.selectAll()
+    tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
+    tela.ds_pix.editingFinished.connect(verifica_condicao)
+    tela.ds_cartao.editingFinished.connect(verifica_condicao)
+    tela.ds_duplicata.editingFinished.connect(verifica_condicao)
+    tela.ds_cheque.editingFinished.connect(verifica_condicao)
 
 
 def fechar_pedido(mnum_pedido):

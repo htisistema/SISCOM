@@ -10,7 +10,7 @@ def ver_serie():
 
 def conexao_banco():
     # Conecte-se ao banco de dados
-    print('conexao')
+    # print('conexao')
     hg.conexao_bd = fdb.connect(
         dsn=hg.host, user="SYSDBA", password="masterkey", charset="UTF8"
     )
@@ -30,7 +30,7 @@ def conexao_banco():
         )
         hg.m_indiv = hg.conexao_cursor.fetchone()
         hg.conexao_bd.commit()
-    print('fim conexao')
+    # print('fim conexao')
 
     return
 

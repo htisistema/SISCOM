@@ -99,7 +99,7 @@ font: 700 9pt &quot;Courier&quot;;</string>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>510</x>
+      <x>480</x>
       <y>100</y>
       <width>180</width>
       <height>50</height>
@@ -167,9 +167,9 @@ color: rgb(0, 0, 0);</string>
    <widget class="QComboBox" name="cb_cliente">
     <property name="geometry">
      <rect>
-      <x>710</x>
+      <x>680</x>
       <y>100</y>
-      <width>510</width>
+      <width>530</width>
       <height>50</height>
      </rect>
     </property>
@@ -477,7 +477,7 @@ background-color: rgb(253, 255, 216);
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">ffont: 700 italic 20pt &quot;Courier&quot;;
+     <string notr="true">font: 700 italic 20pt &quot;Courier&quot;;
 color: rgb(0, 170, 0);
 background-color: rgb(253, 255, 216);
 </string>

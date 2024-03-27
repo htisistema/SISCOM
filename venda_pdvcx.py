@@ -8,6 +8,7 @@ from hti_funcoes import conexao_banco, ver_serie
 from autorizacao_senha import aut_sen
 import hti_global as hg
 import os
+
 # ic()
 
 app = QApplication([])
@@ -274,6 +275,9 @@ def verifica_condicao():
     global m_recebe
     mdin = 0
     mpx = 0
+    mct = 0
+    mdu = 0
+    mch = 0
     tela.ds_dinheiro.editingFinished.disconnect()
     tela.ds_pix.editingFinished.disconnect()
     tela.ds_cartao.editingFinished.disconnect()
@@ -327,69 +331,173 @@ def verifica_condicao():
     #     tela.rb_valor.setEnabled(True)
     #     tela.ds_desconto.setEnabled(True)
 
+    mos = str(resultados[5])
     if mdinheiro > 0:
-        m_recebe.append("DN")
-        m_recebe.append("AV")
-        m_recebe.append("   ")
-        m_recebe.append("      ")
-        m_recebe.append("99999999")
-        m_recebe.append(data_atual)
-        m_recebe.append("C")
-        m_recebe.append("   ")
-        m_recebe.append("")  # cupom
-        m_recebe.append(mdinheiro)  # valor
-        m_recebe.append("")  # finan
-        m_recebe.append("")  # cartao
-        m_recebe.append("        ")
-        m_recebe.append("             ")
-        m_recebe.append("")  # corrente
-        m_recebe.append(" ")
-        m_recebe.append(" ")
-        m_recebe.append(" ")
-        mos = str(resultados[5])
-        m_recebe.append(" OS:" + mos)
+        m_recebe.append(
+            [
+                "DN",
+                "AV",
+                "   ",
+                "      ",
+                "99999999",
+                data_atual,
+                "C",
+                "   ",
+                "",
+                mdinheiro,
+                "",
+                "",
+                "        ",
+                "             ",
+                "",
+                "",
+                "",
+                "",
+                " OS:" + mos,
+            ]
+        )
 
         tela.ds_dinheiro.setValue(float(0))
         print(m_recebe)
     if mpix > 0:
-        m_recebe.append("PX")
-        m_recebe.append("AV")
-        m_recebe.append("   ")
-        m_recebe.append("      ")
-        m_recebe.append("99999999")
-        m_recebe.append(data_atual)
-        m_recebe.append("C")
-        m_recebe.append("   ")
-        m_recebe.append("")  # cupom
-        m_recebe.append(mpix)  # valor
-        m_recebe.append("")  # finan
-        m_recebe.append("")  # cartao
-        m_recebe.append("        ")
-        m_recebe.append("             ")
-        m_recebe.append("")  # corrente
-        m_recebe.append(" ")
-        m_recebe.append(" ")
-        m_recebe.append(" ")
-        mos = str(resultados[4])
-        m_recebe.append(" OS:" + mos)
+        m_recebe.append(
+            [
+                "PX",
+                "AV",
+                "   ",
+                "      ",
+                "99999999",
+                data_atual,
+                "C",
+                "   ",
+                "",
+                mpix,
+                "",
+                "",
+                "        ",
+                "             ",
+                "",
+                "",
+                "",
+                "",
+                " OS:" + mos,
+            ]
+        )
 
         tela.ds_pix.setValue(float(0))
+
+    if mcartao > 0:
+        m_recebe.append(
+            [
+                "CT",
+                "AV",
+                "   ",
+                "      ",
+                "99999999",
+                data_atual,
+                "C",
+                "   ",
+                "",
+                mcartao,
+                "",
+                "",
+                "        ",
+                "             ",
+                "",
+                "",
+                "",
+                "",
+                " OS:" + mos,
+            ]
+        )
+
+        tela.ds_cartao.setValue(float(0))
+
+    if mduplicata > 0:
+        m_recebe.append(
+            [
+                "DU",
+                "AP",
+                "   ",
+                "      ",
+                "99999999",
+                data_atual,
+                "C",
+                "   ",
+                "",
+                mduplicata,
+                "",
+                "",
+                "        ",
+                "             ",
+                "",
+                "",
+                "",
+                "",
+                " OS:" + mos,
+            ]
+        )
+
+        tela.ds_duplicata.setValue(float(0))
+
+    if mcheque > 0:
+        m_recebe.append(
+            [
+                "CH",
+                "AV",
+                "   ",
+                "      ",
+                "99999999",
+                data_atual,
+                "C",
+                "   ",
+                "",
+                mcheque,
+                "",
+                "",
+                "        ",
+                "             ",
+                "",
+                "",
+                "",
+                "",
+                " OS:" + mos,
+            ]
+        )
+
+        tela.ds_cheque.setValue(float(0))
+
         # print(m_recebe[0])
-    for recebe in m_recebe:
-        mtipo = m_recebe[0]
-        # print(mtipo)
+    for i in range(len(m_recebe)):
+        # for recebe in m_recebe:
+        mtipo = m_recebe[i][0]
+        print(mtipo)
         if mtipo == "DN":
-            mdin += float(m_recebe[9])
+            mdin += float(m_recebe[i][9])
             print(mdin)
         if mtipo == "PX":
-            mpx += float(m_recebe[9])
+            mpx += float(m_recebe[i][9])
             print(mpx)
     mdin_f = "{:12,.2f}".format(mdin)
     mdin_tx = f"{mdin_f}"
+
     mpix_f = "{:12,.2f}".format(mpx)
     mpix_tx = f"{mpix_f}"
+
+    mct_f = "{:12,.2f}".format(mct)
+    mct_tx = f"{mct_f}"
+
+    mdu_f = "{:12,.2f}".format(mdu)
+    mdu_tx = f"{mdu_f}"
+
+    mch_f = "{:12,.2f}".format(mch)
+    mch_tx = f"{mch_f}"
+
     lbl_dinheiro.setText(mdin_tx)
     lbl_pix.setText(mpix_tx)
+    lbl_cartao.setText(mct_tx)
+    lbl_duplicata.setText(mdu_tx)
+    lbl_cheque.setText(mch_tx)
     print(m_recebe)
     # if mdinheiro == mtotal_pedido:
     #     mvalor = mdinheiro

@@ -2,10 +2,10 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QDateTime
-from datetime import date, datetime
+from datetime import date
 from icecream import ic
-from hti_funcoes import conexao_banco, ver_serie
-from autorizacao_senha import aut_sen
+from hti_funcoes import conexao_banco
+from ver_pagamento import ver_pagamento
 import hti_global as hg
 import os
 
@@ -104,7 +104,6 @@ mcli_aux = 0
 data_vazia = date(1900, 1, 1)
 mtotal_pedido = 0
 m_recebe = []
-resultados = []
 # tela.cb_forma_pg.addItems(
 #     [
 #         "1->Dinheiro",
@@ -147,7 +146,7 @@ def fecha_tela():
 
 
 def criar_tela():
-    global mtotal_pedido, resultados
+    global mtotal_pedido
     tela.textBrowser.clear()
     lbl_numero_pedido.setText(f" Numero Pedido: {mnumero_pedido}")
     lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
@@ -277,10 +276,19 @@ def verifica_condicao():
     mct = 0
     mdu = 0
     mch = 0
+    tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
+    tela.ds_pix.editingFinished.connect(verifica_condicao)
+    tela.ds_cartao.editingFinished.connect(verifica_condicao)
+    tela.ds_duplicata.editingFinished.connect(verifica_condicao)
+    tela.ds_cheque.editingFinished.connect(verifica_condicao)
+
     tela.ds_dinheiro.editingFinished.disconnect()
     tela.ds_pix.editingFinished.disconnect()
+    # if tela.ds_cartao.signalsBlocked():
     tela.ds_cartao.editingFinished.disconnect()
+    # if tela.ds_duplicata.signalsBlocked():
     tela.ds_duplicata.editingFinished.disconnect()
+    # if tela.ds_cheque.signalsBlocked():
     tela.ds_cheque.editingFinished.disconnect()
 
     mdinheiro = tela.ds_dinheiro.value()
@@ -288,7 +296,9 @@ def verifica_condicao():
     mcartao = tela.ds_cartao.value()
     mduplicata = tela.ds_duplicata.value()
     mcheque = tela.ds_cheque.value()
-
+    # if mdinheiro == 0 and mpix == 0 and mcartao == 0 and mduplicata == 0 and mcheque == 0:
+    #     ic()
+    #     return
     # tela.ds_entrada.setValue(float(0))
     # tela.ds_qtd_dias.setValue(float(0))
 
@@ -329,9 +339,19 @@ def verifica_condicao():
     #     tela.rb_percentual.setEnabled(True)
     #     tela.rb_valor.setEnabled(True)
     #     tela.ds_desconto.setEnabled(True)
-
-    mos = str(resultados[5])
-    if mdinheiro > 0:
+    # print(f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat, COALESCE(pos, ' ') as app FROM sacped_s "
+    #      f"WHERE pnum_ped = '{mnumero_pedido}'")
+    hg.conexao_cursor.execute(
+        f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat, COALESCE(pos, ' ') as app FROM sacped_s "
+        f"WHERE pnum_ped = '{mnumero_pedido}'"
+    )
+    # # 145082Recupere o resultado
+    resultados = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
+    # print(resultados)
+    # print(resultados[0][1])
+    mos = str(resultados[0][4])
+    if mdinheiro != 0:
         m_recebe.append(
             [
                 "DN",
@@ -357,8 +377,7 @@ def verifica_condicao():
         )
 
         tela.ds_dinheiro.setValue(float(0))
-        print(m_recebe)
-    if mpix > 0:
+    if mpix != 0:
         m_recebe.append(
             [
                 "PX",
@@ -386,62 +405,10 @@ def verifica_condicao():
         tela.ds_pix.setValue(float(0))
 
     if mcartao > 0:
-        from confirma import confirma
-
-        tela_pg = uic.loadUi(f"{hg.c_ui}\\tipo_pagamento.ui")
-        tela_pg.setWindowIcon(icon)
-        tela_pg.setWindowTitle(
-            f"DADOS DO CARTAO         {hg.SISTEMA}  Versao: {hg.VERSAO}"
-        )
-        # Centraliza a janela na tela
-        qt_rectangle_pg = tela_pg.frameGeometry()
-        center_point_pg = app.primaryScreen().availableGeometry().center()
-        qt_rectangle_pg.moveCenter(center_point_pg)
-        tela_pg.move(qt_rectangle_pg.topLeft())
-        hg.conexao_cursor.execute(
-            "SELECT codigo, descri, percent, cond, COALESCE(dia1, 0), COALESCE(dia2, 0) , "
-            "COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
-            "COALESCE(dia7, 0), COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), "
-            "COALESCE(dia11, 0), COALESCE(dia12, 0), COALESCE(dia13, 0), COALESCE(dia14, 0), "
-            "COALESCE(dia15, 0) FROM sactabpg ORDER BY codigo"
-        )
-        # Recupere o resultado
-        arq_sactabpg = hg.conexao_cursor.fetchall()
-        hg.conexao_bd.commit()
-
-        tela_pg.cb_tipo_pg.addItem("000-DEFAULT                                     ")
-        for ret_sactabpg in arq_sactabpg:
-            # print(f"{ret_sactabpg[2]:,.2f}".replace(",", " ").replace(".", ","))
-            # formatar numero com tamanho de 8
-            valor = "{:,.2f}".format(ret_sactabpg[2]).rjust(7)
-
-            mdia1 = "{:,.0f}".format(ret_sactabpg[4]).rjust(3)
-            mdia2 = "{:,.0f}".format(ret_sactabpg[5]).rjust(3)
-            mdia3 = "{:,.0f}".format(ret_sactabpg[6]).rjust(3)
-            mdia4 = "{:,.0f}".format(ret_sactabpg[7]).rjust(3)
-            mdia5 = "{:,.0f}".format(ret_sactabpg[8]).rjust(3)
-            mdia6 = "{:,.0f}".format(ret_sactabpg[9]).rjust(3)
-            mdia7 = "{:,.0f}".format(ret_sactabpg[10]).rjust(3)
-            mdia8 = "{:,.0f}".format(ret_sactabpg[11]).rjust(3)
-            mdia9 = "{:,.0f}".format(ret_sactabpg[12]).rjust(3)
-            mdia10 = "{:,.0f}".format(ret_sactabpg[13]).rjust(3)
-            mdia11 = "{:,.0f}".format(ret_sactabpg[14]).rjust(3)
-            mdia12 = "{:,.0f}".format(ret_sactabpg[15]).rjust(3)
-            mdia13 = "{:,.0f}".format(ret_sactabpg[16]).rjust(3)
-            mdia14 = "{:,.0f}".format(ret_sactabpg[17]).rjust(3)
-            mdia15 = "{:,.0f}".format(ret_sactabpg[18]).rjust(3)
-            # valor = f"{ret_sactabpg[0][2]:,.2f}".replace(",", " ").replace(".", ",")
-            item_pg = (
-                f"{ret_sactabpg[0]}-{ret_sactabpg[1]}-(%):{valor}-Cond: {ret_sactabpg[3][0]}+{ret_sactabpg[3][1:3]} "
-                f"dias: {mdia1} {mdia2} {mdia3} {mdia4} {mdia5} {mdia6} {mdia7} {mdia8} {mdia9} {mdia10} "
-                f"{mdia11} {mdia12} {mdia13} {mdia14} {mdia15}"
-            )
-
-            tela_pg.cb_tipo_pg.addItem(item_pg)
-
-        tela_pg.cb_tipo_pg.setCurrentIndex(0)
-        tela_pg.show()
-
+        from ver_pagamento import ver_pagamento
+        mnum1 = ''
+        mnum = ver_pagamento(mnum1)
+        print(f'numero {mnum}')
         # mop = confirma("S", "Confirma os dados:")
         if mop:
             m_recebe.append(
@@ -469,8 +436,6 @@ def verifica_condicao():
             )
 
             tela.ds_cartao.setValue(float(0))
-
-        tela_pg.close()
 
     if mduplicata > 0:
         m_recebe.append(
@@ -527,16 +492,22 @@ def verifica_condicao():
         tela.ds_cheque.setValue(float(0))
 
         # print(m_recebe[0])
+    i = 0
     for i in range(len(m_recebe)):
         # for recebe in m_recebe:
         mtipo = m_recebe[i][0]
-        print(mtipo)
+        # print(mtipo)
         if mtipo == "DN":
             mdin += float(m_recebe[i][9])
-            print(mdin)
         if mtipo == "PX":
             mpx += float(m_recebe[i][9])
-            print(mpx)
+        if mtipo == "CT":
+            mct += float(m_recebe[i][9])
+        if mtipo == "DU":
+            mdu += float(m_recebe[i][9])
+        if mtipo == "CH":
+            mch += float(m_recebe[i][9])
+
     mdin_f = "{:12,.2f}".format(mdin)
     mdin_tx = f"{mdin_f}"
 
@@ -710,7 +681,7 @@ def fechar_pedido(mnum_pedido):
 
 
 if __name__ == "__main__":
-    mnum_ped = "145082"
+    mnum_ped = "000503"
     fechar_pedido(mnum_ped)
     app.exec()
     hg.conexao_bd.close()

@@ -4,8 +4,6 @@ from PyQt6.QtWidgets import QApplication
 from hti_funcoes import conexao_banco
 import hti_global as hg
 
-app = QApplication([])
-app.setStyleSheet(hg.style_sheet)
 tela_pg = uic.loadUi(f"{hg.c_ui}\\tipo_pagamento.ui")
 icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
 tela_pg.setWindowIcon(icon)
@@ -13,11 +11,6 @@ icon_salvar = QIcon(f"{hg.c_imagem}\\confirma.png")
 icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
 tela_pg.setWindowIcon(icon)
 tela_pg.setWindowTitle(f"DADOS DO CARTAO         {hg.SISTEMA}  Versao: {hg.VERSAO}")
-# Centraliza a janela na tela_pg
-qt_rectangle_pg = tela_pg.frameGeometry()
-center_point_pg = app.primaryScreen().availableGeometry().center()
-qt_rectangle_pg.moveCenter(center_point_pg)
-tela_pg.move(qt_rectangle_pg.topLeft())
 conexao_banco()
 hg.conexao_cursor.execute(
     "SELECT codigo, descri, percent, cond, COALESCE(dia1, 0), COALESCE(dia2, 0) , "

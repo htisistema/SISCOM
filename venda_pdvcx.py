@@ -5,7 +5,8 @@ from PyQt6.QtCore import QDateTime
 from datetime import date
 from icecream import ic
 from hti_funcoes import conexao_banco
-from ver_pagamento import ver_pagamento
+
+# from ver_pagamento import ver_pagamento
 import hti_global as hg
 import os
 
@@ -90,7 +91,9 @@ tela_pg.setWindowIcon(icon)
 # icon_salvar = QIcon(f"{hg.c_imagem}\\confirma.png")
 # icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
 tela_pg.setWindowIcon(icon)
-tela_pg.setWindowTitle(f"DADOS DO CARTAO         {hg.SISTEMA}  Versao: {hg.VERSAO}")
+tela_pg.setWindowTitle(f"DADOS DO PAGAMENTO        {hg.SISTEMA}  Versao: {hg.VERSAO}")
+lbl_valor = tela_pg.findChild(QtWidgets.QLabel, "lb_valor")
+tela_pg.empresa.setPixmap(pixmap_redimensionado)
 
 
 conexao_banco()
@@ -497,7 +500,7 @@ def verifica_condicao():
         tela.ds_cheque.setValue(float(0))
 
         # print(m_recebe[0])
-    i = 0
+    # i = 0
     for i in range(len(m_recebe)):
         # for recebe in m_recebe:
         mtipo = m_recebe[i][0]
@@ -659,17 +662,26 @@ def condicao_pagamento():
     mcheq = tela.ds_cheque.value()
     # conexao_banco()
     if mcart > 0:
+        mct_f = "{:12,.2f}".format(mcart)
+        mct_tx = f"{mct_f}"
+        lbl_valor.setText(mct_tx)
         mtipo_pg = "CT"
     elif mdupli > 0:
+        mct_f = "{:12,.2f}".format(mdupli)
+        mct_tx = f"{mct_f}"
+        lbl_valor.setText(mct_tx)
         mtipo_pg = "DU"
     elif mcheq > 0:
+        mct_f = "{:12,.2f}".format(mcheq)
+        mct_tx = f"{mct_f}"
+        lbl_valor.setText(mct_tx)
         mtipo_pg = "CH"
     hg.conexao_cursor.execute(
         f"SELECT codigo, descri, percent, cond, COALESCE(dia1, 0), COALESCE(dia2, 0) , "
         f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
         f"COALESCE(dia7, 0), COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), "
         f"COALESCE(dia11, 0), COALESCE(dia12, 0), COALESCE(dia13, 0), COALESCE(dia14, 0), "
-        f"COALESCE(dia15, 0) FROM sactabpg WHERE tipo_pg = '{mtipo_pg}' ORDER BY codigo"
+        f"COALESCE(dia15, 0) FROM sactabpg WHERE sigla = '{mtipo_pg}' ORDER BY codigo"
     )
     # Recupere o resultado
     arq_sactabpg = hg.conexao_cursor.fetchall()

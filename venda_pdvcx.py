@@ -406,31 +406,84 @@ def verifica_condicao():
         mcod_pag = mop[0:3]
         mnumero = tela_pg.n_documento.text()
         ic(mcod_pag)
-        m_recebe.append(
-            [
-                "CT",
-                "AV",
-                "   ",
-                "      ",
-                mnumero,
-                data_atual,
-                "C",
-                "   ",
-                "",
-                mcartao,
-                "",
-                "",
-                "        ",
-                "             ",
-                "",
-                "",
-                "",
-                "",
-                " OS:" + mos,
-            ]
+        hg.conexao_cursor.execute(
+            f"SELECT codigo, descri, percent, cond, COALESCE(dia1, 0), COALESCE(dia2, 0) , "
+            f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
+            f"COALESCE(dia7, 0), COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), "
+            f"COALESCE(dia11, 0), COALESCE(dia12, 0), COALESCE(dia13, 0), COALESCE(dia14, 0), "
+            f"COALESCE(dia15, 0) FROM sactabpg WHERE codigo = '{mcod_pag}'"
         )
+        # Recupere o resultado
+        arq_sactabpg = hg.conexao_cursor.fetchone()
+        hg.conexao_bd.commit()
+        ic(arq_sactabpg)
+        mvezes = float(arq_sactabpg[3][1:2])
+        mdia = float(arq_sactabpg[4])
+        ic(mvezes)
+        ic(mdia)
+        if mdia > 0:
+            #     //               1    2       3      4         5       6          7           8                 9            10          11      12       13       14        15         16            17            18
+            #     AADD(m_recebe,{'CT','AP',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+            mdata = data_atual + mdia
+            m_recebe.append(
+                [
+                    "CT",
+                    "AP",
+                    "   ",
+                    "      ",
+                    mnumero,
+                    mdata,
+                    "B",
+                    mcod_pag,
+                    f"{mnumero}'{mvezes}'/1",
+                    mcartao,
+                    "",
+                    "",
+                    "        ",
+                    "             ",
+                    "",
+                    "",
+                    "",
+                    "",
+                    " OS:" + mos,
+                ]
+            )
+        else:
+            mdata = data_atual + mdia
+            m_recebe.append(
+                [
+                    "CT",
+                    "AV",
+                    "   ",
+                    "      ",
+                    mnumero,
+                    mdata,
+                    "B",
+                    mcod_pag,
+                    f"{mnumero}'{mvezes}'/1",
+                    mcartao,
+                    "",
+                    "",
+                    "        ",
+                    "             ",
+                    "",
+                    "",
+                    "",
+                    "",
+                    " OS:" + mos,
+                ]
+            )
 
         tela.ds_cartao.setValue(float(0))
+
+        #     IF m_parcela[i,2] > mdata_sis
+        #     mqtd_doc ++
+        #     mqtd_dias := mqtd_dias + (m_parcela[i,2] - mdata_sis)
+        # ELSE
+        #
+        # AADD(m_recebe,{'CT','AV',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+        # ENDIF
+        # NEXT
 
     if mduplicata > 0:
         m_recebe.append(
@@ -652,6 +705,7 @@ def condicao_pagamento():
         mct_f = "{:12,.2f}".format(mcart)
         mct_tx = f"{mct_f}"
         lbl_valor.setText(mct_tx)
+        tela_pg.n_documento.setText(mnumero_pedido)
         mtipo_pg = "CT"
     elif mdupli > 0:
         mct_f = "{:12,.2f}".format(mdupli)
@@ -674,7 +728,7 @@ def condicao_pagamento():
     arq_sactabpg = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()
 
-    tela_pg.cb_tipo_pg.addItem("000-DEFAULT                                     ")
+    # tela_pg.cb_tipo_pg.addItem("000-DEFAULT                                     ")
     for ret_sactabpg in arq_sactabpg:
         # print(f"{ret_sactabpg[2]:,.2f}".replace(",", " ").replace(".", ","))
         # formatar numero com tamanho de 8
@@ -715,6 +769,9 @@ def condicao_pagamento():
     def sair():
         tela_pg.close()
         tela.ds_dinheiro.setFocus()
+        tela.ds_cartao.setValue(float(0))
+        tela.ds_duplicata.setValue(float(0))
+        tela.ds_cheque.setValue(float(0))
         return
 
     tela_pg.cb_tipo_pg.setCurrentIndex(0)

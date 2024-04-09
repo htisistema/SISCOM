@@ -141,22 +141,6 @@ def fecha_tela():
     return
 
 
-# class MainWindow(QMainWindow):
-#     def __init__(self):
-#         super().__init__()
-#         conexao_banco()
-#         fechar_pedido(mnum_ped)
-#
-#
-# class VariavelP(QMainWindow):
-#     def __init__(self):
-#         super().__init__()
-#         self.numero_pedido = ""
-#         self.mtotal_g = 0
-#         conexao_banco()
-#         fechar_pedido(mnum_ped)
-
-
 def criar_tela():
     global mtotal_pedido
     tela.textBrowser.clear()
@@ -417,15 +401,18 @@ def verifica_condicao():
         tela.ds_pix.setValue(float(0))
 
     if mcartao > 0:
+        index = tela_pg.cb_tipo_pg.currentIndex()
+        mop = tela_pg.cb_tipo_pg.itemText(index)
+        mcod_pag = mop[0:3]
         mnumero = tela_pg.n_documento.text()
-        ic(mnumero)
+        ic(mcod_pag)
         m_recebe.append(
             [
                 "CT",
                 "AV",
                 "   ",
                 "      ",
-                "99999999",
+                mnumero,
                 data_atual,
                 "C",
                 "   ",

@@ -80,6 +80,7 @@ lbl_pix = tela.findChild(QtWidgets.QLabel, "lb_pix")
 lbl_cartao = tela.findChild(QtWidgets.QLabel, "lb_cartao")
 lbl_duplicata = tela.findChild(QtWidgets.QLabel, "lb_duplicata")
 lbl_cheque = tela.findChild(QtWidgets.QLabel, "lb_cheque")
+lbl_recebido = tela.findChild(QtWidgets.QLabel, "lb_recebido")
 
 lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
 lbl_produto.setText("F E C H A M E N T O   D O   P E D I D O")
@@ -272,11 +273,11 @@ def verifica_condicao():
     mct = 0
     mdu = 0
     mch = 0
-    tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
-    tela.ds_pix.editingFinished.connect(verifica_condicao)
-    tela.ds_cartao.editingFinished.connect(condicao_pagamento)
-    tela.ds_duplicata.editingFinished.connect(verifica_condicao)
-    tela.ds_cheque.editingFinished.connect(verifica_condicao)
+    # tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
+    # tela.ds_pix.editingFinished.connect(verifica_condicao)
+    # tela.ds_cartao.editingFinished.connect(condicao_pagamento)
+    # tela.ds_duplicata.editingFinished.connect(verifica_condicao)
+    # tela.ds_cheque.editingFinished.connect(verifica_condicao)
 
     tela.ds_dinheiro.editingFinished.disconnect()
     tela.ds_pix.editingFinished.disconnect()
@@ -287,12 +288,12 @@ def verifica_condicao():
     # if tela.ds_cheque.signalsBlocked():
     tela.ds_cheque.editingFinished.disconnect()
 
-    mdinheiro = tela.ds_dinheiro.value()
-    mpix = tela.ds_pix.value()
-    mcartao = tela.ds_cartao.value()
-    mduplicata = tela.ds_duplicata.value()
-    mcheque = tela.ds_cheque.value()
-    # if mdinheiro == 0 and mpix == 0 and mcartao == 0 and mduplicata == 0 and mcheque == 0:
+    mvalor_dinheiro = tela.ds_dinheiro.value()
+    mvalor_pix = tela.ds_pix.value()
+    mvalor_cartao = tela.ds_cartao.value()
+    mvalor_duplicata = tela.ds_duplicata.value()
+    mvalor_cheque = tela.ds_cheque.value()
+    # if mvalor_dinheiro == 0 and mvalor_pix == 0 and mvalor_cartao == 0 and mvalor_duplicata == 0 and mcheque == 0:
     #     ic()
     #     return
     # tela.ds_entrada.setValue(float(0))
@@ -347,7 +348,7 @@ def verifica_condicao():
     # print(resultados)
     # print(resultados[0][1])
     mos = str(resultados[0][4])
-    if mdinheiro != 0:
+    if mvalor_dinheiro != 0:
         m_recebe.append(
             [
                 "DN",
@@ -359,7 +360,7 @@ def verifica_condicao():
                 "C",
                 "   ",
                 "",
-                mdinheiro,
+                mvalor_dinheiro,
                 "",
                 "",
                 "        ",
@@ -373,7 +374,7 @@ def verifica_condicao():
         )
 
         tela.ds_dinheiro.setValue(float(0))
-    if mpix != 0:
+    if mvalor_pix != 0:
         m_recebe.append(
             [
                 "PX",
@@ -385,7 +386,7 @@ def verifica_condicao():
                 "C",
                 "   ",
                 "",
-                mpix,
+                mvalor_pix,
                 "",
                 "",
                 "        ",
@@ -400,7 +401,7 @@ def verifica_condicao():
 
         tela.ds_pix.setValue(float(0))
 
-    if mcartao > 0:
+    if mvalor_cartao > 0:
         index = tela_pg.cb_tipo_pg.currentIndex()
         mop = tela_pg.cb_tipo_pg.itemText(index)
         mcod_pag = mop[0:3]
@@ -411,45 +412,69 @@ def verifica_condicao():
             f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
             f"COALESCE(dia7, 0), COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), "
             f"COALESCE(dia11, 0), COALESCE(dia12, 0), COALESCE(dia13, 0), COALESCE(dia14, 0), "
-            f"COALESCE(dia15, 0) FROM sactabpg WHERE codigo = '{mcod_pag}'"
+            f"COALESCE(dia15, 0), cod_forn, tipo_conta, percent FROM sactabpg WHERE codigo = '{mcod_pag}'"
         )
         # Recupere o resultado
         arq_sactabpg = hg.conexao_cursor.fetchone()
         hg.conexao_bd.commit()
-        ic(arq_sactabpg)
-        mvezes = float(arq_sactabpg[3][1:2])
-        mdia = float(arq_sactabpg[4])
-        ic(mvezes)
-        ic(mdia)
+        mvezes = int(arq_sactabpg[3][1:3])
+        ndia = arq_sactabpg[4]
+        mdia = int(ndia)
+        mpercentual = float(arq_sactabpg[21])
+        mcod_forn = arq_sactabpg[19]
+        mtipo_conta = arq_sactabpg[20]
+        ic(
+            f"vezes {mvezes} dias {mdia} fornecedor {mcod_forn} tipo_conta {mtipo_conta}"
+        )
+
         if mdia > 0:
             #     //               1    2       3      4         5       6          7           8                 9            10          11      12       13       14        15         16            17            18
             #     AADD(m_recebe,{'CT','AP',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
-            mdata = data_atual + mdia
-            m_recebe.append(
-                [
-                    "CT",
-                    "AP",
-                    "   ",
-                    "      ",
-                    mnumero,
-                    mdata,
-                    "B",
-                    mcod_pag,
-                    f"{mnumero}'{mvezes}'/1",
-                    mcartao,
-                    "",
-                    "",
-                    "        ",
-                    "             ",
-                    "",
-                    "",
-                    "",
-                    "",
-                    " OS:" + mos,
-                ]
+            # nova_data = data_atual.addDays(mdia)
+            mvalor_parcela = mvalor_cartao / mvezes
+            mvalor = round(mvalor_parcela, 2)
+            mvalor_parcela = mvalor
+            mdiferenca = round(mvalor_cartao - (mvalor_parcela * mvezes), 2)
+            ic(
+                f"valor cartao {mvalor_cartao} vezes {mvezes} diferenca {mdiferenca} parcela {mvalor_parcela}"
             )
+            # if mdiferenca > 0:
+            for i in range(mvezes):
+                ndia = arq_sactabpg[4 + i]
+                mdia = int(ndia)
+                mdata_f = data_atual.addDays(mdia)
+                m_data_f = mdata_f.toPyDateTime().date()
+                mdata = m_data_f.strftime("%Y/%m/%d")
+
+                mvalor_p = mvalor_parcela + mdiferenca
+                mdiferenca = 0
+                m_recebe.append(
+                    [
+                        "CT",
+                        "AP",
+                        "   ",
+                        "      ",
+                        mnumero,
+                        mdata,
+                        "B",
+                        mcod_pag,
+                        f"{mnumero}-{i+1}/{mvezes}",
+                        mvalor_p,
+                        "",
+                        mnumero,
+                        "        ",
+                        "             ",
+                        "",
+                        mpercentual,
+                        mcod_forn,
+                        mtipo_conta,
+                        " OS:" + mos,
+                    ]
+                )
         else:
-            mdata = data_atual + mdia
+            mdata_f = data_atual.addDays(mdia)
+            m_data_f = mdata_f.toPyDateTime().date()
+            mdata = m_data_f.strftime("%Y/%m/%d")
             m_recebe.append(
                 [
                     "CT",
@@ -460,16 +485,16 @@ def verifica_condicao():
                     mdata,
                     "B",
                     mcod_pag,
-                    f"{mnumero}'{mvezes}'/1",
-                    mcartao,
+                    f"{mnumero}-{mvezes}/1",
+                    mvalor_cartao,
                     "",
                     "",
                     "        ",
                     "             ",
                     "",
-                    "",
-                    "",
-                    "",
+                    mpercentual,
+                    mcod_forn,
+                    mtipo_conta,
                     " OS:" + mos,
                 ]
             )
@@ -485,7 +510,7 @@ def verifica_condicao():
         # ENDIF
         # NEXT
 
-    if mduplicata > 0:
+    if mvalor_duplicata > 0:
         m_recebe.append(
             [
                 "DU",
@@ -497,7 +522,7 @@ def verifica_condicao():
                 "C",
                 "   ",
                 "",
-                mduplicata,
+                mvalor_duplicata,
                 "",
                 "",
                 "        ",
@@ -512,7 +537,7 @@ def verifica_condicao():
 
         tela.ds_duplicata.setValue(float(0))
 
-    if mcheque > 0:
+    if mvalor_cheque > 0:
         m_recebe.append(
             [
                 "CH",
@@ -524,7 +549,7 @@ def verifica_condicao():
                 "C",
                 "   ",
                 "",
-                mcheque,
+                mvalor_cheque,
                 "",
                 "",
                 "        ",
@@ -541,20 +566,27 @@ def verifica_condicao():
 
         # print(m_recebe[0])
     # i = 0
+    total_recebido = 0
     for i in range(len(m_recebe)):
         # for recebe in m_recebe:
         mtipo = m_recebe[i][0]
+        mvlr = m_recebe[i][9]
+        mvlr_tx = float(mvlr)
         # print(mtipo)
         if mtipo == "DN":
-            mdin += float(m_recebe[i][9])
+            mdin += mvlr_tx
         if mtipo == "PX":
-            mpx += float(m_recebe[i][9])
+            mpx += mvlr_tx
         if mtipo == "CT":
-            mct += float(m_recebe[i][9])
+            mct += mvlr_tx
         if mtipo == "DU":
-            mdu += float(m_recebe[i][9])
+            mdu += mvlr_tx
         if mtipo == "CH":
-            mch += float(m_recebe[i][9])
+            mch += mvlr_tx
+        total_recebido = total_recebido + mvlr_tx
+
+    total_f = "{:12,.2f}".format(total_recebido)
+    mtotal_tx = f"{total_f}"
 
     mdin_f = "{:12,.2f}".format(mdin)
     mdin_tx = f"{mdin_f}"
@@ -576,26 +608,27 @@ def verifica_condicao():
     lbl_cartao.setText(mct_tx)
     lbl_duplicata.setText(mdu_tx)
     lbl_cheque.setText(mch_tx)
-    print(m_recebe)
-    # if mdinheiro == mtotal_pedido:
-    #     mvalor = mdinheiro
+    lbl_recebido.setText(mtotal_tx)
+    ic(m_recebe)
+    # if mvalor_dinheiro == mtotal_pedido:
+    #     mvalor = mvalor_dinheiro
     #
     #     m_recebe.append('DN')   # ,'AV','   ','      ','99999999',data_atual,'C','   ',mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94])))}
     #     m_recebe.append('AV')   # ,'   ','      ','99999999',data_atual,'C','   ',mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94])))}
-    # elif mdinheiro == 0 and mn_banco ==  .AND. EMPTY(mn_cred) .AND. EMPTY(mn_pix) .AND. ;
+    # elif mvalor_dinheiro == 0 and mn_banco ==  .AND. EMPTY(mn_cred) .AND. EMPTY(mn_pix) .AND. ;
     #       EMPTY(mn_dup) .AND. EMPTY(mcod_cart) .AND. EMPTY(mn_fin) .AND. EMPTY(mn_trans) .AND. LEN(m_parcela) = 0);
-    #       .OR. mdinheiro = mtot_nota:
-    #   IF ! EMPTY(mdinheiro)   //.OR. mdinheiro = mtot_nota
-    #       IF mdinheiro + mtot_verif > mtot_nota
+    #       .OR. mvalor_dinheiro = mtot_nota:
+    #   IF ! EMPTY(mvalor_dinheiro)   //.OR. mvalor_dinheiro = mtot_nota
+    #       IF mvalor_dinheiro + mtot_verif > mtot_nota
     #           mvalor := mtot_nota - mtot_verif
-    #           mtroco := mdinheiro+mtot_verif - mtot_nota
+    #           mtroco := mvalor_dinheiro+mtot_verif - mtot_nota
     #           SUB_BANNER(30,01,'Troco:'+TRANSFORM(mtroco,'999,999.99'))
     #           INKEY(,10)
     #           INKEY(30)
     #       ELSE
-    #           mvalor := mdinheiro
+    #           mvalor := mvalor_dinheiro
     #       ENDIF
-    #       AADD(m_alt,'DINHEIRO...: Valor: '+TRANSFORM(mdinheiro,'999,999.99'))
+    #       AADD(m_alt,'DINHEIRO...: Valor: '+TRANSFORM(mvalor_dinheiro,'999,999.99'))
     #       AADD(m_recebe,{'DN','AV',SPACE(3),SPACE(6),'99999999',mdata_sis,'C',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
     #   ELSE
     #       IF ! EMPTY(mn_cheque)
@@ -687,11 +720,11 @@ def verifica_condicao():
     # ENDIF
     # tela.ds_dinheiro.setFocus()
     # tela.ds_dinheiro.selectAll()
-    tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
-    tela.ds_pix.editingFinished.connect(verifica_condicao)
-    tela.ds_cartao.editingFinished.connect(condicao_pagamento)
-    tela.ds_duplicata.editingFinished.connect(verifica_condicao)
-    tela.ds_cheque.editingFinished.connect(verifica_condicao)
+    # tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
+    # tela.ds_pix.editingFinished.connect(verifica_condicao)
+    # tela.ds_cartao.editingFinished.connect(condicao_pagamento)
+    # tela.ds_duplicata.editingFinished.connect(verifica_condicao)
+    # tela.ds_cheque.editingFinished.connect(verifica_condicao)
 
 
 def condicao_pagamento():
@@ -761,6 +794,11 @@ def condicao_pagamento():
     def confirma():
         tela_pg.close()
         tela.ds_dinheiro.setFocus()
+        tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
+        tela.ds_pix.editingFinished.connect(verifica_condicao)
+        tela.ds_cartao.editingFinished.connect(condicao_pagamento)
+        tela.ds_duplicata.editingFinished.connect(verifica_condicao)
+        tela.ds_cheque.editingFinished.connect(verifica_condicao)
         verifica_condicao()
         return
         # from venda_pdvcx import verifica_condicao
@@ -772,6 +810,11 @@ def condicao_pagamento():
         tela.ds_cartao.setValue(float(0))
         tela.ds_duplicata.setValue(float(0))
         tela.ds_cheque.setValue(float(0))
+        tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
+        tela.ds_pix.editingFinished.connect(verifica_condicao)
+        tela.ds_cartao.editingFinished.connect(condicao_pagamento)
+        tela.ds_duplicata.editingFinished.connect(verifica_condicao)
+        tela.ds_cheque.editingFinished.connect(verifica_condicao)
         return
 
     tela_pg.cb_tipo_pg.setCurrentIndex(0)
@@ -804,8 +847,8 @@ def fechar_pedido(mnum_pedido):
     tela.ds_cheque.editingFinished.connect(verifica_condicao)
     # tela.ds_pix.setEnabled(False)
 
-    tela.bt_fecha.clicked.connect(salva_pedido)
-    tela.bt_fecha.setIcon(icon_salvar)
+    # tela.bt_fecha.clicked.connect(salva_pedido)
+    # tela.bt_fecha.setIcon(icon_salvar)
     tela.bt_sair.clicked.connect(fecha_tela)
     tela.bt_sair.setIcon(icon_sair)
 

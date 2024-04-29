@@ -1,7 +1,7 @@
-from PyQt6 import uic, QtWidgets
+from PyQt6 import uic, QtWidgets, QtCore
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtCore import QDateTime
+from PyQt6.QtCore import QDateTime, Qt
 from datetime import date
 from icecream import ic
 from hti_funcoes import conexao_banco
@@ -95,6 +95,7 @@ tela_pg.setWindowIcon(icon)
 tela_pg.setWindowTitle(f"DADOS DO PAGAMENTO        {hg.SISTEMA}  Versao: {hg.VERSAO}")
 lbl_valor = tela_pg.findChild(QtWidgets.QLabel, "lb_valor")
 tela_pg.empresa.setPixmap(pixmap_redimensionado)
+tela_pg.setWindowFlag(Qt.WindowType.WindowCloseButtonHint, False)
 
 
 conexao_banco()
@@ -609,6 +610,11 @@ def verifica_condicao():
     lbl_duplicata.setText(mdu_tx)
     lbl_cheque.setText(mch_tx)
     lbl_recebido.setText(mtotal_tx)
+    tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
+    tela.ds_pix.editingFinished.connect(verifica_condicao)
+    tela.ds_cartao.editingFinished.connect(condicao_pagamento)
+    tela.ds_duplicata.editingFinished.connect(condicao_pagamento)
+    tela.ds_cheque.editingFinished.connect(verifica_condicao)
     ic(m_recebe)
     # if mvalor_dinheiro == mtotal_pedido:
     #     mvalor = mvalor_dinheiro
@@ -728,13 +734,15 @@ def verifica_condicao():
 
 
 def condicao_pagamento():
+    tela_pg.sb_qtd_parcelas.setEnabled(False)
     tela_pg.cb_tipo_pg.clear()
     mtipo_pg = ""
     mcart = tela.ds_cartao.value()
     mdupli = tela.ds_duplicata.value()
     mcheq = tela.ds_cheque.value()
-    # conexao_banco()
+    tela_pg.sb_qtd_parcelas.setValue(1)
     if mcart > 0:
+        tela_pg.sb_qtd_parcelas.setEnabled(True)
         mct_f = "{:12,.2f}".format(mcart)
         mct_tx = f"{mct_f}"
         lbl_valor.setText(mct_tx)
@@ -791,14 +799,15 @@ def condicao_pagamento():
 
         tela_pg.cb_tipo_pg.addItem(item_pg)
 
+
     def confirma():
         tela_pg.close()
         tela.ds_dinheiro.setFocus()
-        tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
-        tela.ds_pix.editingFinished.connect(verifica_condicao)
-        tela.ds_cartao.editingFinished.connect(condicao_pagamento)
-        tela.ds_duplicata.editingFinished.connect(verifica_condicao)
-        tela.ds_cheque.editingFinished.connect(verifica_condicao)
+        # tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
+        # tela.ds_pix.editingFinished.connect(verifica_condicao)
+        # tela.ds_cartao.editingFinished.connect(condicao_pagamento)
+        # tela.ds_duplicata.editingFinished.connect(condicao_pagamento)
+        # tela.ds_cheque.editingFinished.connect(verifica_condicao)
         verifica_condicao()
         return
         # from venda_pdvcx import verifica_condicao
@@ -807,15 +816,23 @@ def condicao_pagamento():
     def sair():
         tela_pg.close()
         tela.ds_dinheiro.setFocus()
+        tela.ds_dinheiro.setValue(float(0))
+        tela.ds_pix.setValue(float(0))
         tela.ds_cartao.setValue(float(0))
         tela.ds_duplicata.setValue(float(0))
         tela.ds_cheque.setValue(float(0))
-        tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
-        tela.ds_pix.editingFinished.connect(verifica_condicao)
-        tela.ds_cartao.editingFinished.connect(condicao_pagamento)
-        tela.ds_duplicata.editingFinished.connect(verifica_condicao)
-        tela.ds_cheque.editingFinished.connect(verifica_condicao)
         return
+
+    # def keyPressEvent(event):
+    #     if event.key() == Qt.Key.Key_Escape:
+    #         tela_pg.close()
+    #         tela.ds_dinheiro.setFocus()
+    #         tela.ds_dinheiro.setValue(float(0))
+    #         tela.ds_pix.setValue(float(0))
+    #         tela.ds_cartao.setValue(float(0))
+    #         tela.ds_duplicata.setValue(float(0))
+    #         tela.ds_cheque.setValue(float(0))
+    #         return
 
     tela_pg.cb_tipo_pg.setCurrentIndex(0)
     tela_pg.bt_confirma.clicked.connect(confirma)
@@ -823,6 +840,12 @@ def condicao_pagamento():
     tela_pg.bt_sair.clicked.connect(sair)
     tela_pg.bt_sair.setIcon(icon_sair)
     tela_pg.show()
+
+
+def keyPressEvent(self, event):
+    if event.key() == QtCore.Qt.Key.Key_Escape:
+        ic()
+        event.ignore()  # Ignora o evento, impedindo que a tecla ESC feche a janela
 
 
 def fechar_pedido(mnum_pedido):
@@ -843,7 +866,7 @@ def fechar_pedido(mnum_pedido):
     tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
     tela.ds_pix.editingFinished.connect(verifica_condicao)
     tela.ds_cartao.editingFinished.connect(condicao_pagamento)
-    tela.ds_duplicata.editingFinished.connect(verifica_condicao)
+    tela.ds_duplicata.editingFinished.connect(condicao_pagamento)
     tela.ds_cheque.editingFinished.connect(verifica_condicao)
     # tela.ds_pix.setEnabled(False)
 

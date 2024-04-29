@@ -158,7 +158,7 @@
    <property name="geometry">
     <rect>
      <x>170</x>
-     <y>220</y>
+     <y>240</y>
      <width>230</width>
      <height>40</height>
     </rect>
@@ -190,7 +190,7 @@
    <property name="geometry">
     <rect>
      <x>180</x>
-     <y>140</y>
+     <y>180</y>
      <width>150</width>
      <height>30</height>
     </rect>
@@ -214,7 +214,7 @@
    <property name="geometry">
     <rect>
      <x>340</x>
-     <y>140</y>
+     <y>180</y>
      <width>300</width>
      <height>30</height>
     </rect>
@@ -239,7 +239,7 @@ color: rgb(0, 0, 0);</string>
    <property name="geometry">
     <rect>
      <x>480</x>
-     <y>220</y>
+     <y>240</y>
      <width>130</width>
      <height>40</height>
     </rect>
@@ -304,7 +304,55 @@ color: rgb(0, 0, 0);</string>
     <string>Valor:</string>
    </property>
   </widget>
+  <widget class="QLabel" name="lb_senha_4">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>140</y>
+     <width>150</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>10</pointsize>
+     <italic>false</italic>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Qtd. Parcelas:</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="sb_qtd_parcelas">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>143</y>
+     <width>70</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Courier</family>
+     <pointsize>15</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+  </widget>
  </widget>
+ <tabstops>
+  <tabstop>cb_tipo_pg</tabstop>
+  <tabstop>n_documento</tabstop>
+  <tabstop>sb_qtd_parcelas</tabstop>
+  <tabstop>bt_confirma</tabstop>
+  <tabstop>bt_sair</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

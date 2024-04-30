@@ -143,6 +143,12 @@ def fecha_tela():
     return
 
 
+# def on_close_event(event):
+#     print("esc")
+#     tela.close()
+#     event.accept()
+
+
 def criar_tela():
     global mtotal_pedido
     tela.textBrowser.clear()
@@ -196,11 +202,12 @@ def criar_tela():
 def salva_pedido():
     index = tela.cb_cliente.currentIndex()
     mop = tela.cb_cliente.itemText(index)
-    mcod_cli = mop[0:5]
-
+    mcod_cli = mop[43:48]
+    # ic(f"SELECT * FROM saccli WHERE cod_cli = {mcod_cli}")
     hg.conexao_cursor.execute(f"SELECT * FROM saccli WHERE cod_cli = {mcod_cli}")
     cons_cli = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
+    codigo_cli = int(mcod_cli)
     hg.conexao_cursor.execute(
         f"SELECT * FROM insopera WHERE scod_op = {hg.geral_cod_usuario}"
     )
@@ -232,7 +239,7 @@ def salva_pedido():
         f"pdesc_merc = ?, "
         f"pvlr_fat = ?, "
         f"pfecha = ? "
-        f"WHERE  WHERE SR_RECNO = {mnumero_pedido}"
+        f" WHERE pnum_ped = {mnumero_pedido}"
     )
 
     values = (
@@ -242,7 +249,7 @@ def salva_pedido():
         "",  # m_carro
         "",  # m_modelo,
         "",  # m_km,
-        cons_cli[1],  # cod_cli
+        codigo_cli,  # cod_cli
         cons_oper[8],  # comissao ooperador
         "",  # codigo finan
         "",  # cod tabela
@@ -274,19 +281,11 @@ def verifica_condicao():
     mct = 0
     mdu = 0
     mch = 0
-    # tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
-    # tela.ds_pix.editingFinished.connect(verifica_condicao)
-    # tela.ds_cartao.editingFinished.connect(condicao_pagamento)
-    # tela.ds_duplicata.editingFinished.connect(verifica_condicao)
-    # tela.ds_cheque.editingFinished.connect(verifica_condicao)
 
     tela.ds_dinheiro.editingFinished.disconnect()
     tela.ds_pix.editingFinished.disconnect()
-    # if tela.ds_cartao.signalsBlocked():
     tela.ds_cartao.editingFinished.disconnect()
-    # if tela.ds_duplicata.signalsBlocked():
     tela.ds_duplicata.editingFinished.disconnect()
-    # if tela.ds_cheque.signalsBlocked():
     tela.ds_cheque.editingFinished.disconnect()
 
     mvalor_dinheiro = tela.ds_dinheiro.value()
@@ -418,7 +417,8 @@ def verifica_condicao():
         # Recupere o resultado
         arq_sactabpg = hg.conexao_cursor.fetchone()
         hg.conexao_bd.commit()
-        mvezes = int(arq_sactabpg[3][1:3])
+        mvezes = tela_pg.sb_qtd_parcelas.value()
+        # mvezes = int(arq_sactabpg[3][1:3])
         ndia = arq_sactabpg[4]
         mdia = int(ndia)
         mpercentual = float(arq_sactabpg[21])
@@ -615,7 +615,13 @@ def verifica_condicao():
     tela.ds_cartao.editingFinished.connect(condicao_pagamento)
     tela.ds_duplicata.editingFinished.connect(condicao_pagamento)
     tela.ds_cheque.editingFinished.connect(verifica_condicao)
-    ic(m_recebe)
+    mt_pedido = float(mtotal_pedido)
+    mt_recebido = float(total_recebido)
+    if mt_recebido == mt_pedido:
+        ic(f"pedido {float(mtotal_pedido)} - recebido {float(total_recebido)}")
+        salva_pedido()
+
+    # ic(m_recebe)
     # if mvalor_dinheiro == mtotal_pedido:
     #     mvalor = mvalor_dinheiro
     #
@@ -733,6 +739,15 @@ def verifica_condicao():
     # tela.ds_cheque.editingFinished.connect(verifica_condicao)
 
 
+def limpa_valores():
+    tela.ds_dinheiro.setFocus()
+    tela.ds_dinheiro.setValue(float(0))
+    tela.ds_pix.setValue(float(0))
+    tela.ds_cartao.setValue(float(0))
+    tela.ds_duplicata.setValue(float(0))
+    tela.ds_cheque.setValue(float(0))
+
+
 def condicao_pagamento():
     tela_pg.sb_qtd_parcelas.setEnabled(False)
     tela_pg.cb_tipo_pg.clear()
@@ -799,41 +814,18 @@ def condicao_pagamento():
 
         tela_pg.cb_tipo_pg.addItem(item_pg)
 
-
     def confirma():
         tela_pg.close()
         tela.ds_dinheiro.setFocus()
-        # tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
-        # tela.ds_pix.editingFinished.connect(verifica_condicao)
-        # tela.ds_cartao.editingFinished.connect(condicao_pagamento)
-        # tela.ds_duplicata.editingFinished.connect(condicao_pagamento)
-        # tela.ds_cheque.editingFinished.connect(verifica_condicao)
         verifica_condicao()
         return
-        # from venda_pdvcx import verifica_condicao
-        # verifica_condicao()
 
     def sair():
         tela_pg.close()
-        tela.ds_dinheiro.setFocus()
-        tela.ds_dinheiro.setValue(float(0))
-        tela.ds_pix.setValue(float(0))
-        tela.ds_cartao.setValue(float(0))
-        tela.ds_duplicata.setValue(float(0))
-        tela.ds_cheque.setValue(float(0))
+        limpa_valores()
         return
 
-    # def keyPressEvent(event):
-    #     if event.key() == Qt.Key.Key_Escape:
-    #         tela_pg.close()
-    #         tela.ds_dinheiro.setFocus()
-    #         tela.ds_dinheiro.setValue(float(0))
-    #         tela.ds_pix.setValue(float(0))
-    #         tela.ds_cartao.setValue(float(0))
-    #         tela.ds_duplicata.setValue(float(0))
-    #         tela.ds_cheque.setValue(float(0))
-    #         return
-
+    tela_pg.keyPressEvent = keyPressEvent
     tela_pg.cb_tipo_pg.setCurrentIndex(0)
     tela_pg.bt_confirma.clicked.connect(confirma)
     tela_pg.bt_confirma.setIcon(icon_salvar)
@@ -842,10 +834,11 @@ def condicao_pagamento():
     tela_pg.show()
 
 
-def keyPressEvent(self, event):
+def keyPressEvent(event):
     if event.key() == QtCore.Qt.Key.Key_Escape:
-        ic()
-        event.ignore()  # Ignora o evento, impedindo que a tecla ESC feche a janela
+        tela_pg.close()
+        limpa_valores()
+        # event.ignore()  # Ignora o evento, impedindo que a tecla ESC feche a janela
 
 
 def fechar_pedido(mnum_pedido):
@@ -854,11 +847,8 @@ def fechar_pedido(mnum_pedido):
     # tela.cb_cliente.setEnabled(False)
     mcod_cli = str(hg.m_set[83]).zfill(5)
     mcli_aux = str(hg.m_set[83]).zfill(5)
-    # print(mcli_aux)
     for i in range(tela.cb_cliente.count()):
         item_text = tela.cb_cliente.itemText(i)
-        # print(item_text)
-        # print(f"{mcod_cli} {item_text[43:48]}")
         if str(mcod_cli).strip() == item_text[43:48]:
             tela.cb_cliente.setCurrentIndex(i)
             break

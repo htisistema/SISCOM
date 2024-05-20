@@ -11,8 +11,15 @@ def ver_serie():
 def conexao_banco():
     # Conecte-se ao banco de dados
     # print('conexao')
+    print(f"{hg.host} {hg.port_db}")
+    # fdb.load_api("C:\\HTI\\PYTHON\\SISCOM\\fbclient.dll")
     hg.conexao_bd = fdb.connect(
-        dsn=hg.host, user="SYSDBA", password="masterkey", charset="UTF8"
+        dsn=hg.host,
+        user="SYSDBA",
+        password="masterkey",
+        charset="UTF8",
+        port=hg.port_db,
+        fb_library_name="C:\\Program Files\\Firebird\\Firebird_3_0\\fbclient.dll"
     )
     hg.conexao_cursor = hg.conexao_bd.cursor()
     # verificar_conexao()
@@ -25,9 +32,7 @@ def conexao_banco():
     hg.m_indiv = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
     if hg.m_indiv is None:
-        hg.conexao_cursor.execute(
-            f"SELECT first 1 * FROM sacindiv"
-        )
+        hg.conexao_cursor.execute(f"SELECT first 1 * FROM sacindiv")
         hg.m_indiv = hg.conexao_cursor.fetchone()
         hg.conexao_bd.commit()
     # print('fim conexao')

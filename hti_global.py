@@ -41,6 +41,7 @@ c_ui = config.get('caminho_ui', 'caminho_ui')
 mtipo_temrinal = config.get('tipo_terminal', 'tipo_term')
 mtp_tela = config.get('tipo_tela', 'tp_tela')
 host = config.get('banco', 'host')
+port_db = config.get('port_banco', 'port')
 nome_computador = config.get('terminal', 'nome_terminal')
 conexao_bd = ' '
 conexao_cursor = ' '

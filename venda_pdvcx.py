@@ -81,6 +81,16 @@ lbl_cartao = tela.findChild(QtWidgets.QLabel, "lb_cartao")
 lbl_duplicata = tela.findChild(QtWidgets.QLabel, "lb_duplicata")
 lbl_cheque = tela.findChild(QtWidgets.QLabel, "lb_cheque")
 lbl_recebido = tela.findChild(QtWidgets.QLabel, "lb_recebido")
+lbl_areceber = tela.findChild(QtWidgets.QLabel, "lb_areceber")
+
+lbl_dinheiro.setText('0.00')
+lbl_pix.setText('0.00')
+lbl_cartao.setText('0.00')
+lbl_duplicata.setText('0.00')
+lbl_cheque.setText('0.00')
+lbl_recebido.setText('0.00')
+lbl_areceber.setText('0.00')
+
 
 lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
 lbl_produto.setText("F E C H A M E N T O   D O   P E D I D O")
@@ -568,6 +578,7 @@ def verifica_condicao():
         # print(m_recebe[0])
     # i = 0
     total_recebido = 0
+    total_areceber = 0
     for i in range(len(m_recebe)):
         # for recebe in m_recebe:
         mtipo = m_recebe[i][0]
@@ -585,9 +596,14 @@ def verifica_condicao():
         if mtipo == "CH":
             mch += mvlr_tx
         total_recebido = total_recebido + mvlr_tx
+        mtot_total = float(mtotal_pedido)
+        total_areceber = mtot_total - total_recebido
 
     total_f = "{:12,.2f}".format(total_recebido)
     mtotal_tx = f"{total_f}"
+
+    total_ar = "{:12,.2f}".format(total_areceber)
+    mareceber_tx = f"{total_ar}"
 
     mdin_f = "{:12,.2f}".format(mdin)
     mdin_tx = f"{mdin_f}"
@@ -610,6 +626,7 @@ def verifica_condicao():
     lbl_duplicata.setText(mdu_tx)
     lbl_cheque.setText(mch_tx)
     lbl_recebido.setText(mtotal_tx)
+    lbl_areceber.setText(mareceber_tx)
     tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
     tela.ds_pix.editingFinished.connect(verifica_condicao)
     tela.ds_cartao.editingFinished.connect(condicao_pagamento)

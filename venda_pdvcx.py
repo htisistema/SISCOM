@@ -1,11 +1,11 @@
 from PyQt6 import uic, QtWidgets, QtCore
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtCore import QDateTime, Qt
-from datetime import date
+from PyQt6.QtCore import QDateTime, Qt, QDate
+from datetime import datetime
 from icecream import ic
 from hti_funcoes import conexao_banco
-
+from ATENCAO import atencao
 # from ver_pagamento import ver_pagamento
 import hti_global as hg
 import os
@@ -83,17 +83,17 @@ lbl_cheque = tela.findChild(QtWidgets.QLabel, "lb_cheque")
 lbl_recebido = tela.findChild(QtWidgets.QLabel, "lb_recebido")
 lbl_areceber = tela.findChild(QtWidgets.QLabel, "lb_areceber")
 
-lbl_dinheiro.setText('0.00')
-lbl_pix.setText('0.00')
-lbl_cartao.setText('0.00')
-lbl_duplicata.setText('0.00')
-lbl_cheque.setText('0.00')
-lbl_recebido.setText('0.00')
-lbl_areceber.setText('0.00')
+lbl_dinheiro.setText("0.00")
+lbl_pix.setText("0.00")
+lbl_cartao.setText("0.00")
+lbl_duplicata.setText("0.00")
+lbl_cheque.setText("0.00")
+lbl_recebido.setText("0.00")
+lbl_areceber.setText("0.00")
 
 
 lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
-lbl_produto.setText("F E C H A M E N T O   D O   P E D I D O")
+lbl_produto.setText("F E C H A M E N T O   D O   C A I X A")
 lbl_cabecalho = tela.findChild(QtWidgets.QLabel, "cabecalho")
 
 tela_pg = uic.loadUi(f"{hg.c_ui}\\tipo_pagamento.ui")
@@ -125,7 +125,7 @@ tela.cb_cliente.setCurrentIndex(0)
 data_atual = QDateTime.currentDateTime()
 mnumero_pedido = ""
 mcli_aux = 0
-data_vazia = date(1900, 1, 1)
+
 mtotal_pedido = 0
 m_recebe = []
 # tela.cb_forma_pg.addItems(
@@ -181,7 +181,6 @@ def criar_tela():
         # tela.textBrowser.setFont(fonte)
         mtotal_geral = 0
         i = 0
-        # ic(resultados)
         # Exibir os resultados no QTextEdit
         if len(resultados) > 0:
             for resultado in resultados:
@@ -210,6 +209,7 @@ def criar_tela():
 
 
 def salva_pedido():
+    # ic('salva_pedido')
     index = tela.cb_cliente.currentIndex()
     mop = tela.cb_cliente.itemText(index)
     mcod_cli = mop[43:48]
@@ -228,10 +228,6 @@ def salva_pedido():
         f"UPDATE sacped_s SET "
         f"pcgc = ?, "
         f"pcpf = ?, "
-        f"pplaca = ?, "
-        f"pcarro = ?, "
-        f"pmodelo = ?, "
-        f"pkm = ?, "
         f"pcod_cli = ?, "
         f"pcomi_oper = ?, "
         f"pcod_fin = ?, "
@@ -247,44 +243,148 @@ def salva_pedido():
         f"pcomissao = ?, "
         f"pdesc = ?, "
         f"pdesc_merc = ?, "
-        f"pvlr_fat = ?, "
         f"pfecha = ? "
         f" WHERE pnum_ped = {mnumero_pedido}"
     )
-
+    mcomissao = float(cons_oper[8])
     values = (
         cons_cli[31],
         cons_cli[33],
-        "",  # mplaca
-        "",  # m_carro
-        "",  # m_modelo,
-        "",  # m_km,
         codigo_cli,  # cod_cli
-        cons_oper[8],  # comissao ooperador
+        mcomissao,  # comissao ooperador
         "",  # codigo finan
         "",  # cod tabela
-        "",  # vlr presta
+        0,  # vlr presta
         "",  # cond vezes
         "",  # cond intenv
         "",  # tp_venda
-        "",  # vlr_enta
+        0,  # vlr_enta
         "",  # stat_itam
         "",  # cod_vend
         "",  # vendedor
-        "",  # comissao
-        "",  # desc
-        "",  # desc_merc
-        "",  # vlr_fat
+        0,  # comissao
+        0,  # desc
+        0,  # desc_merc
         "F",  # fecha
     )
-
-    print(sql, values)
-
     hg.conexao_cursor.execute(sql, values)
     hg.conexao_bd.commit()
 
+    mvezes = len(m_recebe)
+    mnum_dup = " "
+    mdup_num = " "
+    ic(mvezes)
+    for i in range(mvezes):
+        mhora = datetime.now().strftime("%H:%M:%S")
+        venc_formatada = m_recebe[i][5]
+        if m_recebe[i][0] == "DN":
+            mnum_dup = mnumero_pedido
+            mdup_num = "99999999"
+        elif m_recebe[i][0] == "DU" or m_recebe[i][0] == "TR" or m_recebe[i][0] == "CR":
+            mnum_dup = m_recebe[i][4]
+            mdup_num = m_recebe[i][4]
+        elif m_recebe[i][0] == "CH":
+            mnum_dup = m_recebe[i][4]
+            mdup_num = m_recebe[i][3]
+        elif m_recebe[i][0] == "CT":
+            mnum_dup = m_recebe[i][4]
+            mdup_num = m_recebe[i][8]
+        elif m_recebe[i][0] == "PX":
+            mnum_dup = m_recebe[i][4]
+            mdup_num = m_recebe[i][4]
+        elif m_recebe[i][0] == "FI":
+            mnum_dup = m_recebe[i][10]
+            mdup_num = m_recebe[i][10]
+
+        sql = (
+            "INSERT INTO saccaixa ("
+            "empresa, "
+            "data, "
+            "tipo, "
+            "tipo_comp, "
+            "nota, "
+            "cod_cli, "
+            "cod_vend, "
+            "cod_opera, "
+            "hora, "
+            "valor_com, "
+            "comissao, "
+            "venci, "
+            "valor, "
+            "num_ban, "
+            "cod_ct, "
+            "c_s, "
+            "num_dup, "
+            "documento, "
+            "descri2, "
+            "obs, "
+            "SR_DELETED) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+        )
+        ic(
+            sql,
+            (
+                "001",
+                hg.mdata_sis,
+                m_recebe[i][0],
+                m_recebe[i][1],
+                "PD" + mnumero_pedido,
+                codigo_cli,
+                hg.geral_cod_usuario,
+                hg.geral_cod_usuario,
+                mhora,
+                m_recebe[i][9],
+                0,
+                venc_formatada,
+                m_recebe[i][9],
+                m_recebe[i][2],
+                m_recebe[i][7],
+                "",
+                mnum_dup,
+                mdup_num,
+                m_recebe[i][11],
+                m_recebe[i][18],
+                " ",
+            ),
+        )
+
+        hg.conexao_cursor.execute(
+            sql,
+            (
+                "001",
+                hg.mdata_sis,
+                m_recebe[i][0],
+                m_recebe[i][1],
+                "PD" + mnumero_pedido,
+                codigo_cli,
+                hg.geral_cod_usuario,
+                hg.geral_cod_usuario,
+                mhora,
+                m_recebe[i][9],
+                0,
+                venc_formatada,
+                m_recebe[i][9],
+                m_recebe[i][2],
+                m_recebe[i][7],
+                "",
+                mnum_dup,
+                mdup_num,
+                m_recebe[i][11],
+                m_recebe[i][18],
+                " ",
+            ),
+        )
+        hg.conexao_bd.commit()
+
+    # ic(m_recebe)
+    # print(sql, values)
+    m_recebe.clear()
+    return
+    # fecha_tela()
+
 
 def verifica_condicao():
+    # ic('verifica_condicao')
     global m_recebe
     mdin = 0
     mpx = 0
@@ -366,7 +466,7 @@ def verifica_condicao():
                 "   ",
                 "      ",
                 "99999999",
-                data_atual,
+                hg.mdata_sis,
                 "C",
                 "   ",
                 "",
@@ -379,7 +479,7 @@ def verifica_condicao():
                 "",
                 "",
                 "",
-                " OS:" + mos,
+                " OS:",
             ]
         )
 
@@ -392,7 +492,7 @@ def verifica_condicao():
                 "   ",
                 "      ",
                 "99999999",
-                data_atual,
+                hg.mdata_sis,
                 "C",
                 "   ",
                 "",
@@ -405,7 +505,7 @@ def verifica_condicao():
                 "",
                 "",
                 "",
-                " OS:" + mos,
+                " OS:",
             ]
         )
 
@@ -451,11 +551,17 @@ def verifica_condicao():
             )
             # if mdiferenca > 0:
             for i in range(mvezes):
-                ndia = arq_sactabpg[4 + i]
-                mdia = int(ndia)
-                mdata_f = data_atual.addDays(mdia)
-                m_data_f = mdata_f.toPyDateTime().date()
-                mdata = m_data_f.strftime("%Y/%m/%d")
+                # ndia = arq_sactabpg[4 + i]
+                # mdia = int(ndia)
+                mdata_sis = QDate.fromString(hg.mdata_sis, "yyyy-MM-dd")
+                # Verifique se a conversão foi bem-sucedida
+                if not mdata_sis.isValid():
+                    atencao(f"Data inválida: {hg.mdata_sis}")
+
+                # Adiciona os dias ao QDate
+                mdata_f = mdata_sis.addDays(mdia * i)
+                # Imprime a nova data
+                mdata_venc = mdata_f.toString("yyyy-MM-dd")
 
                 mvalor_p = mvalor_parcela + mdiferenca
                 mdiferenca = 0
@@ -466,7 +572,7 @@ def verifica_condicao():
                         "   ",
                         "      ",
                         mnumero,
-                        mdata,
+                        mdata_venc,
                         "B",
                         mcod_pag,
                         f"{mnumero}-{i+1}/{mvezes}",
@@ -479,13 +585,20 @@ def verifica_condicao():
                         mpercentual,
                         mcod_forn,
                         mtipo_conta,
-                        " OS:" + mos,
+                        " OS:",
                     ]
                 )
         else:
-            mdata_f = data_atual.addDays(mdia)
-            m_data_f = mdata_f.toPyDateTime().date()
-            mdata = m_data_f.strftime("%Y/%m/%d")
+            mdata_sis = QDate.fromString(hg.mdata_sis, "yyyy-MM-dd")
+            # Verifique se a conversão foi bem-sucedida
+            if not mdata_sis.isValid():
+                atencao(f"Data inválida: {hg.mdata_sis}")
+
+            # Adiciona os dias ao QDate
+            mdata_f = mdata_sis.addDays(mdia * i)
+            # Imprime a nova data
+            mdata_venc = mdata_f.toString("yyyy-MM-dd")
+
             m_recebe.append(
                 [
                     "CT",
@@ -493,7 +606,7 @@ def verifica_condicao():
                     "   ",
                     "      ",
                     mnumero,
-                    mdata,
+                    mdata_venc,
                     "B",
                     mcod_pag,
                     f"{mnumero}-{mvezes}/1",
@@ -506,7 +619,7 @@ def verifica_condicao():
                     mpercentual,
                     mcod_forn,
                     mtipo_conta,
-                    " OS:" + mos,
+                    " OS:",
                 ]
             )
 
@@ -514,7 +627,7 @@ def verifica_condicao():
 
         #     IF m_parcela[i,2] > mdata_sis
         #     mqtd_doc ++
-        #     mqtd_dias := mqtd_dias + (m_parcela[i,2] - mdata_sis)
+        #     mqtd_dias = mqtd_dias + (m_parcela[i,2] - mdata_sis)
         # ELSE
         #
         # AADD(m_recebe,{'CT','AV',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
@@ -529,7 +642,7 @@ def verifica_condicao():
                 "   ",
                 "      ",
                 "99999999",
-                data_atual,
+                mdata_venc,
                 "C",
                 "   ",
                 "",
@@ -542,7 +655,7 @@ def verifica_condicao():
                 "",
                 "",
                 "",
-                " OS:" + mos,
+                " OS:",
             ]
         )
 
@@ -556,7 +669,7 @@ def verifica_condicao():
                 "   ",
                 "      ",
                 "99999999",
-                data_atual,
+                hg.mdata_sis,
                 "C",
                 "   ",
                 "",
@@ -569,7 +682,7 @@ def verifica_condicao():
                 "",
                 "",
                 "",
-                " OS:" + mos,
+                " OS:",
             ]
         )
 
@@ -596,6 +709,7 @@ def verifica_condicao():
         if mtipo == "CH":
             mch += mvlr_tx
         total_recebido = total_recebido + mvlr_tx
+        # ic(mtotal_pedido)
         mtot_total = float(mtotal_pedido)
         total_areceber = mtot_total - total_recebido
 
@@ -632,11 +746,15 @@ def verifica_condicao():
     tela.ds_cartao.editingFinished.connect(condicao_pagamento)
     tela.ds_duplicata.editingFinished.connect(condicao_pagamento)
     tela.ds_cheque.editingFinished.connect(verifica_condicao)
+    # ic(mtotal_pedido)
     mt_pedido = float(mtotal_pedido)
     mt_recebido = float(total_recebido)
-    if mt_recebido == mt_pedido:
+    if mt_recebido >= mt_pedido:
         ic(f"pedido {float(mtotal_pedido)} - recebido {float(total_recebido)}")
         salva_pedido()
+        m_recebe.clear()
+        fecha_tela()
+        # return
 
     # ic(m_recebe)
     # if mvalor_dinheiro == mtotal_pedido:
@@ -649,29 +767,29 @@ def verifica_condicao():
     #       .OR. mvalor_dinheiro = mtot_nota:
     #   IF ! EMPTY(mvalor_dinheiro)   //.OR. mvalor_dinheiro = mtot_nota
     #       IF mvalor_dinheiro + mtot_verif > mtot_nota
-    #           mvalor := mtot_nota - mtot_verif
-    #           mtroco := mvalor_dinheiro+mtot_verif - mtot_nota
+    #           mvalor = mtot_nota - mtot_verif
+    #           mtroco = mvalor_dinheiro+mtot_verif - mtot_nota
     #           SUB_BANNER(30,01,'Troco:'+TRANSFORM(mtroco,'999,999.99'))
     #           INKEY(,10)
     #           INKEY(30)
     #       ELSE
-    #           mvalor := mvalor_dinheiro
+    #           mvalor = mvalor_dinheiro
     #       ENDIF
     #       AADD(m_alt,'DINHEIRO...: Valor: '+TRANSFORM(mvalor_dinheiro,'999,999.99'))
     #       AADD(m_recebe,{'DN','AV',SPACE(3),SPACE(6),'99999999',mdata_sis,'C',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
     #   ELSE
     #       IF ! EMPTY(mn_cheque)
     #           IF (mvalor + mtot_verif) - mtot_nota > .01
-    #               mcred_cheq := op_simnao('S','O Valor de R$:'+TRANSFORM(mvalor+mtot_verif - mtot_nota,'999,999.99')+'  vai ser gerado um CREDITO para o cliente:')
+    #               mcred_cheq = op_simnao('S','O Valor de R$:'+TRANSFORM(mvalor+mtot_verif - mtot_nota,'999,999.99')+'  vai ser gerado um CREDITO para o cliente:')
     #               IF  mcred_cheq = 'N'
     #                   LOOP
     #               ENDIF
-    #               mvlr_credcheq := mvalor+mtot_verif - mtot_nota
+    #               mvlr_credcheq = mvalor+mtot_verif - mtot_nota
     #               IF mvencimento > mdata_sis
     # *       	                                                         1    2      3         4       5        6       7         8                 9      10     11     12       13     14      15        16   17  18       19
     #                   AADD(m_recebe,{'CH','AP',mn_banco,mn_cheque,mn_dup,mvencimento,'B',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj,' ',' ','CREDITO P/ CLIENTE DE R$:'+TRANSFORM(mvalor+mtot_verif - mtot_nota,'999,999.99')+IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
     #                   mqtd_doc ++
-    #                   mqtd_dias := mqtd_dias + (mvencimento - mdata_sis)
+    #                   mqtd_dias = mqtd_dias + (mvencimento - mdata_sis)
     #               ELSE
     #                   AADD(m_recebe,{'CH','AV',mn_banco,mn_cheque,mn_dup,mvencimento,'B',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj,' ',' ','CREDITO P/ CLIENTE DE R$:'+TRANSFORM(mvalor+mtot_verif - mtot_nota,'999,999.99')+IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
     #               ENDIF
@@ -680,14 +798,14 @@ def verifica_condicao():
     # *       	                                                         1    2      3         4       5        6       7         8                 9      10     11     12       13     14      15        16   17  18   19
     #                   AADD(m_recebe,{'CH','AP',mn_banco,mn_cheque,mn_dup,mvencimento,'B',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj,' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
     #                   mqtd_doc ++
-    #                   mqtd_dias := mqtd_dias + (mvencimento - mdata_sis)
+    #                   mqtd_dias = mqtd_dias + (mvencimento - mdata_sis)
     #               ELSE
     #                   AADD(m_recebe,{'CH','AV',mn_banco,mn_cheque,mn_dup,mvencimento,'B',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj,' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
     #               ENDIF
     #           ENDIF
     #           AADD(m_alt,'CHEQUE.....: Bco.: '+mn_banco+' No: '+mn_cheque+' Venc: '+DTOC(mvencimento)+' Vlr:'+TRANSFORM(mvalor,'999,999.99'))
     #       ELSEIF ! EMPTY(mn_dup)
-    #           i := 0
+    #           i = 0
     #           FOR i = 1 TO LEN(m_parcela)
     #               IF EMPTY(m_parcela[i,1])
     #                   LOOP
@@ -696,13 +814,13 @@ def verifica_condicao():
     #               IF m_parcela[i,2] > mdata_sis
     #                   AADD(m_recebe,{'DU','AP',mn_banco,SPACE(6),m_parcela[i,1],m_parcela[i,2],mt_pag,STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
     #                   mqtd_doc ++
-    #                   mqtd_dias := mqtd_dias + (m_parcela[i,2] - mdata_sis)
+    #                   mqtd_dias = mqtd_dias + (m_parcela[i,2] - mdata_sis)
     #               ELSE
     #                   AADD(m_recebe,{'DU','AV',mn_banco,SPACE(6),m_parcela[i,1],m_parcela[i,2],mt_pag,STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
     #               ENDIF
     #           NEXT
     #       ELSEIF ! EMPTY(mn_cupom)
-    #           i := 0
+    #           i = 0
     #           FOR i = 1 TO LEN(m_parcela)
     #               IF EMPTY(m_parcela[i,1])
     #                   LOOP
@@ -712,14 +830,14 @@ def verifica_condicao():
     # //               1    2       3      4         5       6          7           8                 9            10          11      12       13       14        15         16            17            18
     #                   AADD(m_recebe,{'CT','AP',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
     #                   mqtd_doc ++
-    #                   mqtd_dias := mqtd_dias + (m_parcela[i,2] - mdata_sis)
+    #                   mqtd_dias = mqtd_dias + (m_parcela[i,2] - mdata_sis)
     #               ELSE
     #
     #                   AADD(m_recebe,{'CT','AV',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
     #               ENDIF
     #           NEXT
     #       ELSEIF ! EMPTY(mn_fin)  // .OR. LEN(m_parcela) > 0
-    #           i := 0
+    #           i = 0
     #           FOR i = 1 TO LEN(m_parcela)
     #               IF EMPTY(m_parcela[i,1])
     #                   LOOP
@@ -728,7 +846,7 @@ def verifica_condicao():
     #               IF m_parcela[i,2] > mdata_sis
     #                   AADD(m_recebe,{'FI','AP',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),mn_cupom,m_parcela[i,3],m_parcela[i,1],mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
     #                   mqtd_doc ++
-    #                   mqtd_dias := mqtd_dias + (m_parcela[i,2] - mdata_sis)
+    #                   mqtd_dias = mqtd_dias + (m_parcela[i,2] - mdata_sis)
     #               ELSE
     #                   AADD(m_recebe,{'FI','AV',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),mn_cupom,m_parcela[i,3],m_parcela[i,1],mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
     #               ENDIF
@@ -737,8 +855,8 @@ def verifica_condicao():
     #           AADD(m_alt,'TRANSFERENC: '+mn_trans+' Venc.: '+DTOC(mvencimento)+' Valor: '+TRANSFORM(mvalor,'999,999.99'))
     #           AADD(m_recebe,{'TR','AP',SPACE(3),SPACE(6),mn_trans,mvencimento,mt_pag,STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
     #       ELSEIF ! EMPTY(mn_cred)
-    #           mtipo_pg := 1
-    #           mcredito := mcredito - mvalor
+    #           mtipo_pg = 1
+    #           mcredito = mcredito - mvalor
     #           AADD(m_alt,'CREDITO....: '+mn_cred+' Venc.: '+DTOC(mvencimento)+' Valor: '+TRANSFORM(mvalor,'999,999.99'))
     #           AADD(m_recebe,{'CR','AV',SPACE(3),SPACE(6),mn_cred,mvencimento,mt_pag,STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
     #       ELSEIF ! EMPTY(mn_pix)
@@ -790,6 +908,9 @@ def condicao_pagamento():
         mct_tx = f"{mct_f}"
         lbl_valor.setText(mct_tx)
         mtipo_pg = "CH"
+    else:
+        return
+
     hg.conexao_cursor.execute(
         f"SELECT codigo, descri, percent, cond, COALESCE(dia1, 0), COALESCE(dia2, 0) , "
         f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
@@ -873,6 +994,7 @@ def fechar_pedido(mnum_pedido):
     tela.ds_dinheiro.editingFinished.connect(verifica_condicao)
     tela.ds_pix.editingFinished.connect(verifica_condicao)
     tela.ds_cartao.editingFinished.connect(condicao_pagamento)
+
     tela.ds_duplicata.editingFinished.connect(condicao_pagamento)
     tela.ds_cheque.editingFinished.connect(verifica_condicao)
     # tela.ds_pix.setEnabled(False)
@@ -890,7 +1012,8 @@ def fechar_pedido(mnum_pedido):
 
 
 if __name__ == "__main__":
-    mnum_ped = "000503"
+    mnum_ped = "411561"
     fechar_pedido(mnum_ped)
     app.exec()
     hg.conexao_bd.close()
+    tela.close()

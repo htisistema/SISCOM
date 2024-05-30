@@ -72,8 +72,6 @@ tela.comboBox_5.setCurrentIndex(0)  # coloca o focus no index
 tela.comboBox_6.addItems([" ", "1", "2", "3", "4", "5", "6", "7", "8", '9'])
 tela.comboBox_6.setCurrentIndex(0)  # coloca o focus no index
 
-data_vazia = date(1900, 1, 1)
-
 
 def fecha_tela():
     tela.close()
@@ -123,7 +121,7 @@ def salvar_usuario():
 
     m_sdata_cad_f = datetime.strptime(tela.msdata_cad.text(), '%d/%m/%Y').date()
     m_sdata_cad = m_sdata_cad_f.strftime('%Y-%m-%d')
-    if m_sdata_cad_f == data_vazia:
+    if m_sdata_cad_f ==  hg.data_vazia:
         m_sdata_cad = None
 
     index = tela.comboBox_3.currentIndex()

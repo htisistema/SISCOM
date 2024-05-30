@@ -1,57 +1,90 @@
 import configparser
 import socket
 import os
+# from icecream import ic
+from datetime import date
+from PyQt6.QtCore import QDateTime
+
 # from PyQt6 import QtWidgets
 # PEGA O NOME DO ARQUIVO EM EXECUCAO
 nome_file = os.path.basename(__file__)
 nome_computador = socket.gethostname()
 endereco_ip = socket.gethostbyname(nome_computador)
 
-VERSAO = 'v23.04.13'
-SISTEMA = '.: SISCOM :. Sistema Automacao Comercial'
-SIT_TIP = 'SISCOM'
-HTISISTEMA = '.: HTI Sistemas Ltda :.'
-CNPJ_HTI = '24494200000106'
-INSC_MUNCI = '066728339'
-RAZAO_HTI = 'M. EDUARDA B. B. CINTRA'
-END_HTI = 'Rua Cicero Monteiro'
-MNUM_HTI = '1040'
-COMP_HTI = ''
-BAIRRO_HTI = 'Centro'
-CIDADE_HTI = 'Tacaimbo'
-UF_HTI = 'PE'
-CEP_HTI = '55140000'
-FONE_HTI = '993127894'
+VERSAO = "v23.04.13"
+SISTEMA = ".: SISCOM :. Sistema Automacao Comercial"
+SIT_TIP = "SISCOM"
+HTISISTEMA = ".: HTI Sistemas Ltda :."
+CNPJ_HTI = "24494200000106"
+INSC_MUNCI = "066728339"
+RAZAO_HTI = "M. EDUARDA B. B. CINTRA"
+END_HTI = "Rua Cicero Monteiro"
+MNUM_HTI = "1040"
+COMP_HTI = ""
+BAIRRO_HTI = "Centro"
+CIDADE_HTI = "Tacaimbo"
+UF_HTI = "PE"
+CEP_HTI = "55140000"
+FONE_HTI = "993127894"
 m_set = []
 m_indiv = []
 
-
-geral_cod_usuario = '999'
-geral_nivel_usuario = '15 '
-mcodempresa = '001'
-VERSAO_ANTIGA = 'v23.04.13'
+data_vazia = date(1900, 1, 1)
+data_atual = QDateTime.currentDateTime()
+# ic(data_atual)
+m_data_f = data_atual.toPyDateTime().date()
+# ic(m_data_f)
+mdata_sis = m_data_f.strftime("%Y/%m/%d")
+# ic(mdata_sis)
+geral_cod_usuario = "999"
+geral_nivel_usuario = "15 "
+mcodempresa = "001"
+VERSAO_ANTIGA = "v23.04.13"
 m_autorizado = False
 config = configparser.ConfigParser()
-config.read('sisconfig.ini')
-c_usuario = config.get('caminho_usuario', 'caminho_usuario')
-c_cliente = config.get('caminho_cliente', 'caminho_cliente')
-c_produto = config.get('caminho_produto', 'caminho_produto')
-c_imagem = config.get('caminho_imagem', 'caminho_img')
-c_ui = config.get('caminho_ui', 'caminho_ui')
-mtipo_temrinal = config.get('tipo_terminal', 'tipo_term')
-mtp_tela = config.get('tipo_tela', 'tp_tela')
-host = config.get('banco', 'host')
-port_db = config.get('port_banco', 'port')
-nome_computador = config.get('terminal', 'nome_terminal')
-conexao_bd = ' '
-conexao_cursor = ' '
-estados = ['AC - ACRE', 'AL - ALAGOAS', 'AP - AMAPA', 'AM - AMAZONAS', 'BA - BAHIA', 'CE - CEARA',
-           'DF - DISTRITO FEDERAL', 'ES - ESPIRITO SANTOS', 'EX - EXTERIOR', 'GO - GOIAS',
-           'MA - MARANHAO', 'MS - MATO GROSSO SUL', 'MT - MATO GROSS', 'MG - MINAS GERAIS',
-           'PA - PARA', 'PB - PARAIBA', 'PE - PERNAMBUCO', 'PI - PIAUI', 'PR - PARANA',
-           'RJ - RIO DE JANEIRO', 'RN - RIO GRANDE DO NORTE', 'RS - RIO GRANDE DO SUL',
-           'RR - RORAIMA', 'RO - RONDONIA', 'SC - SANTA CATARINA', 'SE - SERGIPE',
-           'SP - SAO PAULO', 'TO - TOCANTINS']
+config.read("sisconfig.ini")
+c_usuario = config.get("caminho_usuario", "caminho_usuario")
+c_cliente = config.get("caminho_cliente", "caminho_cliente")
+c_produto = config.get("caminho_produto", "caminho_produto")
+c_imagem = config.get("caminho_imagem", "caminho_img")
+c_ui = config.get("caminho_ui", "caminho_ui")
+mtipo_temrinal = config.get("tipo_terminal", "tipo_term")
+mtp_tela = config.get("tipo_tela", "tp_tela")
+host = config.get("banco", "host")
+port_db = config.get("port_banco", "port")
+nome_computador = config.get("terminal", "nome_terminal")
+conexao_bd = " "
+conexao_cursor = " "
+estados = [
+    "AC - ACRE",
+    "AL - ALAGOAS",
+    "AP - AMAPA",
+    "AM - AMAZONAS",
+    "BA - BAHIA",
+    "CE - CEARA",
+    "DF - DISTRITO FEDERAL",
+    "ES - ESPIRITO SANTOS",
+    "EX - EXTERIOR",
+    "GO - GOIAS",
+    "MA - MARANHAO",
+    "MS - MATO GROSSO SUL",
+    "MT - MATO GROSS",
+    "MG - MINAS GERAIS",
+    "PA - PARA",
+    "PB - PARAIBA",
+    "PE - PERNAMBUCO",
+    "PI - PIAUI",
+    "PR - PARANA",
+    "RJ - RIO DE JANEIRO",
+    "RN - RIO GRANDE DO NORTE",
+    "RS - RIO GRANDE DO SUL",
+    "RR - RORAIMA",
+    "RO - RONDONIA",
+    "SC - SANTA CATARINA",
+    "SE - SERGIPE",
+    "SP - SAO PAULO",
+    "TO - TOCANTINS",
+]
 
 
 # Crie uma classe para a folha de estilo CSS

@@ -71,7 +71,7 @@ for ret_cidade in arq_cidade:
     item = f'{ret_cidade[0]} - {ret_cidade[1]}'.strip('(),')
     tela.comboBox_2.addItem(item)
 
-data_vazia = date(1900, 1, 1)
+
 
 
 def on_close_event(event):

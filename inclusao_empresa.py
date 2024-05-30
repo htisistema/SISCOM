@@ -45,7 +45,7 @@ tela.statusBar.showMessage(f"<< {nome_file} >>")
 # lbl_nome_cliente = tela.findChild(QtWidgets.QLabel, "cadastro_empresa")
 # lbl_nome_cliente.setText("CADASTRO DA EMPRESA")
 
-data_vazia = date(1900, 1, 1)
+ 
 
 tela.comboBox.addItems(hg.estados)
 
@@ -71,7 +71,7 @@ def salvar_empresa():
     m_nome_cab = 'F'
     m_dataini_f = datetime.strptime(tela.mdataini.text(), '%d/%m/%Y').date()
     m_dataini = m_dataini_f.strftime('%Y-%m-%d')
-    if m_dataini_f == data_vazia:
+    if m_dataini_f ==  hg.data_vazia:
         m_dataini = None
 
     if tela.rb_nome_cab_razao.isChecked():

@@ -61,7 +61,7 @@ hg.conexao_bd.commit()
 
 tela.comboBox_2.addItems(hg.estados)
 
-data_vazia = date(1900, 1, 1)
+
 
 for ret_cidade in arq_cidade:
     item = f'{ret_cidade[0]}'.strip('(),')

@@ -103,7 +103,7 @@ for ret_cli in arq_cli:
 tela.cb_cliente.setCurrentIndex(0)
 
 mcli_aux = 0
-data_vazia = date(1900, 1, 1)
+ 
 info_inicial_pedido = []
 tela.cb_forma_pg.addItems(
     [
@@ -459,7 +459,7 @@ def verifica_condicao():
 def ver_entrega():
     m_data_ent_f = datetime.strptime(tela.data_previsao.text(), "%d/%m/%Y").date()
     m_data_ent = m_data_ent_f.strftime("%Y-%m-%d")
-    if m_data_ent_f == data_vazia:
+    if m_data_ent_f ==  hg.data_vazia:
         return
 
     if hg.m_set[161] > 0 or hg.m_set[162] > 0 or hg.m_set[163] > 0:

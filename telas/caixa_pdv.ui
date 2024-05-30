@@ -161,7 +161,7 @@ color: rgb(0, 0, 0);</string>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">font: 700 12pt &quot;Courier&quot;;</string>
+     <string notr="true">font: 700 20pt &quot;Courier&quot;;</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_7">
@@ -609,12 +609,12 @@ background-color: rgb(253, 255, 216);
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <tabstops>
-  <tabstop>cb_cliente</tabstop>
   <tabstop>ds_dinheiro</tabstop>
   <tabstop>ds_pix</tabstop>
   <tabstop>ds_cartao</tabstop>
   <tabstop>ds_duplicata</tabstop>
   <tabstop>ds_cheque</tabstop>
+  <tabstop>cb_cliente</tabstop>
   <tabstop>bt_sair</tabstop>
   <tabstop>textBrowser</tabstop>
  </tabstops>

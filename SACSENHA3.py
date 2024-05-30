@@ -72,7 +72,7 @@ tela.comboBox_5.setCurrentIndex(0)  # coloca o focus no index
 tela.comboBox_6.addItems([" ", "1", "2", "3", "4", "5", "6", "7", "8", '9'])
 tela.comboBox_6.setCurrentIndex(0)  # coloca o focus no index
 
-data_vazia = date(1900, 1, 1)
+
 
 
 def on_close_event(event):

@@ -53,7 +53,7 @@ pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100
 tela.empresa.setPixmap(pixmap_redimensionado)
 
 
-data_vazia = date(1900, 1, 1)
+ 
 
 
 def sac140():
@@ -147,7 +147,7 @@ def salvar_fornecedor():
 
     m_data_cad_f = datetime.strptime(tela.mdata_cad.text(), '%d/%m/%Y').date()
     m_data_cad = m_data_cad_f.strftime('%Y-%m-%d')
-    if m_data_cad_f == data_vazia:
+    if m_data_cad_f ==  hg.data_vazia:
         m_data_cad = None
 
     m_endereco = tela.mendereco.text().upper()

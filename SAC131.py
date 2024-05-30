@@ -94,7 +94,7 @@ tela.comboBox_4.setCurrentIndex(16)  # coloca o focus no index
 tela.comboBox_6.setCurrentIndex(16)    # coloca o focus no index
 tela.comboBox_16.setCurrentIndex(16)    # coloca o focus no index
 
-data_vazia = date(1900, 1, 1)
+ 
 
 for ret_cidade in arq_cidade:
     item = f'{ret_cidade[0]}'.strip('(),')
@@ -196,12 +196,12 @@ def salvar_cliente():
 
     m_data_nas_f = datetime.strptime(tela.mdata_nas.text(), '%d/%m/%Y').date()
     m_data_nas = m_data_nas_f.strftime('%Y-%m-%d')
-    if m_data_nas_f == data_vazia:
+    if m_data_nas_f ==  hg.data_vazia:
         m_data_nas = None
 
     m_data_cad_f = datetime.strptime(tela.mdata_cad.text(), '%d/%m/%Y').date()
     m_data_cad = m_data_cad_f.strftime('%Y-%m-%d')
-    if m_data_cad_f == data_vazia:
+    if m_data_cad_f ==  hg.data_vazia:
         m_data_cad = None
 
     # m_data_cad_f = datetime.strptime(tela.mdata_cad.text(), '%d/%m/%Y').date()
@@ -209,7 +209,7 @@ def salvar_cliente():
 
     m_data_bloq_f = datetime.strptime(tela.mdata_bloq.text(), '%d/%m/%Y').date()
     m_data_bloq = m_data_nas_f.strftime('%Y-%m-%d')
-    if m_data_bloq_f == data_vazia:
+    if m_data_bloq_f ==  hg.data_vazia:
         m_data_bloq = None
 
     m_obs_bloq = tela.mobs_bloq.text().upper()
@@ -237,7 +237,7 @@ def salvar_cliente():
 
     m_dat_emi_f = datetime.strptime(tela.mdat_emi.text(), '%d/%m/%Y').date()
     m_dat_emi = m_dat_emi_f.strftime('%Y-%m-%d')
-    if m_dat_emi_f == data_vazia:
+    if m_dat_emi_f ==  hg.data_vazia:
         m_dat_emi = None
 
     m_comprado = tela.mcomprado.text().upper()
@@ -251,35 +251,35 @@ def salvar_cliente():
 
     m_data_nas1_f = datetime.strptime(tela.mdata_nas1.text(), '%d/%m/%Y').date()
     m_data_nas1 = m_data_nas1_f.strftime('%Y-%m-%d')
-    if m_data_nas1_f == data_vazia:
+    if m_data_nas1_f ==  hg.data_vazia:
         m_data_nas1 = None
 
     m_nome2 = tela.mnome2.text().upper()
 
     m_data_nas2_f = datetime.strptime(tela.mdata_nas2.text(), '%d/%m/%Y').date()
     m_data_nas2 = m_data_nas2_f.strftime('%Y-%m-%d')
-    if m_data_nas2_f == data_vazia:
+    if m_data_nas2_f ==  hg.data_vazia:
         m_data_nas2 = None
 
     m_nome3 = tela.mnome3.text().upper()
 
     m_data_nas3_f = datetime.strptime(tela.mdata_nas3.text(), '%d/%m/%Y').date()
     m_data_nas3 = m_data_nas3_f.strftime('%Y-%m-%d')
-    if m_data_nas3_f == data_vazia:
+    if m_data_nas3_f ==  hg.data_vazia:
         m_data_nas3 = None
 
     m_nome4 = tela.mnome4.text().upper()
 
     m_data_nas4_f = datetime.strptime(tela.mdata_nas4.text(), '%d/%m/%Y').date()
     m_data_nas4 = m_data_nas4_f.strftime('%Y-%m-%d')
-    if m_data_nas4_f == data_vazia:
+    if m_data_nas4_f ==  hg.data_vazia:
         m_data_nas4 = None
 
     m_nome5 = tela.mnome5.text().upper()
 
     m_data_nas5_f = datetime.strptime(tela.mdata_nas5.text(), '%d/%m/%Y').date()
     m_data_nas5 = m_data_nas5_f.strftime('%Y-%m-%d')
-    if m_data_nas5_f == data_vazia:
+    if m_data_nas5_f ==  hg.data_vazia:
         m_data_nas5 = None
 
     m_desconto = tela.doubleSpinBox_2.value()
@@ -314,7 +314,7 @@ def salvar_cliente():
     m_no1 = tela.mno1.text()
     m_venc1_f = datetime.strptime(tela.mvenc1.text(), '%d/%m/%Y').date()
     m_venc1 = m_venc1_f.strftime('%Y-%m-%d')
-    if m_venc1_f == data_vazia:
+    if m_venc1_f ==  hg.data_vazia:
         m_venc1 = None
 
     m_cartao2 = tela.mcartao2.text().upper()
@@ -322,7 +322,7 @@ def salvar_cliente():
 
     m_venc2_f = datetime.strptime(tela.mvenc2.text(), '%d/%m/%Y').date()
     m_venc2 = m_venc2_f.strftime('%Y-%m-%d')
-    if m_venc2_f == data_vazia:
+    if m_venc2_f ==  hg.data_vazia:
         m_venc2 = None
 
     m_pai_ = tela.mpai.text().upper()
@@ -357,12 +357,12 @@ def salvar_cliente():
 
     m_desde1_f = datetime.strptime(tela.mdesde1.text(), '%d/%m/%Y').date()
     m_desde1 = m_desde1_f.strftime('%Y-%m-%d')
-    if m_desde1_f == data_vazia:
+    if m_desde1_f ==  hg.data_vazia:
         m_desde1 = None
 
     m_desde2_f = datetime.strptime(tela.mdesde2.text(), '%d/%m/%Y').date()
     m_desde2 = m_desde2_f.strftime('%Y-%m-%d')
-    if m_desde2_f == data_vazia:
+    if m_desde2_f ==  hg.data_vazia:
         m_desde2 = None
 
     # ATUALIZA OS DADOS DO CLIENTE

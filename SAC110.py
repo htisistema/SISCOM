@@ -232,7 +232,7 @@ tela.comboBox_15.setCurrentIndex(0)
 
 # resultado = acbr_dll.minha_dll.minha_funcao( CNPJ_Consultar('536170610406', eCaptcha, sResposta, esTamanho))
 
-data_vazia = date(1900, 1, 1)
+ 
 
 
 def on_close_event(event):
@@ -265,7 +265,7 @@ def salvar_produto():
 
     m_data_cad_f = datetime.strptime(tela.mdata_cad.text(), '%d/%m/%Y').date()
     m_data_cad = m_data_cad_f.strftime('%Y-%m-%d')
-    if m_data_cad_f == data_vazia:
+    if m_data_cad_f ==  hg.data_vazia:
         m_data_cad = None
 
     m_cod_barr = tela.mcod_barr.text().upper()

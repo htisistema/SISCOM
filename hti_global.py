@@ -34,7 +34,7 @@ data_atual = QDateTime.currentDateTime()
 # ic(data_atual)
 m_data_f = data_atual.toPyDateTime().date()
 # ic(m_data_f)
-mdata_sis = m_data_f.strftime("%Y/%m/%d")
+mdata_sis = m_data_f.strftime("%Y-%m-%d")
 # ic(mdata_sis)
 geral_cod_usuario = "999"
 geral_nivel_usuario = "15 "

@@ -7,7 +7,8 @@ from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QRadioButton
 from PyQt6.QtGui import QGuiApplication
 from datetime import datetime
-from datetime import date
+# from datetime import date
+from hti_funcoes import conexao_banco
 import hti_global as hg
 
 titulo = "INCLUSÃO DE PRODUTOS" 
@@ -55,8 +56,9 @@ tela.empresa.setPixmap(pixmap_redimensionado)
 # # Recupere o resultado
 # m_set = hg.conexao_cursor.fetchone()
 # hg.conexao_bd.commit()
+conexao_banco()
 
-hg.conexao_cursor.execute(f"SELECT gru_sub, merc FROM sacgrupo WHERE CHAR_LENGTH(trim(gru_sub)) = 3")
+hg.conexao_cursor.execute("SELECT gru_sub, merc FROM sacgrupo WHERE CHAR_LENGTH(trim(gru_sub)) = 3")
 # Recupere o resultado
 arq_grupo = hg.conexao_cursor.fetchall()
 hg.conexao_bd.commit()
@@ -95,9 +97,9 @@ hg.conexao_bd.commit()
 tela.comboBox_3.addItems(["1->Produto", "2->Materia Prima", "3->Isumos", "4->Consumo", "5->Outros"])
 tela.comboBox_3.setCurrentIndex(0)  # coloca o focus no index
 
-tela.comboBox_5.addItems(["UN ->Unidade", "AR ->Arroba", "CX ->Caixa", "FD ->Fardo", "KG ->Kilo", "MT ->Metro",
+tela.cb_unidade.addItems(["UN ->Unidade", "AR ->Arroba", "CX ->Caixa", "FD ->Fardo", "KG ->Kilo", "MT ->Metro",
                           "TON->Tonelada"])
-tela.comboBox_5.setCurrentIndex(0)  # coloca o focus no index
+tela.cb_unidade.setCurrentIndex(0)  # coloca o focus no index
 
 hg.conexao_cursor.execute(f"SELECT cod_espe, descri FROM sacespe")
 arq_espe = hg.conexao_cursor.fetchall()
@@ -278,8 +280,8 @@ def salvar_produto():
     mop = tela.comboBox_4.itemText(index)
     m_sub_grupo = mop[0:5]
 
-    index = tela.comboBox_5.currentIndex()
-    mop = tela.comboBox_5.itemText(index)
+    index = tela.cb_unidade.currentIndex()
+    mop = tela.cb_unidade.itemText(index)
     m_unidade = mop[0:3]
 
     m_pr_venda = tela.doubleSpinBox_2.value()
@@ -509,14 +511,13 @@ def desabilitar_objeto():
 def inclusao_produto():
     # PEGAR O NUMERO QUE FALTA NA SEQUENCIA OU O ULTIMO NUMERO
     hg.conexao_cursor.execute(f"select first 1 t.id_ant + 1 "
-                                      f"from (select (select first 1 cast(a1.cod_merc as int) from sacmerc a1 "
-                                      f"where cast(a1.cod_merc as int) < cast(a.cod_merc as int) "
-                                      f"order by cast(a1.cod_merc as int) desc) as id_ant, "
-                                      f"cast(a.cod_merc as int) as cod_merc from sacmerc a order by "
-                                      f"cast(a.cod_merc as int)) t "
-                                      f"where coalesce(t.id_ant,0) <> cast(t.cod_merc as int) - 1 ")
+                              f"from (select (select first 1 cast(a1.cod_merc as int) from sacmerc a1 "
+                              f"where cast(a1.cod_merc as int) < cast(a.cod_merc as int) "
+                              f"order by cast(a1.cod_merc as int) desc) as id_ant, "
+                              f"cast(a.cod_merc as int) as cod_merc from sacmerc a order by "
+                              f"cast(a.cod_merc as int)) t where coalesce(t.id_ant,0) <> cast(t.cod_merc as int) - 1 ")
     # # Recupere o resultado
-    arq_prod = hg.conexao_cursor.fetchone()
+    arq_prod = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()
 
     if arq_prod is None:

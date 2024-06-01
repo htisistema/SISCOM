@@ -5,7 +5,7 @@ from PyQt6.QtCore import QDateTime, Qt, QDate
 from datetime import datetime
 from icecream import ic
 from hti_funcoes import conexao_banco
-from ATENCAO import atencao
+# from ATENCAO import atencao
 # from ver_pagamento import ver_pagamento
 import hti_global as hg
 import os
@@ -529,8 +529,8 @@ def verifica_condicao():
         hg.conexao_bd.commit()
         mvezes = tela_pg.sb_qtd_parcelas.value()
         # mvezes = int(arq_sactabpg[3][1:3])
-        ndia = arq_sactabpg[4]
-        mdia = int(ndia)
+        # ndia = arq_sactabpg[4]
+        mdia = 30
         mpercentual = float(arq_sactabpg[21])
         mcod_forn = arq_sactabpg[19]
         mtipo_conta = arq_sactabpg[20]
@@ -553,15 +553,19 @@ def verifica_condicao():
             for i in range(mvezes):
                 # ndia = arq_sactabpg[4 + i]
                 # mdia = int(ndia)
+                ic(hg.mdata_sis)
                 mdata_sis = QDate.fromString(hg.mdata_sis, "yyyy-MM-dd")
-                # Verifique se a conversão foi bem-sucedida
-                if not mdata_sis.isValid():
-                    atencao(f"Data inválida: {hg.mdata_sis}")
+                ic(mdata_sis)
+                # # Verifique se a conversão foi bem-sucedida
+                # if not mdata_sis.isValid():
+                #     ic(f"Data inválida: {hg.mdata_sis}")
 
                 # Adiciona os dias ao QDate
-                mdata_f = mdata_sis.addDays(mdia * i)
+                mdata_f = hg.mdata_sis.addDays(mdia)
+                ic(mdata_f)
                 # Imprime a nova data
                 mdata_venc = mdata_f.toString("yyyy-MM-dd")
+                ic(mdata_venc)
 
                 mvalor_p = mvalor_parcela + mdiferenca
                 mdiferenca = 0
@@ -588,14 +592,11 @@ def verifica_condicao():
                         " OS:",
                     ]
                 )
+                mdia = mdia + 30
         else:
             mdata_sis = QDate.fromString(hg.mdata_sis, "yyyy-MM-dd")
-            # Verifique se a conversão foi bem-sucedida
-            if not mdata_sis.isValid():
-                atencao(f"Data inválida: {hg.mdata_sis}")
-
             # Adiciona os dias ao QDate
-            mdata_f = mdata_sis.addDays(mdia * i)
+            mdata_f = mdata_sis.addDays(mdia)
             # Imprime a nova data
             mdata_venc = mdata_f.toString("yyyy-MM-dd")
 

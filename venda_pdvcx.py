@@ -5,6 +5,7 @@ from PyQt6.QtCore import QDateTime, Qt, QDate
 from datetime import datetime
 from icecream import ic
 from hti_funcoes import conexao_banco
+
 # from ATENCAO import atencao
 # from ver_pagamento import ver_pagamento
 import hti_global as hg
@@ -167,7 +168,7 @@ def criar_tela():
     try:
         hg.conexao_cursor.execute(
             f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat, COALESCE(pos, ' ') as app FROM sacped_s "
-            f"WHERE pnum_ped = '{mnumero_pedido}'"
+            f"WHERE pnum_ped = {mnumero_pedido}"
         )
         # # 145082Recupere o resultado
         resultados = hg.conexao_cursor.fetchall()
@@ -195,7 +196,7 @@ def criar_tela():
                 linha = f"  {i}   {pcod_merc}  {pmerc}"
                 linha1 = f"              {mquantd} x {mvalor} = {msoma}"
                 mtotal_geral += soma
-                # linha = ' '.join(map(str, resultado))
+                # linha = " ".join(map(str, resultado))
                 tela.textBrowser.append(linha)
                 tela.textBrowser.append(linha1)
                 # print(f"{hg.c_produto}\\{mcodigo}.jpg")
@@ -209,12 +210,12 @@ def criar_tela():
 
 
 def salva_pedido():
-    # ic('salva_pedido')
+    # ic("salva_pedido")
     index = tela.cb_cliente.currentIndex()
     mop = tela.cb_cliente.itemText(index)
     mcod_cli = mop[43:48]
     # ic(f"SELECT * FROM saccli WHERE cod_cli = {mcod_cli}")
-    hg.conexao_cursor.execute(f"SELECT * FROM saccli WHERE cod_cli = {mcod_cli}")
+    hg.conexao_cursor.execute(f"SELECT cod_cli, razao, nome, cgc, cpf, tipo FROM saccli WHERE cod_cli = {mcod_cli}")
     cons_cli = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
     codigo_cli = int(mcod_cli)
@@ -248,8 +249,8 @@ def salva_pedido():
     )
     mcomissao = float(cons_oper[8])
     values = (
-        cons_cli[31],
-        cons_cli[33],
+        cons_cli[3],
+        cons_cli[4],
         codigo_cli,  # cod_cli
         mcomissao,  # comissao ooperador
         "",  # codigo finan
@@ -270,6 +271,103 @@ def salva_pedido():
     hg.conexao_cursor.execute(sql, values)
     hg.conexao_bd.commit()
 
+    hg.conexao_cursor.execute(f"SELECT * FROM sacped_s WHERE pnum_ped = {mnumero_pedido}")
+    cons_ped = hg.conexao_cursor.fetchall()
+    hg.conexao_bd.commit()
+    mcontador = len(cons_ped)
+    print(mcontador)
+    for i in range(mcontador):
+        sql = (
+            "INSERT INTO sacmov ("
+            "empresa,"
+            "num_ped           ,"
+            "data_ped          ,"
+            "documento         ,"
+            "codigo            ,"
+            "gru_sub           ,"
+            "produto           ,"
+            "especie           ,"
+            "cod_fab           ,"
+            "fabrica           ,"
+            "data_s_e          ,"
+            "ent_sai           ,"
+            "quantd            ,"
+            "pr_venda1         ,"
+            "pr_venda          ,"
+            "vl_vend           ,"
+            "vl_fatura         ,"
+            "peso              ,"
+            "cod_vend          ,"
+            "cod_oper          ,"
+            "cod_cli           ,"
+            "cliente           ,"
+            "tipo              ,"
+            "pr_unit           ,"
+            "cust_mer          ,"
+            "isento            ,"
+            "com_oper          ,"
+            "tp_venda          ,"
+            "cond_vezes        ,"
+            "cond_intev        ,"
+            "producao          ,"
+            "comissao          ,"
+            "montador          ,"
+            "montador1         ,"
+            "com_monta         ,"
+            "com_monta1        ,"
+            "convidado         ,"
+            "cod_presente      ,"
+            "sr_deleted)       "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+            "?, ?, ?, ?, ?, ?, ?) "
+        )
+        mdocumento = 'PD'+mnumero_pedido
+        hg.conexao_cursor.execute(
+            sql,
+            (
+                hg.mcodempresa,
+                mnumero_pedido,
+                cons_ped[i][3], # DATA DO PEDIDO
+                mdocumento,
+                cons_ped[i][5], # COD -PRODUTO
+                cons_ped[i][4], # GRUPO
+                cons_ped[i][6], # PRODUTO
+                cons_ped[i][8], # ESPECIE
+                cons_ped[i][29], # FABRICANTE
+                cons_ped[i][30], # RAZAO
+                hg.mdata_sis,
+                'S',
+                cons_ped[i][13], # QUANTD
+                cons_ped[i][18], # PR_VENDA1
+                cons_ped[i][19], # PR_VENDA
+                cons_ped[i][18], # VL_VENDA
+                cons_ped[i][18],
+                cons_ped[i][10], # PESO
+                hg.geral_cod_usuario,
+                hg.geral_cod_usuario,
+                codigo_cli, # cod_cli
+                cons_cli[1], # razao
+                '02',
+                cons_ped[i][17], # pr_unit
+                cons_ped[i][21], # cus_merc
+                cons_ped[i][50], # isento
+                0,
+                ' ',
+                '   ',
+                '  ',
+                ' ',
+                0,
+                ' ',
+                ' ',
+                0,
+                0,
+                cons_ped[i][104],
+                cons_ped[i][98],
+                ' '
+            ),
+        )
+        hg.conexao_bd.commit()
+
     mvezes = len(m_recebe)
     mnum_dup = " "
     mdup_num = " "
@@ -282,7 +380,7 @@ def salva_pedido():
             mdup_num = "99999999"
         elif m_recebe[i][0] == "DU" or m_recebe[i][0] == "TR" or m_recebe[i][0] == "CR":
             mnum_dup = m_recebe[i][4]
-            mdup_num = m_recebe[i][4]
+            mdup_num = m_recebe[i][8]
         elif m_recebe[i][0] == "CH":
             mnum_dup = m_recebe[i][4]
             mdup_num = m_recebe[i][3]
@@ -295,6 +393,8 @@ def salva_pedido():
         elif m_recebe[i][0] == "FI":
             mnum_dup = m_recebe[i][10]
             mdup_num = m_recebe[i][10]
+
+        # CAIXA
 
         sql = (
             "INSERT INTO saccaixa ("
@@ -321,37 +421,11 @@ def salva_pedido():
             "SR_DELETED) "
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
         )
-        ic(
-            sql,
-            (
-                "001",
-                hg.mdata_sis,
-                m_recebe[i][0],
-                m_recebe[i][1],
-                "PD" + mnumero_pedido,
-                codigo_cli,
-                hg.geral_cod_usuario,
-                hg.geral_cod_usuario,
-                mhora,
-                m_recebe[i][9],
-                0,
-                venc_formatada,
-                m_recebe[i][9],
-                m_recebe[i][2],
-                m_recebe[i][7],
-                "",
-                mnum_dup,
-                mdup_num,
-                m_recebe[i][11],
-                m_recebe[i][18],
-                " ",
-            ),
-        )
 
         hg.conexao_cursor.execute(
             sql,
             (
-                "001",
+                hg.mcodempresa,
                 hg.mdata_sis,
                 m_recebe[i][0],
                 m_recebe[i][1],
@@ -376,6 +450,177 @@ def salva_pedido():
         )
         hg.conexao_bd.commit()
 
+        # CONTAS A RECEBER
+
+        # if m_recebe[i][0] == "DN":
+        #     mnum_dup = STRZERO(mnum_ped,6)
+        # elif m_recebe[i][0] == "CH":
+        #    mnum_dup = m_recebe[i,4]
+        # elif m_recebe[i][0] == "DU" or m_recebe[i][0] == "TR" or m_recebe[i][0] == "CR":
+        #     mnum_dup = m_recebe[i,5]
+        # elif m_recebe[i][0] == "FI":
+        #     mnum_dup = m_recebe[i,11]
+        # elif m_recebe[i][0] == "CT":
+        #     mnum_dup = m_recebe[i,9]
+        mbaixar = "N"
+        sql = (
+            "INSERT INTO sacdupr ("
+            "empresa         ,"
+            "emissao         ,"
+            "tipo            ,"
+            "tip_cli         ,"
+            "fornec          ,"
+            "cliente         ,"
+            "venc            ,"
+            "venc1           ,"
+            "comissao        ,"
+            "comissao1       ,"
+            "vlr_tab         ,"
+            "operador        ,"
+            "vendedor        ,"
+            "num_ped         ,"
+            "banco           ,"
+            "ope_venda       ,"
+            "ope_comi        ,"
+            "mov_cx          ,"
+            "c_cpfcnpj       ,"
+            "numero          ,"
+            "duplicata       ,"
+            "valor_dup       ,"
+            "valor           ,"
+            "agencia         ,"
+            "c_c             ,"
+            "datpag          ,"
+            "vlpago          ,"
+            "pago            ,"
+            "corrente        ,"
+            "cpfcnpj         ,"
+            "vl_ipi          ,"
+            "com_sem         ,"
+            "obs           ,"
+            "SR_DELETED) "
+            "VALUES (?,?,?,?,?,?,?,?,?,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,' ') "
+        )
+        if len(cons_cli[3]) > 0:
+            mcgccpf = cons_cli[3]
+        else:
+            mcgccpf = cons_cli[4]
+
+        if m_recebe[i][0] == "FI" or m_recebe[i][0] == "CT":
+            mtip = m_recebe[i][7]
+        else:
+            mtip = m_recebe[i][2]
+
+        if m_recebe[i][0] == "CT":
+            mvlr = m_recebe[i][9] - (m_recebe[i][9] * (m_recebe[i][15] / 100))
+        else:
+            mvlr = m_recebe[i][9]
+
+        if (m_recebe[i][0] == "DN" or m_recebe[i][0] == "CR" or m_recebe[i][0] == "PX" or
+                ((m_recebe[i][0] == "CT" or m_recebe[i][0] == "CH") and m_recebe[i][5] <= hg.mdata_sis
+                 and mbaixar == "S")):
+            mdata_pg = m_recebe[i][5]
+        else:
+            mdata_pg = None
+
+        if (m_recebe[i][0] == "DN" or m_recebe[i][0] == "CR" or m_recebe[i][0] == "PX" or
+                ((m_recebe[i][0] == "CT" or m_recebe[i][0] == "CH") and m_recebe[i][5] <= hg.mdata_sis
+                 and mbaixar == "S")):
+            mvlr_pago = m_recebe[i][9]
+        else:
+            mvlr_pago = 0
+
+        if (m_recebe[i][0] == "DN" or m_recebe[i][0] == "CR" or m_recebe[i][0] == "PX" or
+                ((m_recebe[i][0] == "CT" or m_recebe[i][0] == "CH") and m_recebe[i][5] <= hg.mdata_sis
+                 and mbaixar == "S")):
+            mpago = "B"
+        else:
+            mpago = " "
+
+        if m_recebe[i][0] == "CH":
+            mcnpjcfp = m_recebe[i][15]
+        else:
+            mcnpjcfp = " "
+
+        mperc_comissao = 0
+        mperc_com1 = 0
+        mvlr_tab = 0
+        print(sql,(
+                hg.mcodempresa,
+                hg.mdata_sis,
+                m_recebe[i][0],
+                cons_cli[5],
+                codigo_cli,
+                cons_cli[1],
+                m_recebe[i][5],
+                m_recebe[i][5],
+                mperc_comissao,
+                mperc_com1,
+                mvlr_tab,
+                hg.geral_cod_usuario,
+                hg.geral_cod_usuario,
+                mnumero_pedido,
+                m_recebe[i][6],
+                hg.geral_cod_usuario,
+                0,
+                "C",
+                mcgccpf,
+                mtip,
+                mnum_dup,
+                m_recebe[i][9],
+                mvlr,
+                m_recebe[i][12],
+                m_recebe[i][13],
+                mdata_pg,
+                mvlr_pago,
+                mpago,
+                m_recebe[i][14],
+                mcnpjcfp,
+                0,
+                '',
+                m_recebe[i][18]))
+
+        hg.conexao_cursor.execute(
+            sql,
+            (
+                hg.mcodempresa,
+                hg.mdata_sis,
+                m_recebe[i][0],
+                cons_cli[5],
+                codigo_cli,
+                cons_cli[1],
+                m_recebe[i][5],
+                m_recebe[i][5],
+                mperc_comissao,
+                mperc_com1,
+                mvlr_tab,
+                hg.geral_cod_usuario,
+                hg.geral_cod_usuario,
+                mnumero_pedido,
+                m_recebe[i][6],
+                hg.geral_cod_usuario,
+                0,
+                "C",
+                mcgccpf,
+                mtip,
+                mnum_dup,
+                m_recebe[i][9],
+                mvlr,
+                m_recebe[i][12],
+                m_recebe[i][13],
+                mdata_pg,
+                mvlr_pago,
+                mpago,
+                m_recebe[i][14],
+                mcnpjcfp,
+                0,
+                "",
+                m_recebe[i][18]
+            ),
+        )
+        hg.conexao_bd.commit()
+
+
     # ic(m_recebe)
     # print(sql, values)
     m_recebe.clear()
@@ -384,7 +629,7 @@ def salva_pedido():
 
 
 def verifica_condicao():
-    # ic('verifica_condicao')
+    # ic("verifica_condicao")
     global m_recebe
     mdin = 0
     mpx = 0
@@ -411,7 +656,7 @@ def verifica_condicao():
 
     index = tela.cb_cliente.currentIndex()
     mop = tela.cb_cliente.itemText(index)
-    mcod_cli = mop[0:5]
+    # mcod_cli = mop[0:5]
     # index = tela.cb_forma_pg.currentIndex()
     # mop = tela.cb_forma_pg.itemText(index)
     # m_tipo_pag = mop[0:1]
@@ -446,12 +691,10 @@ def verifica_condicao():
     #     tela.rb_percentual.setEnabled(True)
     #     tela.rb_valor.setEnabled(True)
     #     tela.ds_desconto.setEnabled(True)
-    # print(f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat, COALESCE(pos, ' ') as app FROM sacped_s "
-    #      f"WHERE pnum_ped = '{mnumero_pedido}'")
-    hg.conexao_cursor.execute(
-        f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat, COALESCE(pos, ' ') as app FROM sacped_s "
-        f"WHERE pnum_ped = '{mnumero_pedido}'"
-    )
+    # print(f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat, COALESCE(pos, " ") as app FROM sacped_s "
+    #      f"WHERE pnum_ped = "{mnumero_pedido}"")
+    hg.conexao_cursor.execute(f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat, COALESCE(pos, ' ') as app FROM sacped_s "
+                              f"WHERE pnum_ped = {mnumero_pedido}")
     # # 145082Recupere o resultado
     resultados = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()
@@ -522,7 +765,7 @@ def verifica_condicao():
             f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
             f"COALESCE(dia7, 0), COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), "
             f"COALESCE(dia11, 0), COALESCE(dia12, 0), COALESCE(dia13, 0), COALESCE(dia14, 0), "
-            f"COALESCE(dia15, 0), cod_forn, tipo_conta, percent FROM sactabpg WHERE codigo = '{mcod_pag}'"
+            f"COALESCE(dia15, 0), cod_forn, tipo_conta, percent FROM sactabpg WHERE codigo = {mcod_pag}"
         )
         # Recupere o resultado
         arq_sactabpg = hg.conexao_cursor.fetchone()
@@ -540,7 +783,7 @@ def verifica_condicao():
 
         if mdia > 0:
             #     //               1    2       3      4         5       6          7           8                 9            10          11      12       13       14        15         16            17            18
-            #     AADD(m_recebe,{'CT','AP',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+            #     AADD(m_recebe,{"CT","AP",SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],"B",STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
             # nova_data = data_atual.addDays(mdia)
             mvalor_parcela = mvalor_cartao / mvezes
             mvalor = round(mvalor_parcela, 2)
@@ -551,22 +794,14 @@ def verifica_condicao():
             )
             # if mdiferenca > 0:
             for i in range(mvezes):
-                # ndia = arq_sactabpg[4 + i]
-                # mdia = int(ndia)
-                ic(hg.mdata_sis)
+                mdia = mdia * (i + 1)
                 mdata_sis = QDate.fromString(hg.mdata_sis, "yyyy-MM-dd")
-                ic(mdata_sis)
-                # # Verifique se a conversão foi bem-sucedida
-                # if not mdata_sis.isValid():
-                #     ic(f"Data inválida: {hg.mdata_sis}")
+                # Verifique se a conversão foi bem-sucedida
+                if not mdata_sis.isValid():
+                    print(f"Data inválida: {hg.mdata_sis}")
 
-                # Adiciona os dias ao QDate
-                mdata_f = hg.mdata_sis.addDays(mdia)
-                ic(mdata_f)
-                # Imprime a nova data
+                mdata_f = mdata_sis.addDays(mdia)
                 mdata_venc = mdata_f.toString("yyyy-MM-dd")
-                ic(mdata_venc)
-
                 mvalor_p = mvalor_parcela + mdiferenca
                 mdiferenca = 0
                 m_recebe.append(
@@ -595,11 +830,6 @@ def verifica_condicao():
                 mdia = mdia + 30
         else:
             mdata_sis = QDate.fromString(hg.mdata_sis, "yyyy-MM-dd")
-            # Adiciona os dias ao QDate
-            mdata_f = mdata_sis.addDays(mdia)
-            # Imprime a nova data
-            mdata_venc = mdata_f.toString("yyyy-MM-dd")
-
             m_recebe.append(
                 [
                     "CT",
@@ -607,7 +837,7 @@ def verifica_condicao():
                     "   ",
                     "      ",
                     mnumero,
-                    mdata_venc,
+                    mdata_sis,
                     "B",
                     mcod_pag,
                     f"{mnumero}-{mvezes}/1",
@@ -626,40 +856,100 @@ def verifica_condicao():
 
         tela.ds_cartao.setValue(float(0))
 
-        #     IF m_parcela[i,2] > mdata_sis
-        #     mqtd_doc ++
-        #     mqtd_dias = mqtd_dias + (m_parcela[i,2] - mdata_sis)
-        # ELSE
-        #
-        # AADD(m_recebe,{'CT','AV',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
-        # ENDIF
-        # NEXT
-
     if mvalor_duplicata > 0:
-        m_recebe.append(
-            [
-                "DU",
-                "AP",
-                "   ",
-                "      ",
-                "99999999",
-                mdata_venc,
-                "C",
-                "   ",
-                "",
-                mvalor_duplicata,
-                "",
-                "",
-                "        ",
-                "             ",
-                "",
-                "",
-                "",
-                "",
-                " OS:",
-            ]
+        index = tela_pg.cb_tipo_pg.currentIndex()
+        mop = tela_pg.cb_tipo_pg.itemText(index)
+        mcod_pag = mop[0:3]
+        mnumero = tela_pg.n_documento.text()
+        ic(mcod_pag)
+        hg.conexao_cursor.execute(
+            f"SELECT codigo, descri, percent, cond, COALESCE(dia1, 0), COALESCE(dia2, 0) , "
+            f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
+            f"COALESCE(dia7, 0), COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), "
+            f"COALESCE(dia11, 0), COALESCE(dia12, 0), COALESCE(dia13, 0), COALESCE(dia14, 0), "
+            f"COALESCE(dia15, 0), cod_forn, tipo_conta, percent FROM sactabpg WHERE codigo = {mcod_pag}"
+        )
+        arq_sactabpg = hg.conexao_cursor.fetchone()
+        hg.conexao_bd.commit()
+        mvezes = tela_pg.sb_qtd_parcelas.value()
+        mdia = int(arq_sactabpg[4])
+        mpercentual = float(arq_sactabpg[21])
+        mcod_forn = arq_sactabpg[19]
+        mtipo_conta = arq_sactabpg[20]
+        ic(
+            f"vezes {mvezes} dias {mdia} fornecedor {mcod_forn} tipo_conta {mtipo_conta}"
         )
 
+        if mdia > 0:
+            #     //               1    2       3      4         5       6          7           8                 9            10          11      12       13       14        15         16            17            18
+            #     AADD(m_recebe,{"CT","AP",SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],"B",STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
+            # nova_data = data_atual.addDays(mdia)
+            mvalor_parcela = mvalor_duplicata / mvezes
+            mvalor = round(mvalor_parcela, 2)
+            mvalor_parcela = mvalor
+            mdiferenca = round(mvalor_duplicata - (mvalor_parcela * mvezes), 2)
+            ic(
+                f"valor cartao {mvalor_duplicata} vezes {mvezes} diferenca {mdiferenca} parcela {mvalor_parcela}"
+            )
+            # if mdiferenca > 0:
+            for i in range(mvezes):
+                mdia = int(arq_sactabpg[4 * (i + 1)])
+                mdata_sis = QDate.fromString(hg.mdata_sis, "yyyy-MM-dd")
+                if not mdata_sis.isValid():
+                    print(f"Data inválida: {hg.mdata_sis}")
+
+                mdata_f = mdata_sis.addDays(mdia)
+                mdata_venc = mdata_f.toString("yyyy-MM-dd")
+                mvalor_p = mvalor_parcela + mdiferenca
+                mdiferenca = 0
+                m_recebe.append(
+                    [
+                        "DU",
+                        "AP",
+                        "   ",
+                        "      ",
+                        mnumero,
+                        mdata_venc,
+                        "B",
+                        mcod_pag,
+                        f"{mnumero}-{i+1}/{mvezes}",
+                        mvalor_p,
+                        "",
+                        mnumero,
+                        "        ",
+                        "             ",
+                        "",
+                        mpercentual,
+                        mcod_forn,
+                        mtipo_conta,
+                        " OS:",
+                    ]
+                )
+        else:
+            mdata_sis = QDate.fromString(hg.mdata_sis, "yyyy-MM-dd")
+            m_recebe.append(
+                [
+                    "DU",
+                    "AV",
+                    "   ",
+                    "      ",
+                    mnumero,
+                    mdata_sis,
+                    "B",
+                    mcod_pag,
+                    f"{mnumero}-{mvezes}/1",
+                    mvalor_duplicata,
+                    "",
+                    "",
+                    "        ",
+                    "             ",
+                    "",
+                    mpercentual,
+                    mcod_forn,
+                    mtipo_conta,
+                    " OS:",
+                ]
+            )
         tela.ds_duplicata.setValue(float(0))
 
     if mvalor_cheque > 0:
@@ -710,7 +1000,7 @@ def verifica_condicao():
         if mtipo == "CH":
             mch += mvlr_tx
         total_recebido = total_recebido + mvlr_tx
-        # ic(mtotal_pedido)
+        ic(total_recebido)
         mtot_total = float(mtotal_pedido)
         total_areceber = mtot_total - total_recebido
 
@@ -747,11 +1037,10 @@ def verifica_condicao():
     tela.ds_cartao.editingFinished.connect(condicao_pagamento)
     tela.ds_duplicata.editingFinished.connect(condicao_pagamento)
     tela.ds_cheque.editingFinished.connect(verifica_condicao)
-    # ic(mtotal_pedido)
     mt_pedido = float(mtotal_pedido)
     mt_recebido = float(total_recebido)
+    ic(f"pedido {float(mtotal_pedido)} - recebido {float(total_recebido)}")
     if mt_recebido >= mt_pedido:
-        ic(f"pedido {float(mtotal_pedido)} - recebido {float(total_recebido)}")
         salva_pedido()
         m_recebe.clear()
         fecha_tela()
@@ -761,8 +1050,8 @@ def verifica_condicao():
     # if mvalor_dinheiro == mtotal_pedido:
     #     mvalor = mvalor_dinheiro
     #
-    #     m_recebe.append('DN')   # ,'AV','   ','      ','99999999',data_atual,'C','   ',mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94])))}
-    #     m_recebe.append('AV')   # ,'   ','      ','99999999',data_atual,'C','   ',mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94])))}
+    #     m_recebe.append("DN")   # ,"AV","   ","      ","99999999",data_atual,"C","   ",mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente," "," "," ",IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94])))}
+    #     m_recebe.append("AV")   # ,"   ","      ","99999999",data_atual,"C","   ",mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente," "," "," ",IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94])))}
     # elif mvalor_dinheiro == 0 and mn_banco ==  .AND. EMPTY(mn_cred) .AND. EMPTY(mn_pix) .AND. ;
     #       EMPTY(mn_dup) .AND. EMPTY(mcod_cart) .AND. EMPTY(mn_fin) .AND. EMPTY(mn_trans) .AND. LEN(m_parcela) = 0);
     #       .OR. mvalor_dinheiro = mtot_nota:
@@ -770,54 +1059,54 @@ def verifica_condicao():
     #       IF mvalor_dinheiro + mtot_verif > mtot_nota
     #           mvalor = mtot_nota - mtot_verif
     #           mtroco = mvalor_dinheiro+mtot_verif - mtot_nota
-    #           SUB_BANNER(30,01,'Troco:'+TRANSFORM(mtroco,'999,999.99'))
+    #           SUB_BANNER(30,01,"Troco:"+TRANSFORM(mtroco,"999,999.99"))
     #           INKEY(,10)
     #           INKEY(30)
     #       ELSE
     #           mvalor = mvalor_dinheiro
     #       ENDIF
-    #       AADD(m_alt,'DINHEIRO...: Valor: '+TRANSFORM(mvalor_dinheiro,'999,999.99'))
-    #       AADD(m_recebe,{'DN','AV',SPACE(3),SPACE(6),'99999999',mdata_sis,'C',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #       AADD(m_alt,"DINHEIRO...: Valor: "+TRANSFORM(mvalor_dinheiro,"999,999.99"))
+    #       AADD(m_recebe,{"DN","AV",SPACE(3),SPACE(6),"99999999",mdata_sis,"C",STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente," "," "," ",IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
     #   ELSE
     #       IF ! EMPTY(mn_cheque)
     #           IF (mvalor + mtot_verif) - mtot_nota > .01
-    #               mcred_cheq = op_simnao('S','O Valor de R$:'+TRANSFORM(mvalor+mtot_verif - mtot_nota,'999,999.99')+'  vai ser gerado um CREDITO para o cliente:')
-    #               IF  mcred_cheq = 'N'
+    #               mcred_cheq = op_simnao("S","O Valor de R$:"+TRANSFORM(mvalor+mtot_verif - mtot_nota,"999,999.99")+"  vai ser gerado um CREDITO para o cliente:")
+    #               IF  mcred_cheq = "N"
     #                   LOOP
     #               ENDIF
     #               mvlr_credcheq = mvalor+mtot_verif - mtot_nota
     #               IF mvencimento > mdata_sis
     # *       	                                                         1    2      3         4       5        6       7         8                 9      10     11     12       13     14      15        16   17  18       19
-    #                   AADD(m_recebe,{'CH','AP',mn_banco,mn_cheque,mn_dup,mvencimento,'B',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj,' ',' ','CREDITO P/ CLIENTE DE R$:'+TRANSFORM(mvalor+mtot_verif - mtot_nota,'999,999.99')+IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   AADD(m_recebe,{"CH","AP",mn_banco,mn_cheque,mn_dup,mvencimento,"B",STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj," "," ","CREDITO P/ CLIENTE DE R$:"+TRANSFORM(mvalor+mtot_verif - mtot_nota,"999,999.99")+IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
     #                   mqtd_doc ++
     #                   mqtd_dias = mqtd_dias + (mvencimento - mdata_sis)
     #               ELSE
-    #                   AADD(m_recebe,{'CH','AV',mn_banco,mn_cheque,mn_dup,mvencimento,'B',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj,' ',' ','CREDITO P/ CLIENTE DE R$:'+TRANSFORM(mvalor+mtot_verif - mtot_nota,'999,999.99')+IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   AADD(m_recebe,{"CH","AV",mn_banco,mn_cheque,mn_dup,mvencimento,"B",STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj," "," ","CREDITO P/ CLIENTE DE R$:"+TRANSFORM(mvalor+mtot_verif - mtot_nota,"999,999.99")+IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
     #               ENDIF
     #           ELSE
     #               IF mvencimento > mdata_sis
     # *       	                                                         1    2      3         4       5        6       7         8                 9      10     11     12       13     14      15        16   17  18   19
-    #                   AADD(m_recebe,{'CH','AP',mn_banco,mn_cheque,mn_dup,mvencimento,'B',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj,' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   AADD(m_recebe,{"CH","AP",mn_banco,mn_cheque,mn_dup,mvencimento,"B",STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj," "," ",IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
     #                   mqtd_doc ++
     #                   mqtd_dias = mqtd_dias + (mvencimento - mdata_sis)
     #               ELSE
-    #                   AADD(m_recebe,{'CH','AV',mn_banco,mn_cheque,mn_dup,mvencimento,'B',STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj,' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   AADD(m_recebe,{"CH","AV",mn_banco,mn_cheque,mn_dup,mvencimento,"B",STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,magencia,mc_c,mcorrente,mcpfcnpj," "," ",IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
     #               ENDIF
     #           ENDIF
-    #           AADD(m_alt,'CHEQUE.....: Bco.: '+mn_banco+' No: '+mn_cheque+' Venc: '+DTOC(mvencimento)+' Vlr:'+TRANSFORM(mvalor,'999,999.99'))
+    #           AADD(m_alt,"CHEQUE.....: Bco.: "+mn_banco+" No: "+mn_cheque+" Venc: "+DTOC(mvencimento)+" Vlr:"+TRANSFORM(mvalor,"999,999.99"))
     #       ELSEIF ! EMPTY(mn_dup)
     #           i = 0
     #           FOR i = 1 TO LEN(m_parcela)
     #               IF EMPTY(m_parcela[i,1])
     #                   LOOP
     #               ENDIF
-    #               AADD(m_alt,'DUPLICATA..: No.:'+m_parcela[i,1]+' Venc:'+DTOC(m_parcela[i,2])+' Vlr:'+TRANSFORM(m_parcela[i,3],'999,999.99'))
+    #               AADD(m_alt,"DUPLICATA..: No.:"+m_parcela[i,1]+" Venc:"+DTOC(m_parcela[i,2])+" Vlr:"+TRANSFORM(m_parcela[i,3],"999,999.99"))
     #               IF m_parcela[i,2] > mdata_sis
-    #                   AADD(m_recebe,{'DU','AP',mn_banco,SPACE(6),m_parcela[i,1],m_parcela[i,2],mt_pag,STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   AADD(m_recebe,{"DU","AP",mn_banco,SPACE(6),m_parcela[i,1],m_parcela[i,2],mt_pag,STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente," "," "," ",IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
     #                   mqtd_doc ++
     #                   mqtd_dias = mqtd_dias + (m_parcela[i,2] - mdata_sis)
     #               ELSE
-    #                   AADD(m_recebe,{'DU','AV',mn_banco,SPACE(6),m_parcela[i,1],m_parcela[i,2],mt_pag,STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   AADD(m_recebe,{"DU","AV",mn_banco,SPACE(6),m_parcela[i,1],m_parcela[i,2],mt_pag,STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente," "," "," ",IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
     #               ENDIF
     #           NEXT
     #       ELSEIF ! EMPTY(mn_cupom)
@@ -826,15 +1115,15 @@ def verifica_condicao():
     #               IF EMPTY(m_parcela[i,1])
     #                   LOOP
     #               ENDIF
-    #               AADD(m_alt,'CARTAO.....: '+STRZERO(mcod_cart,3)+' Cupom No.: '+m_parcela[i,1]+' Valor: '+TRANSFORM(m_parcela[i,3],'999,999.99'))
+    #               AADD(m_alt,"CARTAO.....: "+STRZERO(mcod_cart,3)+" Cupom No.: "+m_parcela[i,1]+" Valor: "+TRANSFORM(m_parcela[i,3],"999,999.99"))
     #               IF m_parcela[i,2] > mdata_sis
     # //               1    2       3      4         5       6          7           8                 9            10          11      12       13       14        15         16            17            18
-    #                   AADD(m_recebe,{'CT','AP',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   AADD(m_recebe,{"CT","AP",SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],"B",STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
     #                   mqtd_doc ++
     #                   mqtd_dias = mqtd_dias + (m_parcela[i,2] - mdata_sis)
     #               ELSE
     #
-    #                   AADD(m_recebe,{'CT','AV',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   AADD(m_recebe,{"CT","AV",SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],"B",STRZERO(mcod_cart,3),m_parcela[i,1],m_parcela[i,3],mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,mdesc_cart,m_parcela[i,4],m_parcela[i,5],IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
     #               ENDIF
     #           NEXT
     #       ELSEIF ! EMPTY(mn_fin)  // .OR. LEN(m_parcela) > 0
@@ -843,26 +1132,26 @@ def verifica_condicao():
     #               IF EMPTY(m_parcela[i,1])
     #                   LOOP
     #               ENDIF
-    #               AADD(m_alt,'FINANCIAMEN: '+m_parcela[i,1]+' Venc.: '+DTOC(m_parcela[i,2])+' Vlr: '+TRANSFORM(m_parcela[i,3],'999,999.99'))
+    #               AADD(m_alt,"FINANCIAMEN: "+m_parcela[i,1]+" Venc.: "+DTOC(m_parcela[i,2])+" Vlr: "+TRANSFORM(m_parcela[i,3],"999,999.99"))
     #               IF m_parcela[i,2] > mdata_sis
-    #                   AADD(m_recebe,{'FI','AP',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),mn_cupom,m_parcela[i,3],m_parcela[i,1],mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   AADD(m_recebe,{"FI","AP",SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],"B",STRZERO(mcod_cart,3),mn_cupom,m_parcela[i,3],m_parcela[i,1],mcartao,SPACE(8),SPACE(13),mcorrente," "," "," ",IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
     #                   mqtd_doc ++
     #                   mqtd_dias = mqtd_dias + (m_parcela[i,2] - mdata_sis)
     #               ELSE
-    #                   AADD(m_recebe,{'FI','AV',SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],'B',STRZERO(mcod_cart,3),mn_cupom,m_parcela[i,3],m_parcela[i,1],mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #                   AADD(m_recebe,{"FI","AV",SPACE(3),SPACE(6),mn_dup,m_parcela[i,2],"B",STRZERO(mcod_cart,3),mn_cupom,m_parcela[i,3],m_parcela[i,1],mcartao,SPACE(8),SPACE(13),mcorrente," "," "," ",IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
     #               ENDIF
     #           NEXT
     #       ELSEIF ! EMPTY(mn_trans)
-    #           AADD(m_alt,'TRANSFERENC: '+mn_trans+' Venc.: '+DTOC(mvencimento)+' Valor: '+TRANSFORM(mvalor,'999,999.99'))
-    #           AADD(m_recebe,{'TR','AP',SPACE(3),SPACE(6),mn_trans,mvencimento,mt_pag,STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #           AADD(m_alt,"TRANSFERENC: "+mn_trans+" Venc.: "+DTOC(mvencimento)+" Valor: "+TRANSFORM(mvalor,"999,999.99"))
+    #           AADD(m_recebe,{"TR","AP",SPACE(3),SPACE(6),mn_trans,mvencimento,mt_pag,STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente," "," "," ",IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
     #       ELSEIF ! EMPTY(mn_cred)
     #           mtipo_pg = 1
     #           mcredito = mcredito - mvalor
-    #           AADD(m_alt,'CREDITO....: '+mn_cred+' Venc.: '+DTOC(mvencimento)+' Valor: '+TRANSFORM(mvalor,'999,999.99'))
-    #           AADD(m_recebe,{'CR','AV',SPACE(3),SPACE(6),mn_cred,mvencimento,mt_pag,STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #           AADD(m_alt,"CREDITO....: "+mn_cred+" Venc.: "+DTOC(mvencimento)+" Valor: "+TRANSFORM(mvalor,"999,999.99"))
+    #           AADD(m_recebe,{"CR","AV",SPACE(3),SPACE(6),mn_cred,mvencimento,mt_pag,STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente," "," "," ",IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
     #       ELSEIF ! EMPTY(mn_pix)
-    #           AADD(m_alt,'No.PIX.....: '+mn_pix+' Venc.: '+DTOC(mvencimento)+' Valor: '+TRANSFORM(mvalor,'999,999.99'))
-    #           AADD(m_recebe,{'PX','AV',SPACE(3),SPACE(6),mn_pix,mvencimento,mt_pag,STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente,' ',' ',' ',IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),'',' OS:'+ALLTRIM(cons_ped[1,94]))})
+    #           AADD(m_alt,"No.PIX.....: "+mn_pix+" Venc.: "+DTOC(mvencimento)+" Valor: "+TRANSFORM(mvalor,"999,999.99"))
+    #           AADD(m_recebe,{"PX","AV",SPACE(3),SPACE(6),mn_pix,mvencimento,mt_pag,STRZERO(mcod_cart,3),mn_cupom,mvalor,mn_fin,mcartao,SPACE(8),SPACE(13),mcorrente," "," "," ",IF(EMPTY(VAL(ALLTRIM(cons_ped[1,94]))),""," OS:"+ALLTRIM(cons_ped[1,94]))})
     #       ENDIF
     # ENDIF
     # ENDIF
@@ -887,11 +1176,10 @@ def limpa_valores():
 def condicao_pagamento():
     tela_pg.sb_qtd_parcelas.setEnabled(False)
     tela_pg.cb_tipo_pg.clear()
-    mtipo_pg = ""
     mcart = tela.ds_cartao.value()
     mdupli = tela.ds_duplicata.value()
     mcheq = tela.ds_cheque.value()
-    tela_pg.sb_qtd_parcelas.setValue(1)
+    tela_pg.sb_qtd_parcelas.setValue(0)
     if mcart > 0:
         tela_pg.sb_qtd_parcelas.setEnabled(True)
         mct_f = "{:12,.2f}".format(mcart)
@@ -903,6 +1191,7 @@ def condicao_pagamento():
         mct_f = "{:12,.2f}".format(mdupli)
         mct_tx = f"{mct_f}"
         lbl_valor.setText(mct_tx)
+        tela_pg.n_documento.setText(mnumero_pedido)
         mtipo_pg = "DU"
     elif mcheq > 0:
         mct_f = "{:12,.2f}".format(mcheq)
@@ -917,7 +1206,7 @@ def condicao_pagamento():
         f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
         f"COALESCE(dia7, 0), COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), "
         f"COALESCE(dia11, 0), COALESCE(dia12, 0), COALESCE(dia13, 0), COALESCE(dia14, 0), "
-        f"COALESCE(dia15, 0) FROM sactabpg WHERE sigla = '{mtipo_pg}' ORDER BY codigo"
+        f"COALESCE(dia15, 0) FROM sactabpg WHERE sigla = {mtipo_pg} ORDER BY codigo"
     )
     # Recupere o resultado
     arq_sactabpg = hg.conexao_cursor.fetchall()
@@ -950,8 +1239,16 @@ def condicao_pagamento():
             f"dias: {mdia1} {mdia2} {mdia3} {mdia4} {mdia5} {mdia6} {mdia7} {mdia8} {mdia9} {mdia10} "
             f"{mdia11} {mdia12} {mdia13} {mdia14} {mdia15}"
         )
-
+        # tela.doubleSpinBox_18.value()
         tela_pg.cb_tipo_pg.addItem(item_pg)
+    index = tela_pg.cb_tipo_pg.currentIndex()
+    ic(index)
+    mop = tela_pg.cb_tipo_pg.itemText(index)
+    # ic(mop)
+    # ic(mop[0])
+    # ic(mop[45:47])
+    nvezes = int(mop[45:47])
+    tela_pg.sb_qtd_parcelas.setValue(nvezes)
 
     def confirma():
         tela_pg.close()

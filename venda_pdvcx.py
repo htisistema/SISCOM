@@ -5,7 +5,6 @@ from PyQt6.QtCore import QDateTime, Qt, QDate
 from datetime import datetime
 from icecream import ic
 from hti_funcoes import conexao_banco
-
 # from ATENCAO import atencao
 # from ver_pagamento import ver_pagamento
 import hti_global as hg

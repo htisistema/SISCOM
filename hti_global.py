@@ -36,6 +36,7 @@ m_data_f = data_atual.toPyDateTime().date()
 # ic(m_data_f)
 mdata_sis = m_data_f.strftime("%Y-%m-%d")
 # ic(mdata_sis)
+arquivo_impressao = "REL_RESERVA.PDF"
 geral_cod_usuario = "999"
 geral_nivel_usuario = "15 "
 mcodempresa = "001"
@@ -48,6 +49,7 @@ c_cliente = config.get("caminho_cliente", "caminho_cliente")
 c_produto = config.get("caminho_produto", "caminho_produto")
 c_imagem = config.get("caminho_imagem", "caminho_img")
 c_ui = config.get("caminho_ui", "caminho_ui")
+c_pdf = config.get("caminho_pdf", "caminho_pdf")
 mtipo_temrinal = config.get("tipo_terminal", "tipo_term")
 mtp_tela = config.get("tipo_tela", "tp_tela")
 host = config.get("banco", "host")

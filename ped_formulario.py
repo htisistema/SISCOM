@@ -4,6 +4,7 @@ import os
 from icecream import ic
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap, QFont
+from PyQt6.QtPdfWidgets import QPdfView
 from PyQt6.QtWidgets import (
     QButtonGroup,
     QMessageBox,

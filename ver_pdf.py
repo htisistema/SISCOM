@@ -1,113 +1,296 @@
+import os
 import sys
 import fitz  # PyMuPDF
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QWidget, QLabel, QScrollArea, QPushButton,
-                             QHBoxLayout)
+from PyQt6 import uic
+from PyQt6.QtWidgets import (
+    QApplication,
+    QGraphicsScene,
+    QGraphicsPixmapItem,
+)
 from PyQt6.QtGui import QPixmap, QImage, QPainter
 from PyQt6.QtPrintSupport import QPrinter, QPrintDialog
-from PyQt6 import Qt
+from PyQt6.QtGui import QIcon, QGuiApplication
+from PyQt6.QtCore import Qt
+import hti_global as hg
 
-class PDFViewer(QMainWindow):
-    def __init__(self, file_name):
-        super().__init__()
+app = QApplication([])
+app.setStyleSheet(hg.style_sheet)
+tela = uic.loadUi(f"{hg.c_ui}\\preview_print.ui")
+icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
+tela.setWindowIcon(icon)
+tela.setWindowTitle(
+    f"MENU DE PREVIEW / IMPRIMIR         {hg.SISTEMA}  Versao: {hg.VERSAO}"
+)
+# Centraliza a janela na tela
+qt_rectangle = tela.frameGeometry()
+center_point = app.primaryScreen().availableGeometry().center()
+qt_rectangle.moveCenter(center_point)
+tela.move(qt_rectangle.topLeft())
+icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+icon_imprimir = QIcon(f"{hg.c_imagem}\\impressora.jpg")
 
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
 
-        main_layout = QVBoxLayout()
-        self.central_widget.setLayout(main_layout)
+# Centraliza a janela na tela
+# AJUSTAR A TELA EM RELACAO AO MONITOR
+if hg.mtp_tela == "G":
+    primary_screen = QGuiApplication.primaryScreen()
+    if primary_screen is not None:
+        screen_geometry = primary_screen.geometry()
+        tela.setGeometry(screen_geometry)
 
-        self.zoom_factor = 1.0  # Initial zoom factor
+# PEGA O NOME DO ARQUIVO EM EXECUCAO
+nome_file_com = os.path.basename(__file__)
+nome_file, ext = os.path.splitext(nome_file_com)
 
-        self.scroll_area = QScrollArea()
-        main_layout.addWidget(self.scroll_area)
+if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
+else:
+    imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
-        self.container = QWidget()
-        self.scroll_area.setWidget(self.container)
-        self.scroll_area.setWidgetResizable(True)
+mcaminho_pdf = " "
 
-        self.v_layout = QVBoxLayout(self.container)
-        self.container.setLayout(self.v_layout)
+scene = QGraphicsScene()
+tela.graphicsView.setScene(scene)
 
-        self.load_pdf(file_name)
 
-        self.resize(1200, 800)  # Initial window size
+def fecha_tela():
+    tela.close()
+    # tela.closeEvent = on_close_event
+    return
 
-        # Add control buttons
-        button_layout = QHBoxLayout()
 
-        self.zoom_in_button = QPushButton("Zoom In")
-        self.zoom_in_button.clicked.connect(self.zoom_in)
-        button_layout.addWidget(self.zoom_in_button)
+def load_pdf(file_name, zoom_factor=1.0):
+    pdf_file = fitz.open(file_name)
+    return pdf_file, zoom_factor
 
-        self.zoom_out_button = QPushButton("Zoom Out")
-        self.zoom_out_button.clicked.connect(self.zoom_out)
-        button_layout.addWidget(self.zoom_out_button)
 
-        self.print_button = QPushButton("Print")
-        self.print_button.clicked.connect(self.print_pdf)
-        button_layout.addWidget(self.print_button)
+def display_pages(pdf_file, zoom_factor):
+    scene.clear()
+    for page_num in range(len(pdf_file)):
+        page = pdf_file.load_page(page_num)
+        pix = page.get_pixmap(matrix=fitz.Matrix(zoom_factor, zoom_factor))
+        image = QImage(
+            pix.samples, pix.width, pix.height, pix.stride, QImage.Format.Format_RGB888
+        )
+        pixmap = QPixmap.fromImage(image)
 
-        main_layout.addLayout(button_layout)
+        item = QGraphicsPixmapItem(pixmap)
+        item.setPos(0, page_num * pix.height)
+        scene.addItem(item)
 
-        self.show()
+    tela.graphicsView.setSceneRect(0, 0, pix.width, pix.height * len(pdf_file))
 
-    def load_pdf(self, file_name):
-        self.pdf_file = fitz.open(file_name)
-        self.display_pages()
 
-    def display_pages(self):
-        # Clear existing widgets
-        for i in reversed(range(self.v_layout.count())):
-            widget_to_remove = self.v_layout.itemAt(i).widget()
-            self.v_layout.removeWidget(widget_to_remove)
-            widget_to_remove.setParent(None)
+def zoom_in(pdf_file, zoom_factor):
+    zoom_factor += 0.1
+    display_pages(pdf_file, zoom_factor)
+    return zoom_factor
 
-        for page_num in range(len(self.pdf_file)):
-            page = self.pdf_file.load_page(page_num)
-            pix = page.get_pixmap(matrix=fitz.Matrix(self.zoom_factor, self.zoom_factor))
-            image = QImage(pix.samples, pix.width, pix.height, pix.stride, QImage.Format.Format_RGB888)
-            pixmap = QPixmap.fromImage(image)
 
-            label = QLabel()
-            label.setPixmap(pixmap)
-            self.v_layout.addWidget(label)
+def zoom_out(pdf_file, zoom_factor):
+    zoom_factor -= 0.1
+    display_pages(pdf_file, zoom_factor)
+    return zoom_factor
 
-    def zoom_in(self):
-        self.zoom_factor += 0.1
-        self.display_pages()
 
-    def zoom_out(self):
-        self.zoom_factor -= 0.1
-        self.display_pages()
+def print_pdf(pdf_file, zoom_factor):
+    printer = QPrinter()
+    print_dialog = QPrintDialog(printer)
 
-    def print_pdf(self):
-        printer = QPrinter()
-        print_dialog = QPrintDialog(printer, self)
+    if print_dialog.exec() == QPrintDialog.Accepted:
+        for page_num in range(len(pdf_file)):
+            page = pdf_file.load_page(page_num)
+            pix = page.get_pixmap(matrix=fitz.Matrix(zoom_factor, zoom_factor))
+            image = QImage(
+                pix.samples,
+                pix.width,
+                pix.height,
+                pix.stride,
+                QImage.Format.Format_RGB888,
+            )
 
-        if print_dialog.exec() == QPrintDialog.Accepted:
-            for page_num in range(len(self.pdf_file)):
-                page = self.pdf_file.load_page(page_num)
-                pix = page.get_pixmap(matrix=fitz.Matrix(self.zoom_factor, self.zoom_factor))
-                image = QImage(pix.samples, pix.width, pix.height, pix.stride, QImage.Format.Format_RGB888)
+            printer.newPage()
+            painter = QPainter(printer)
+            rect = painter.viewport()
+            size = image.size()
+            size.scale(rect.size(), Qt.AspectRatioMode.KeepAspectRatio)
+            painter.setViewport(rect.x(), rect.y(), size.width(), size.height())
+            painter.setWindow(image.rect())
+            painter.drawImage(0, 0, image)
+            painter.end()
 
-                printer.newPage()
-                painter = QPainter(printer)
-                rect = painter.viewport()
-                size = image.size()
-                size.scale(rect.size(), Qt.AspectRatioMode.KeepAspectRatio)
-                painter.setViewport(rect.x(), rect.y(), size.width(), size.height())
-                painter.setWindow(image.rect())
-                painter.drawImage(0, 0, image)
-                painter.end()
+
+def main(file_name):
+    global mcaminho_pdf
+    mcaminho_pdf = file_name
+
+    pdf_file, zoom_factor = load_pdf(file_name)
+    display_pages(pdf_file, zoom_factor)
+    tela.bt_sair.setIcon(icon_sair)
+    tela.bt_imprimir.setIcon(icon_imprimir)
+    tela.bt_zoom_in.setFocus()
+
+    # Utilize uma função intermediária para manter o valor do zoom_factor
+    def zoom_in_handler():
+        nonlocal zoom_factor
+        zoom_factor = zoom_in(pdf_file, zoom_factor)
+
+    def zoom_out_handler():
+        nonlocal zoom_factor
+        zoom_factor = zoom_out(pdf_file, zoom_factor)
+
+    tela.bt_zoom_in.clicked.connect(zoom_in_handler)
+    tela.bt_zoom_out.clicked.connect(zoom_out_handler)
+    tela.bt_sair.clicked.connect(fecha_tela)
+    tela.bt_imprimir.clicked.connect(lambda: print_pdf(pdf_file, zoom_factor))
+    tela.show()
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    file_name = "C:\\HTI\\PYTHON\\SISCOM\\pdf\\REL_RESERVA.PDF"  # Nome do arquivo PDF
-    viewer = PDFViewer(file_name)
-    sys.exit(app.exec())
+    cam_pdf = "C:\\HTI\\PYTHON\\SISCOM\\pdf\\REL_RESERVA.PDF"
+    print(cam_pdf)
+    main(cam_pdf)
+    app.exec()
+    tela.close()
 
 
-
-
-
+# import os
+# import fitz  # PyMuPDF
+# from PyQt6 import uic
+# from PyQt6.QtWidgets import (
+#     QApplication,
+#     QGraphicsScene,
+#     QGraphicsPixmapItem,
+# )
+# from PyQt6.QtGui import QPixmap, QImage, QPainter
+# from PyQt6.QtPrintSupport import QPrinter, QPrintDialog
+# from PyQt6.QtGui import QIcon, QGuiApplication
+# from PyQt6.QtCore import Qt
+# import hti_global as hg
+#
+# app = QApplication([])
+# app.setStyleSheet(hg.style_sheet)
+# tela = uic.loadUi(f"{hg.c_ui}\\preview_print.ui")
+# icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
+# tela.setWindowIcon(icon)
+# tela.setWindowTitle(
+#     f"MENU DE PREVIEW / IMPRIMIR         {hg.SISTEMA}  Versao: {hg.VERSAO}"
+# )
+# # Centraliza a janela na tela
+# qt_rectangle = tela.frameGeometry()
+# center_point = app.primaryScreen().availableGeometry().center()
+# qt_rectangle.moveCenter(center_point)
+# tela.move(qt_rectangle.topLeft())
+# icon_salvar = QIcon(f"{hg.c_imagem}\\confirma.png")
+# icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
+# # Centraliza a janela na tela
+# # AJUSTAR A TELA EM RELACAO AO MONITOR
+# if hg.mtp_tela == "G":
+#     primary_screen = QGuiApplication.primaryScreen()
+#     if primary_screen is not None:
+#         screen_geometry = primary_screen.geometry()
+#         tela.setGeometry(screen_geometry)
+#
+# # PEGA O NOME DO ARQUIVO EM EXECUCAO
+# nome_file_com = os.path.basename(__file__)
+# nome_file, ext = os.path.splitext(nome_file_com)
+#
+# if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+#     imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
+# else:
+#     imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
+#
+# mcaminho_pdf = " "
+#
+# scene = QGraphicsScene()
+# tela.graphicsView.setScene(scene)
+#
+#
+# def load_pdf(file_name, zoom_factor=1.0):
+#     pdf_file = fitz.open(file_name)
+#     return pdf_file, zoom_factor
+#
+#
+# def display_pages(pdf_file, zoom_factor):
+#     scene.clear()
+#     for page_num in range(len(pdf_file)):
+#         page = pdf_file.load_page(page_num)
+#         pix = page.get_pixmap(matrix=fitz.Matrix(zoom_factor, zoom_factor))
+#         image = QImage(
+#             pix.samples, pix.width, pix.height, pix.stride, QImage.Format.Format_RGB888
+#         )
+#         pixmap = QPixmap.fromImage(image)
+#
+#         item = QGraphicsPixmapItem(pixmap)
+#         item.setPos(0, page_num * pix.height)
+#         scene.addItem(item)
+#
+#     tela.graphicsView.setSceneRect(0, 0, pix.width, pix.height * len(pdf_file))
+#     # tela.graphicsView.setSceneRect(0, 0, pix.width(), pix.height() * len(pdf_file))
+#
+#
+# def zoom_in(pdf_file, zoom_factor):
+#     zoom_factor += 0.1
+#     display_pages(pdf_file, zoom_factor)
+#     return zoom_factor
+#
+#
+# def zoom_out(pdf_file, zoom_factor):
+#     zoom_factor -= 0.1
+#     display_pages(pdf_file, zoom_factor)
+#     return zoom_factor
+#
+#
+# def print_pdf(pdf_file, zoom_factor):
+#     printer = QPrinter()
+#     print_dialog = QPrintDialog(printer)
+#
+#     if print_dialog.exec() == QPrintDialog.Accepted:
+#         for page_num in range(len(pdf_file)):
+#             page = pdf_file.load_page(page_num)
+#             pix = page.get_pixmap(matrix=fitz.Matrix(zoom_factor, zoom_factor))
+#             image = QImage(
+#                 pix.samples,
+#                 pix.width,
+#                 pix.height,
+#                 pix.stride,
+#                 QImage.Format.Format_RGB888,
+#             )
+#
+#             printer.newPage()
+#             painter = QPainter(printer)
+#             rect = painter.viewport()
+#             size = image.size()
+#             size.scale(rect.size(), Qt.AspectRatioMode.KeepAspectRatio)
+#             painter.setViewport(rect.x(), rect.y(), size.width(), size.height())
+#             painter.setWindow(image.rect())
+#             painter.drawImage(0, 0, image)
+#             painter.end()
+#
+#
+# def main(file_name):
+#     global mcaminho_pdf
+#     mcaminho_pdf = file_name
+#
+#     pdf_file, zoom_factor = load_pdf(file_name)
+#     display_pages(pdf_file, zoom_factor)
+#
+#     tela.bt_zoom_in.setIcon(icon_sair)
+#     tela.bt_zoom_in.setFocus()
+#
+#     tela.bt_zoom_in.clicked.connect(
+#         lambda: globals().update(zoom_factor=zoom_in(pdf_file, zoom_factor))
+#     )
+#     tela.bt_zoom_out.clicked.connect(
+#         lambda: globals().update(zoom_factor=zoom_out(pdf_file, zoom_factor))
+#     )
+#     tela.bt_imprimir.clicked.connect(lambda: print_pdf(pdf_file, zoom_factor))
+#     tela.show()
+#
+#
+# if __name__ == "__main__":
+#     cam_pdf = "C:\\HTI\\PYTHON\\SISCOM\\pdf\\REL_RESERVA.PDF"
+#     print(cam_pdf)
+#     main(cam_pdf)
+#     app.exec()
+#     tela.close()

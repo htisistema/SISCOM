@@ -5,6 +5,7 @@ from PyQt6.QtCore import QDateTime, Qt, QDate
 from datetime import datetime
 from icecream import ic
 from hti_funcoes import conexao_banco
+from ped_formulario import ped_formulario
 # from ATENCAO import atencao
 # from ver_pagamento import ver_pagamento
 import hti_global as hg
@@ -214,7 +215,9 @@ def salva_pedido():
     mop = tela.cb_cliente.itemText(index)
     mcod_cli = mop[43:48]
     # ic(f"SELECT * FROM saccli WHERE cod_cli = {mcod_cli}")
-    hg.conexao_cursor.execute(f"SELECT cod_cli, razao, nome, cgc, cpf, tipo FROM saccli WHERE cod_cli = {mcod_cli}")
+    hg.conexao_cursor.execute(
+        f"SELECT cod_cli, razao, nome, cgc, cpf, tipo FROM saccli WHERE cod_cli = {mcod_cli}"
+    )
     cons_cli = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
     codigo_cli = int(mcod_cli)
@@ -270,11 +273,12 @@ def salva_pedido():
     hg.conexao_cursor.execute(sql, values)
     hg.conexao_bd.commit()
 
-    hg.conexao_cursor.execute(f"SELECT * FROM sacped_s WHERE pnum_ped = {mnumero_pedido}")
+    hg.conexao_cursor.execute(
+        f"SELECT * FROM sacped_s WHERE pnum_ped = {mnumero_pedido}"
+    )
     cons_ped = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()
     mcontador = len(cons_ped)
-    print(mcontador)
     for i in range(mcontador):
         sql = (
             "INSERT INTO sacmov ("
@@ -320,49 +324,49 @@ def salva_pedido():
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
             "?, ?, ?, ?, ?, ?, ?) "
         )
-        mdocumento = 'PD'+mnumero_pedido
+        mdocumento = "PD" + mnumero_pedido
         hg.conexao_cursor.execute(
             sql,
             (
                 hg.mcodempresa,
                 mnumero_pedido,
-                cons_ped[i][3], # DATA DO PEDIDO
+                cons_ped[i][3],  # DATA DO PEDIDO
                 mdocumento,
-                cons_ped[i][5], # COD -PRODUTO
-                cons_ped[i][4], # GRUPO
-                cons_ped[i][6], # PRODUTO
-                cons_ped[i][8], # ESPECIE
-                cons_ped[i][29], # FABRICANTE
-                cons_ped[i][30], # RAZAO
+                cons_ped[i][5],  # COD -PRODUTO
+                cons_ped[i][4],  # GRUPO
+                cons_ped[i][6],  # PRODUTO
+                cons_ped[i][8],  # ESPECIE
+                cons_ped[i][29],  # FABRICANTE
+                cons_ped[i][30],  # RAZAO
                 hg.mdata_sis,
-                'S',
-                cons_ped[i][13], # QUANTD
-                cons_ped[i][18], # PR_VENDA1
-                cons_ped[i][19], # PR_VENDA
-                cons_ped[i][18], # VL_VENDA
+                "S",
+                cons_ped[i][13],  # QUANTD
+                cons_ped[i][18],  # PR_VENDA1
+                cons_ped[i][19],  # PR_VENDA
+                cons_ped[i][18],  # VL_VENDA
                 cons_ped[i][18],
-                cons_ped[i][10], # PESO
+                cons_ped[i][10],  # PESO
                 hg.geral_cod_usuario,
                 hg.geral_cod_usuario,
-                codigo_cli, # cod_cli
-                cons_cli[1], # razao
-                '02',
-                cons_ped[i][17], # pr_unit
-                cons_ped[i][21], # cus_merc
-                cons_ped[i][50], # isento
+                codigo_cli,  # cod_cli
+                cons_cli[1],  # razao
+                "02",
+                cons_ped[i][17],  # pr_unit
+                cons_ped[i][21],  # cus_merc
+                cons_ped[i][50],  # isento
                 0,
-                ' ',
-                '   ',
-                '  ',
-                ' ',
+                " ",
+                "   ",
+                "  ",
+                " ",
                 0,
-                ' ',
-                ' ',
+                " ",
+                " ",
                 0,
                 0,
                 cons_ped[i][104],
                 cons_ped[i][98],
-                ' '
+                " ",
             ),
         )
         hg.conexao_bd.commit()
@@ -515,23 +519,44 @@ def salva_pedido():
         else:
             mvlr = m_recebe[i][9]
 
-        if (m_recebe[i][0] == "DN" or m_recebe[i][0] == "CR" or m_recebe[i][0] == "PX" or
-                ((m_recebe[i][0] == "CT" or m_recebe[i][0] == "CH") and m_recebe[i][5] <= hg.mdata_sis
-                 and mbaixar == "S")):
+        if (
+            m_recebe[i][0] == "DN"
+            or m_recebe[i][0] == "CR"
+            or m_recebe[i][0] == "PX"
+            or (
+                (m_recebe[i][0] == "CT" or m_recebe[i][0] == "CH")
+                and m_recebe[i][5] <= hg.mdata_sis
+                and mbaixar == "S"
+            )
+        ):
             mdata_pg = m_recebe[i][5]
         else:
             mdata_pg = None
 
-        if (m_recebe[i][0] == "DN" or m_recebe[i][0] == "CR" or m_recebe[i][0] == "PX" or
-                ((m_recebe[i][0] == "CT" or m_recebe[i][0] == "CH") and m_recebe[i][5] <= hg.mdata_sis
-                 and mbaixar == "S")):
+        if (
+            m_recebe[i][0] == "DN"
+            or m_recebe[i][0] == "CR"
+            or m_recebe[i][0] == "PX"
+            or (
+                (m_recebe[i][0] == "CT" or m_recebe[i][0] == "CH")
+                and m_recebe[i][5] <= hg.mdata_sis
+                and mbaixar == "S"
+            )
+        ):
             mvlr_pago = m_recebe[i][9]
         else:
             mvlr_pago = 0
 
-        if (m_recebe[i][0] == "DN" or m_recebe[i][0] == "CR" or m_recebe[i][0] == "PX" or
-                ((m_recebe[i][0] == "CT" or m_recebe[i][0] == "CH") and m_recebe[i][5] <= hg.mdata_sis
-                 and mbaixar == "S")):
+        if (
+            m_recebe[i][0] == "DN"
+            or m_recebe[i][0] == "CR"
+            or m_recebe[i][0] == "PX"
+            or (
+                (m_recebe[i][0] == "CT" or m_recebe[i][0] == "CH")
+                and m_recebe[i][5] <= hg.mdata_sis
+                and mbaixar == "S"
+            )
+        ):
             mpago = "B"
         else:
             mpago = " "
@@ -544,7 +569,9 @@ def salva_pedido():
         mperc_comissao = 0
         mperc_com1 = 0
         mvlr_tab = 0
-        print(sql,(
+        print(
+            sql,
+            (
                 hg.mcodempresa,
                 hg.mdata_sis,
                 m_recebe[i][0],
@@ -576,8 +603,10 @@ def salva_pedido():
                 m_recebe[i][14],
                 mcnpjcfp,
                 0,
-                '',
-                m_recebe[i][18]))
+                "",
+                m_recebe[i][18],
+            ),
+        )
 
         hg.conexao_cursor.execute(
             sql,
@@ -614,15 +643,15 @@ def salva_pedido():
                 mcnpjcfp,
                 0,
                 "",
-                m_recebe[i][18]
+                m_recebe[i][18],
             ),
         )
         hg.conexao_bd.commit()
 
-
-    # ic(m_recebe)
     # print(sql, values)
     m_recebe.clear()
+    ped_formulario(mnumero_pedido)
+    # print(PDFViewer(mnumero_pedido))
     return
     # fecha_tela()
 
@@ -692,8 +721,10 @@ def verifica_condicao():
     #     tela.ds_desconto.setEnabled(True)
     # print(f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat, COALESCE(pos, " ") as app FROM sacped_s "
     #      f"WHERE pnum_ped = "{mnumero_pedido}"")
-    hg.conexao_cursor.execute(f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat, COALESCE(pos, ' ') as app FROM sacped_s "
-                              f"WHERE pnum_ped = {mnumero_pedido}")
+    hg.conexao_cursor.execute(
+        f"SELECT pcod_merc, pmerc, pquantd, pvlr_fat, COALESCE(pos, ' ') as app FROM sacped_s "
+        f"WHERE pnum_ped = {mnumero_pedido}"
+    )
     # # 145082Recupere o resultado
     resultados = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()

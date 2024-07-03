@@ -585,3 +585,9 @@ if __name__ == "__main__":
         print("ok")
 
     # print(dcripto('ûüÈ'))
+
+
+def ver_serie():
+    mserie = hg.m_set[122]
+    mser = mserie[-6:]
+    return mser

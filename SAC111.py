@@ -4,7 +4,7 @@ import os
 from PyQt6 import uic, QtCore, QtWidgets
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QRadioButton, QComboBox
-from PyQt6.QtCore import QDate, QDateTime, QTime, QObject
+from PyQt6.QtCore import QDate, QDateTime, QTime
 from datetime import datetime, date
 from hti_funcoes import conexao_banco
 import hti_global as hg

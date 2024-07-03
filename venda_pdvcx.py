@@ -569,44 +569,6 @@ def salva_pedido():
         mperc_comissao = 0
         mperc_com1 = 0
         mvlr_tab = 0
-        print(
-            sql,
-            (
-                hg.mcodempresa,
-                hg.mdata_sis,
-                m_recebe[i][0],
-                cons_cli[5],
-                codigo_cli,
-                cons_cli[1],
-                m_recebe[i][5],
-                m_recebe[i][5],
-                mperc_comissao,
-                mperc_com1,
-                mvlr_tab,
-                hg.geral_cod_usuario,
-                hg.geral_cod_usuario,
-                mnumero_pedido,
-                m_recebe[i][6],
-                hg.geral_cod_usuario,
-                0,
-                "C",
-                mcgccpf,
-                mtip,
-                mnum_dup,
-                m_recebe[i][9],
-                mvlr,
-                m_recebe[i][12],
-                m_recebe[i][13],
-                mdata_pg,
-                mvlr_pago,
-                mpago,
-                m_recebe[i][14],
-                mcnpjcfp,
-                0,
-                "",
-                m_recebe[i][18],
-            ),
-        )
 
         hg.conexao_cursor.execute(
             sql,

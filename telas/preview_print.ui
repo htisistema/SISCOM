@@ -13,30 +13,46 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QPushButton" name="bt_zoom_in">
    <property name="geometry">
     <rect>
-     <x>1030</x>
-     <y>10</y>
-     <width>180</width>
-     <height>60</height>
+     <x>1020</x>
+     <y>30</y>
+     <width>41</width>
+     <height>30</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">border-style: Outset;
+font: 900 20pt &quot;Arial Black&quot;;
+border-width: 1px;
+border-radius: 90px;</string>
+   </property>
    <property name="text">
-    <string>ZOOM (+)</string>
+    <string>+</string>
    </property>
   </widget>
   <widget class="QPushButton" name="bt_zoom_out">
    <property name="geometry">
     <rect>
-     <x>1030</x>
-     <y>110</y>
-     <width>180</width>
-     <height>60</height>
+     <x>1170</x>
+     <y>30</y>
+     <width>40</width>
+     <height>30</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">border-style: Outset;
+font: 900 20pt &quot;Arial Black&quot;;
+border-width: 1px;
+border-radius: 90px;
+</string>
+   </property>
    <property name="text">
-    <string>ZOOM (-)</string>
+    <string>-</string>
    </property>
   </widget>
   <widget class="QGraphicsView" name="graphicsView">
@@ -53,7 +69,7 @@
    <property name="geometry">
     <rect>
      <x>1030</x>
-     <y>280</y>
+     <y>140</y>
      <width>180</width>
      <height>60</height>
     </rect>
@@ -71,14 +87,33 @@
   <widget class="QPushButton" name="bt_sair">
    <property name="geometry">
     <rect>
-     <x>1040</x>
-     <y>470</y>
+     <x>1030</x>
+     <y>310</y>
      <width>180</width>
      <height>60</height>
     </rect>
    </property>
    <property name="text">
     <string>SAIR</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>1090</x>
+     <y>30</y>
+     <width>60</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 12pt &quot;Arial&quot;;</string>
+   </property>
+   <property name="text">
+    <string> ZOOM</string>
    </property>
   </widget>
  </widget>

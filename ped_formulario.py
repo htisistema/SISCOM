@@ -59,15 +59,26 @@ def ped_formulario(mnumero_pedido, ali, mvia):
         data_obj = cons_ped[0][9]
         mdataemi = data_obj.strftime("%d/%m/%Y")
 
-        eixo = 280
+        eixo = 275
         linhas = 3
         cnv = canvas.Canvas(f"{hg.c_pdf}\\{mnumero_pedido}.pdf", pagesize=A4)
         cnv.setFont("Courier", 12)
-        cnv.drawString(
-            mm2p(5), mm2p(eixo), str(hg.m_set[128].strip())
-        )  # string EMPRESA
-        cnv.setFont("Courier", 11)
-        cnv.rect(13, 790, 557, 0)  # linha
+        cnv.drawImage("c:\\hti\\python\\siscom\\imagem\\001.jpg", mm2p(5), mm2p(eixo), width=mm2p(15), height=mm2p(15))
+
+        cnv.setFont("Helvetica", 12)
+        cnv.drawString(mm2p(25), mm2p(eixo+12), str(hg.m_set[129].strip()))  # string EMPRESA
+        cnv.setFont("Courier", 10)
+        cnv.drawString(mm2p(25), mm2p(eixo+9), str(hg.m_set[128].strip()))  # string EMPRESA
+        cnv.drawString(mm2p(25), mm2p(eixo+6), f"End.: {str(hg.m_set[131].strip())} "
+                                               f"No.: {str(hg.m_set[159].strip())} "
+                                               f"Complemento: {str(hg.m_set[160].strip())}")  # string EMPRESA
+        cnv.drawString(mm2p(25), mm2p(eixo+3), f"Bairro: {str(hg.m_set[132].strip())} "
+                                               f"Cidade: {str(hg.m_set[133].strip())} "
+                                               f"UF: {str(hg.m_set[18].strip())} CEP: {str(hg.m_set[134].strip())} "
+                                               f"FONE: {str(hg.m_set[135].strip())}")  # string EMPRESA
+
+        cnv.setFont("Helvetica", 11)
+        cnv.rect(13, 776, 557, 0)  # linha
         eixo -= 5
         if ali == "orcam":
             cnv.drawString(mm2p(5), mm2p(eixo), f"{hg.m_set[23]}: {mnumero_pedido}")
@@ -82,42 +93,13 @@ def ped_formulario(mnumero_pedido, ali, mvia):
         if not ver_serie() == "141237" and not ver_serie() == "141473":
             eixo -= linhas
             cnv.drawString(mm2p(5), mm2p(eixo), "SEM VALOR FISCAL")
-        if cons_ped[0][7] == "*" and not ver_serie() == "141599":
-            eixo -= linhas
-            cnv.drawString(mm2p(5), mm2p(eixo), "PAGO")
-
-        if mvia == "2a.via":
-            if cons_ped[0][7] == "C":
-                eixo -= linhas
-                cnv.drawString(
-                    mm2p(5), mm2p(eixo), f"CANCELADO - MOTIVO: {cons_ped[0][8]}"
-                )
-                eixo -= linhas
-                cnv.setFont("Courier", 9)
-                cnv.drawString(mm2p(5), mm2p(eixo), f"Emissao da 2a.via: {mdatasis}")
-                mhora = datetime.now().strftime("%H:%M:%S")
-                cnv.drawString(mm2p(70), mm2p(eixo), f"Horas: {mhora}")
-                cnv.drawString(
-                    mm2p(80), mm2p(eixo), f"Operador: {hg.geral_cod_usuario}"
-                )
-            elif cons_ped[0][7] == " " or cons_ped[0][7] == "":
-                eixo -= linhas
-                cnv.drawString(mm2p(5), mm2p(eixo), "ABERTO")
-                cnv.setFont("Courier", 9)
-
-                cnv.drawString(mm2p(25), mm2p(eixo), f"Emissao da 2a.via: {mdatasis}")
-                mhora = datetime.now().strftime("%H:%M:%S")
-                cnv.drawString(mm2p(70), mm2p(eixo), f"Horas: {mhora}")
-                cnv.drawString(
-                    mm2p(80), mm2p(eixo), f"Operador: {hg.geral_cod_usuario}"
-                )
 
         cnv.setFont("Courier", 9)
-        eixo -= linhas
-        # cnv.drawString(mm2p(5), mm2p(eixo), f"Emissao: {cons_ped[0][9]}")
-        # cnv.drawString(mm2p(70), mm2p(eixo), f"Horas: {cons_ped[0][10]}")
-        cnv.drawString(mm2p(5), mm2p(eixo), f"Ope: {cons_ped[0][11]}")
-        cnv.drawString(mm2p(20), mm2p(eixo), f"Cod.: {cons_ped[0][12]}")
+        cnv.drawString(mm2p(130), mm2p(eixo), f"{mvia}  T:{cons_ped[0][16]}")
+        cnv.drawString(mm2p(160), mm2p(eixo), f"Ope: {cons_ped[0][11]}")
+        cnv.drawString(mm2p(180), mm2p(eixo), f"Cod.: {cons_ped[0][12]}")
+
+        cnv.setFont("Courier", 9)
 
         if hg.m_set[80] == "S":
             cnv.drawString(mm2p(100), mm2p(eixo), f" {cons_ped[0][13]}")
@@ -130,7 +112,6 @@ def ped_formulario(mnumero_pedido, ali, mvia):
         if cons_ped[0][15] == "":
             cnv.drawString(mm2p(130), mm2p(eixo), f"Data APP: {cons_ped[0][15]}")
 
-        cnv.drawString(mm2p(130), mm2p(eixo), f"{mvia}  T:{cons_ped[0][16]}")
         # @ PROW(),00 SAY PADL(mvia+'  T:'+ALLTRIM(imppedido[1,3])+IF(mquantd > 1,' C-'+STRZERO(i,2),''),132)
 
         cnv.setFont("Courier", 11)
@@ -167,6 +148,38 @@ def ped_formulario(mnumero_pedido, ali, mvia):
             eixo -= linhas
             cnv.drawString(mm2p(5), mm2p(eixo), f"      {cons_cli[17]}")
 
+        cnv.setFont("Helvetica", 9)
+
+        if cons_ped[0][7] == "*" and not ver_serie() == "141599":
+            eixo -= linhas
+            cnv.drawString(mm2p(5), mm2p(eixo), "PAGO")
+
+        if mvia == "2":
+            if cons_ped[0][7] == "C":
+                eixo -= linhas
+                cnv.drawString(
+                    mm2p(5), mm2p(eixo), f"CANCELADO - MOTIVO: {cons_ped[0][8]}"
+                )
+                eixo -= linhas
+                cnv.setFont("Courier", 9)
+                cnv.drawString(mm2p(5), mm2p(eixo), f"Emissao da 2a.via: {mdatasis}")
+                mhora = datetime.now().strftime("%H:%M:%S")
+                cnv.drawString(mm2p(70), mm2p(eixo), f"Horas: {mhora}")
+                cnv.drawString(
+                    mm2p(80), mm2p(eixo), f"Operador: {hg.geral_cod_usuario}"
+                )
+            elif cons_ped[0][7] == " " or cons_ped[0][7] == "":
+                eixo -= linhas
+                cnv.drawString(mm2p(5), mm2p(eixo), "ABERTO")
+                cnv.setFont("Courier", 9)
+
+                cnv.drawString(mm2p(25), mm2p(eixo), f"Emissao da 2a.via: {mdatasis}")
+                mhora = datetime.now().strftime("%H:%M:%S")
+                cnv.drawString(mm2p(70), mm2p(eixo), f"Horas: {mhora}")
+                cnv.drawString(
+                    mm2p(80), mm2p(eixo), f"Operador: {hg.geral_cod_usuario}"
+                )
+        cnv.setFont("Courier", 9)
         cnv.rect(13, 725, 557, 0)  # linha
         cnv.drawString(
             mm2p(5),

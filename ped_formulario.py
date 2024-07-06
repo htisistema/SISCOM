@@ -29,12 +29,20 @@ def ped_formulario(mnumero_pedido, ali, mvia):
     data_obj = datetime.strptime(hg.mdata_sis, "%Y-%m-%d")
     mdatasis = data_obj.strftime("%d/%m/%Y")
 
+    if ali == "orcam":
+        arquivo_db = "sacorcam"
+    else:
+        arquivo_db = "sacped_s"
     # data = QDate.fromString(str(hg.mdata_sis), "yyyy-MM-dd")
     # mdatasis = QDateTime(data, QTime(0, 0))
-
+    #                0         1      2        3         4        5         6       7       8       9       10
+    #        11          12          13      14     15       16       17      18    19     20      21        22
+    #        23         24           25         26          27         28        29
     hg.conexao_cursor.execute(
         f"SELECT pcod_merc, pmerc, plocal, punidade, pquantd, pvlr_fat, pcod_cli, ppag, pmotivo, pdat_ped, phora, "
-        f"PCOD_OPER, PCOD_VEND, PVENDEDOR, POS, DATA_APP, PTERMINA FROM sacped_s "
+        f"PCOD_OPER, PCOD_VEND, PVENDEDOR, POS, DATA_APP, PTERMINA, POBS1, POBS2, POBS3, POBS4, PQUANTD, PDESC_MERC, "
+        f"PPROMOCAO, PPRE_VENDA, PD_ENTREGA, PCOND_VEZE, PCOND_INTE, PVLR_ENT, PPRAZO "
+        f"FROM {arquivo_db} "
         f"WHERE pnum_ped = {mnumero_pedido}"
     )
     cons_ped = hg.conexao_cursor.fetchall()
@@ -63,22 +71,44 @@ def ped_formulario(mnumero_pedido, ali, mvia):
         linhas = 3
         cnv = canvas.Canvas(f"{hg.c_pdf}\\{mnumero_pedido}.pdf", pagesize=A4)
         cnv.setFont("Courier", 12)
-        cnv.drawImage("c:\\hti\\python\\siscom\\imagem\\001.jpg", mm2p(5), mm2p(eixo), width=mm2p(15), height=mm2p(15))
+        cnv.drawImage(
+            "c:\\hti\\python\\siscom\\imagem\\001.jpg",
+            mm2p(5),
+            mm2p(eixo),
+            width=mm2p(15),
+            height=mm2p(15),
+        )
 
         cnv.setFont("Helvetica", 12)
-        cnv.drawString(mm2p(25), mm2p(eixo+12), str(hg.m_set[129].strip()))  # string EMPRESA
+        cnv.drawString(
+            mm2p(25), mm2p(eixo + 12), str(hg.m_set[129].strip())
+        )  # string EMPRESA
         cnv.setFont("Courier", 10)
-        cnv.drawString(mm2p(25), mm2p(eixo+9), str(hg.m_set[128].strip()))  # string EMPRESA
-        cnv.drawString(mm2p(25), mm2p(eixo+6), f"End.: {str(hg.m_set[131].strip())} "
-                                               f"No.: {str(hg.m_set[159].strip())} "
-                                               f"Complemento: {str(hg.m_set[160].strip())}")  # string EMPRESA
-        cnv.drawString(mm2p(25), mm2p(eixo+3), f"Bairro: {str(hg.m_set[132].strip())} "
-                                               f"Cidade: {str(hg.m_set[133].strip())} "
-                                               f"UF: {str(hg.m_set[18].strip())} CEP: {str(hg.m_set[134].strip())} "
-                                               f"FONE: {str(hg.m_set[135].strip())}")  # string EMPRESA
-
+        cnv.drawString(
+            mm2p(25), mm2p(eixo + 9), str(hg.m_set[128].strip())
+        )  # string EMPRESA
+        cnv.drawString(
+            mm2p(25),
+            mm2p(eixo + 6),
+            f"End.: {str(hg.m_set[131].strip())} "
+            f"No.: {str(hg.m_set[159].strip())} "
+            f"Complemento: {str(hg.m_set[160].strip())}",
+        )  # string EMPRESA
+        cnv.drawString(
+            mm2p(25),
+            mm2p(eixo + 3),
+            f"Bairro: {str(hg.m_set[132].strip())} "
+            f"Cidade: {str(hg.m_set[133].strip())} "
+            f"UF: {str(hg.m_set[18].strip())} CEP: {str(hg.m_set[134].strip())} ",
+        )  # string EMPRESA
         cnv.setFont("Helvetica", 11)
-        cnv.rect(13, 776, 557, 0)  # linha
+        cnv.drawString(
+            mm2p(25),
+            mm2p(eixo - 1), f"FONE: {str(hg.m_set[135].strip())}",)  # string EMPRESA
+
+        eixo -= linhas
+        cnv.line(mm2p(5), mm2p(eixo), mm2p(201), mm2p(eixo))
+        # cnv.rect(13, 776, 557, 0)  # linha
         eixo -= 5
         if ali == "orcam":
             cnv.drawString(mm2p(5), mm2p(eixo), f"{hg.m_set[23]}: {mnumero_pedido}")
@@ -180,17 +210,31 @@ def ped_formulario(mnumero_pedido, ali, mvia):
                     mm2p(80), mm2p(eixo), f"Operador: {hg.geral_cod_usuario}"
                 )
         cnv.setFont("Courier", 9)
-        cnv.rect(13, 725, 557, 0)  # linha
+        eixo -= linhas
+        cnv.line(mm2p(5), mm2p(eixo), mm2p(201), mm2p(eixo))
+        # cnv.rect(13, 710, 557, 0)  # linha
+        eixo -= 5
         cnv.drawString(
             mm2p(5),
-            mm2p(252),
+            mm2p(eixo),
             "Codigo Descricao                              Local UN     Quantd.     Vlr. Venda      Vlr.Total",
         )
-        cnv.rect(13, 710, 557, 0)  # linha
+        eixo -= linhas
+        cnv.line(mm2p(5), mm2p(eixo), mm2p(201), mm2p(eixo))
+
+        # cnv.rect(13, 695, 557, 0)  # linha
         # cnv.setFont("Courier", 10)
-        eixo = 247
+        eixo -= 5
         i = 0
         total_valor = 0
+        mtot_volume = 0
+        mtot_desc = 0
+        mdesconto = 0
+        mt_pedido = 0
+        mtot_quant = 0
+        mtot_prazo = 0
+        mprazo_aux = 0
+
         for i in range(len(cons_ped)):
             # mqtd_p = f"{cons_ped[i][4]:,.2f}".replace(",", " ").replace(".", ",")
             mqtd_p = (
@@ -211,14 +255,283 @@ def ped_formulario(mnumero_pedido, ali, mvia):
                 f"{cons_ped[i][0]} {cons_ped[i][1]} {cons_ped[i][2]} {cons_ped[i][3]} {mqtd_p} X {mvalor} = "
                 f"{mvalor_total}",
             )
+            mtot_volume += cons_ped[i][22]
+            # print(f"hti {hg.m_set[35]}")
+            if hg.m_set[35] == "S":
+                if cons_ped[i][24] > 0:
+                    mdesconto = mperc = 0
+                elif cons_ped[i][25] > cons_ped[i][6]:
+                    mdesconto = (cons_ped[i][6] * cons_ped[i][6]) - (
+                        cons_ped[i][6] * cons_ped[i][25]
+                    )
+                    mperc = (
+                        (
+                            (cons_ped[i][6] * cons_ped[i][25])
+                            - (cons_ped[i][6] * cons_ped[i][6])
+                        )
+                        / (cons_ped[i][6] * cons_ped[i][25])
+                    ) * 100
+                # else:
+                #    mperc = imppedido[cont,39]
+            else:
+                mdesconto = 0
+
+            mtot_desc = mtot_desc + mdesconto
+            mt_pedido += (cons_ped[i][4] * cons_ped[i][5]) - mdesconto
+            mtot_quant += cons_ped[i][4]
+            if cons_ped[i][29] > 0:
+                mtot_prazo += mt_pedido
+                mprazo_aux = cons_ped[i][29]
+
             eixo -= 4
 
-        total_valor = (
-            "{:12,.2f}".format(total_valor).replace(".", ",").replace(",", ".")
+        cnv.setFont("Courier", 10)
+        eixo = 170
+        cnv.drawString(
+            mm2p(5),
+            mm2p(eixo),
+            f"OBS.: {cons_ped[i][17].rstrip()} {cons_ped[i][18].rstrip()}",
         )
-        cnv.setFont("Courier", 12)
-        cnv.rect(13, 100, 250, 0)  # linha
-        cnv.drawString(mm2p(5), mm2p(26), f"Total Geral R$...: {total_valor}")
+
+        eixo -= linhas
+        cnv.drawString(
+            mm2p(5),
+            mm2p(eixo),
+            f"     {cons_ped[i][19].rstrip()} {cons_ped[i][20].rstrip()}",
+        )
+        # cnv.rect(13, 470, 557, 0)  # linha
+        eixo -= linhas
+        cnv.line(mm2p(5), mm2p(eixo), mm2p(201), mm2p(eixo))
+
+        # if hg.m_set[1][109] == 'S':
+        #    eixo -= linhas
+        #    cnv.drawString(
+        #        mm2p(5),
+        #        mm2p(eixo),
+        #        f"Doc.Vencidos R$: {mlim_venc} Doc.A vencer R$: {mlim_avenc} Sld.Devedor R$: {mtot_limite}")
+        if hg.m_set[108] == "S":
+            mtot_desc = cons_ped[i][23] * -1
+
+        eixo -= 5
+        mtotal_pedido = mt_pedido + mtot_desc
+        mt_pedido = "{:10,.2f}".format(mt_pedido).replace(".", ",").replace(",", ".")
+        mtot_desc = "{:10,.2f}".format(mtot_desc).replace(".", ",").replace(",", ".")
+        mtotal_pedido = (
+            "{:10,.2f}".format(mtotal_pedido).replace(".", ",").replace(",", ".")
+        )
+
+        cnv.drawString(
+            mm2p(5),
+            mm2p(eixo),
+            f"Volumes: {mtot_volume} Qtd.Itens: {len(cons_ped)} Sub-total: {mt_pedido} Desconto: {mtot_desc}",
+        )
+        cnv.setFont("Helvetica", 11)
+        cnv.drawString(mm2p(158), mm2p(eixo), f"Total Nota R$: {mtotal_pedido}")
+
+        cnv.setFont("Courier", 9)
+
+        if cons_ped[0][25] is not None:
+            eixo -= linhas
+            cnv.drawString(
+                mm2p(5), mm2p(eixo), f"PREVISAO DE ENTREGA: {cons_ped[0][25]}"
+            )  # - {ver_dia(imppedido[1,101])}",)
+
+            # if len(mtipo_pag) > 0
+        if float(cons_ped[0][26][0:2]) == 0:
+            print(cons_ped[0][26][0:2], cons_ped[0][27][0:2])
+            eixo -= linhas
+            if cons_ped[0][27][0:2] == "CH":
+                # eixo -= linhas
+                cnv.drawString(
+                    mm2p(5),
+                    mm2p(eixo),
+                    f"Pagamento AVISTA - Modo de Pagamento: CHEQUE",
+                )
+
+            elif cons_ped[0][27][0:2] == "DN":
+                # eixo -= linhas
+                cnv.drawString(
+                    mm2p(5),
+                    mm2p(eixo),
+                    f"Pagamento AVISTA - Modo de Pagamento: DINHEIRO",
+                )
+            elif cons_ped[0][27][0:2] == "PX":
+                # eixo -= linhas
+                cnv.drawString(
+                    mm2p(5),
+                    mm2p(eixo),
+                    f"Pagamento AVISTA - Modo de Pagamento: PIX",
+                )
+
+            if cons_ped[0][28] > 0:
+                # eixo -= linhas
+                cnv.drawString(
+                    mm2p(120),
+                    mm2p(eixo),
+                    f"Valor da Entrada R$: {cons_ped[0][27]}",
+                )
+        else:
+            if (
+                cons_ped[0][27][0:2] == "CH"
+                or cons_ped[0][27][0:2] == "DU"
+                or cons_ped[0][27][0:2] == "CT"
+            ):
+                if cons_ped[0][27][0:2] == "CH":
+                    eixo -= linhas
+                    cnv.drawString(
+                        mm2p(5),
+                        mm2p(eixo),
+                        f"CHEQUES",
+                    )
+                elif cons_ped[0][27][0:2] == "DU":
+                    eixo -= linhas
+                    cnv.drawString(
+                        mm2p(5),
+                        mm2p(eixo),
+                        f"DUPLICATAS",
+                    )
+                else:
+                    eixo -= linhas
+                    cnv.drawString(
+                        mm2p(5),
+                        mm2p(eixo),
+                        f"CARTAO",
+                    )
+
+                # cnv.drawString(mm2p(5), mm2p(eixo), f" APRAZO: {cons_ped[0][26][1][1]} + {cons_ped[0][26][2][2]} p/ {m_dia[1]} + {m_dia[2]} + {m_dia[3]} + {m_dia[4]} + {m_dia[5]} + {m_dia[6]} + {m_dia[6]} + {m_dia[7]}
+                # IF(! EMPTY(m_dia[8]),' + '+STRZERO(m_dia[8],3),'')+IF(! EMPTY(m_dia[9]),' + '+STRZERO(m_dia[9],3),'')+IF(! EMPTY(m_dia[10]),' + '+STRZERO(m_dia[10],3),'')+IF(! EMPTY(m_dia[11]),' + '+STRZERO(m_dia[11],3),'')+IF(! EMPTY(m_dia[12]),' + '+STRZERO(m_dia[12],3),'')+IF(! EMPTY(m_dia[13]),' + '+STRZERO(m_dia[13],3),'')+IF(! EMPTY(m_dia[14]),' + '+STRZERO(m_dia[14],3),'')+IF(! EMPTY(m_dia[15]),' + '+STRZERO(m_dia[15],3),'')+' Dias'",)
+                #
+                # @ PROW(),PCOL()+1 SAY ' APRAZO: '+SUBSTR(imppedido[1,43],1,1)+' + '+SUBSTR(imppedido[1,43],2,2)+' p/ '+IF(! EMPTY(m_dia[1]),STRZERO(m_dia[1],3),'')+IF(! EMPTY(m_dia[2]),' + '+STRZERO(m_dia[2],3),'')+IF(! EMPTY(m_dia[3]),' + '+STRZERO(m_dia[3],3),'')+IF(! EMPTY(m_dia[4]),' + '+STRZERO(m_dia[4],3),'')+IF(! EMPTY(m_dia[5]),' + '+STRZERO(m_dia[5],3),'')+IF(! EMPTY(m_dia[6]),' + '+STRZERO(m_dia[6],3),'')+IF(! EMPTY(m_dia[7]),' + '+STRZERO(m_dia[7],3),'')+;
+                # IF(! EMPTY(m_dia[8]),' + '+STRZERO(m_dia[8],3),'')+IF(! EMPTY(m_dia[9]),' + '+STRZERO(m_dia[9],3),'')+IF(! EMPTY(m_dia[10]),' + '+STRZERO(m_dia[10],3),'')+IF(! EMPTY(m_dia[11]),' + '+STRZERO(m_dia[11],3),'')+IF(! EMPTY(m_dia[12]),' + '+STRZERO(m_dia[12],3),'')+IF(! EMPTY(m_dia[13]),' + '+STRZERO(m_dia[13],3),'')+IF(! EMPTY(m_dia[14]),' + '+STRZERO(m_dia[14],3),'')+IF(! EMPTY(m_dia[15]),' + '+STRZERO(m_dia[15],3),'')+' Dias'
+
+                if cons_ped[0][28] > 0:
+                    eixo -= linhas
+                    cnv.drawString(
+                        mm2p(5),
+                        mm2p(eixo),
+                        f"Valor da Entrada R$: {cons_ped[0][27]}",
+                    )
+                if mtot_prazo > 0:
+                    eixo -= linhas
+                    cnv.drawString(
+                        mm2p(5),
+                        mm2p(eixo),
+                        f"Venc. : {mdataemi+mprazo_aux} - R$: {mtot_prazo}",
+                    )
+
+                    #                     if float(cons_ped[0][26][2]) >= 2:
+                    #                         mc_dup = f = 0
+                    #                         for mc_dup = 1 TO VAL(SUBSTR(imppedido[1,43],2,2))
+                    #                             IF f = 0
+                    #                                 DEVPOS(PROW()+1,00);DEVOUT('')
+                    #                             ENDIF
+                    #                             DEVPOS(PROW(),PCOL()+1);DEVOUT('Venc.'+ALLTRIM(STR(mc_dup))+':'+DTOC(mdata+m_dia[mc_dup]))
+                    #                             DEVPOS(PROW(),PCOL()+1);DEVOUT('- R$:'+TRANSFORM((((mcust_real+mtot_ipi)-mvlr_ent-mtot_prazo)/VAL(SUBSTR(imppedido[1,43],2,2))),'999,999.99'))
+                    #                             f ++
+                    #                             IF f = 4
+                    #                                 f = 0
+                    #                             ENDIF
+                    #                         NEXT
+                    #                     ELSE
+                    #                         IF mcust_real-mvlr_ent-mtot_prazo > 0
+                    #                             @ PROW()+1,00 SAY 'Venc.1:'+DTOC(mdata+m_dia[1])
+                    #                             DEVPOS(PROW(),PCOL()+1);DEVOUT('- R$:'+TRANSFORM((mcust_real+mtot_ipi)-mvlr_ent-mtot_prazo,'999,999.99'))
+                    #                         ENDIF
+                    #                     ENDIF
+                    #                 ELSEIF SUBSTR(cons_ped[0][26],1,2) = 'FI'
+                    #                     cons_finan :={}
+                    #                     sr_getconnection():exec("SELECT * FROM sacfin WHERE cod_fin = "+sr_cdbvalue(STRZERO(mcod_fin,3)),,.t.,@cons_finan)
+                    #                     sr_getconnection():exec('COMMIT',,.f.)
+                    #                     @ PROW()+1,00 SAY 'Pag. APRAZO'
+                    #                     IF LEN(cons_finan) = 0
+                    #                         DEVPOS(PROW(),PCOL()+2);DEVOUT('Modo: FINANCIAMENTO - '+STRZERO(mcod_fin,3)+'-     - Condicao: ')
+                    #                     ELSE
+                    #                         DEVPOS(PROW(),PCOL()+2);DEVOUT('Modo: FINANCIAMENTO - '+STRZERO(mcod_fin,3)+'-'+cons_finan[1,2]+' - Condicao: ')
+                    #                     ENDIF
+                    #                     DEVPOS(PROW(),PCOL());DEVOUTPICT(mtipo_fin,'@R 9+99')
+                    #                     IF mvlr_ent > 0
+                    #                         DEVPOS(PROW(),PCOL()+1);DEVOUT('- Entrada R$:')
+                    #                         DEVPOS(PROW(),PCOL()+1);DEVOUTPICT(mvlr_ent,'99,999.99')
+                    #                     ENDIF
+                    #                     DEVPOS(PROW(),PCOL()+1);DEVOUT('- Prestacao R$:')
+                    #                     DEVPOS(PROW(),PCOL()+1);DEVOUTPICT(mvalor_pres,'99,999.99')
+                    #                 ENDIF
+                    #             ENDIF
+                    #         ELSE
+                    #             cons_caixa := {}
+                    #             sr_getconnection():exec("SELECT * FROM saccaixa WHERE nota = "+sr_cdbvalue('PD'+STRZERO(mnum_ped,6)),,.t.,@cons_caixa)
+                    #             sr_getconnection():exec('COMMIT',,.f.)
+                    #             i := 0
+                    #             FOR i = 1 TO LEN(cons_caixa)
+                    #                 IF cons_caixa[i,2] = 'DN'
+                    #                     DEVPOS(PROW()+1,00);DEVOUT('Dinheiro R$..: '+TRANSFORM(cons_caixa[i,10],'9,999,999.99'))
+                    #                 ELSEIF cons_caixa[i,2] = 'CR'
+                    #                     DEVPOS(PROW()+1,00);DEVOUT('Credito R$...: '+TRANSFORM(cons_caixa[i,10],'9,999,999.99'))
+                    #                 ELSEIF cons_caixa[i,2] = 'CH'
+                    #                     DEVPOS(PROW()+1,00);DEVOUT('Cheque R$....: '+TRANSFORM(cons_caixa[i,10],'9,999,999.99')+' Bco: '+cons_caixa[i,6]+' No.: '+cons_caixa[i,8]+' Venc.: '+DTOC(cons_caixa[i,9]))
+                    #                 ELSEIF cons_caixa[i,2] = 'DU'
+                    #                     DEVPOS(PROW()+1,00);DEVOUT('Duplicata R$.: '+TRANSFORM(cons_caixa[i,10],'9,999,999.99')+' No.: '+cons_caixa[i,8]+IF(cons_caixa[i,20] = '*',' Pag..: ',' Venc.: ')+DTOC(cons_caixa[i,9]))
+                    #                 ELSEIF cons_caixa[i,2] = 'FI'
+                    #                     DEVPOS(PROW()+1,00);DEVOUT('Financeira R$: '+TRANSFORM(cons_caixa[i,10],'9,999,999.99')+' No.: '+cons_caixa[i,8]+' Venc.: '+DTOC(cons_caixa[i,9]))
+                    #                 ELSEIF cons_caixa[i,2] = 'CT'
+                    #                     DEVPOS(PROW()+1,00);DEVOUT('Cartao R$....: '+TRANSFORM(cons_caixa[i,10],'9,999,999.99')+' Cod.: '+cons_caixa[i,7]+' Doc.: '+cons_caixa[i,8]+' Venc.: '+DTOC(cons_caixa[i,9]))
+                    #                 ELSEIF cons_caixa[i,2] = 'CA'
+                    #                     DEVPOS(PROW()+1,00);DEVOUT('PEDIDO CANCELADO PELO OPERADOR COD.: '+cons_caixa[i,17])
+                    #                 ELSEIF cons_caixa[i,2] = 'ES'
+                    #                     DEVPOS(PROW()+1,00);DEVOUT(cons_caixa[i,13]+'-'+cons_caixa[i,14])
+                    #                 ELSE
+                    #                     LOOP
+                    #                 ENDIF
+                    #             NEXT
+                    #         ENDIF
+                    # @ PROW()+1,00 SAY mtraco
+                    # imprt(mtipo_imp,'N')
+        # cnv.rect(13, 445, 557, 0)  # linha
+        eixo -= linhas
+        cnv.line(mm2p(5), mm2p(eixo), mm2p(201), mm2p(eixo))
+
+        if len(hg.m_set[24].rstrip()) > 0:
+            eixo -= 3
+            cnv.drawString(mm2p(5), mm2p(eixo), f"{hg.m_set[24].rstrip()}")
+
+        if len(hg.m_set[25].rstrip()) > 0:
+            eixo -= linhas
+            cnv.drawString(
+                mm2p(5),
+                mm2p(eixo),
+                f"{hg.m_set[25].rstrip()}",
+            )
+        if len(hg.m_set[26].rstrip()) > 0:
+            eixo -= linhas
+            cnv.drawString(
+                mm2p(5),
+                mm2p(eixo),
+                f"{hg.m_set[26].rstrip()}",
+            )
+        if len(hg.m_set[27].rstrip()) > 0:
+            eixo -= linhas
+            cnv.drawString(
+                mm2p(5),
+                mm2p(eixo),
+                f"{hg.m_set[27].rstrip()}",
+            )
+
+        # @ PROW()+1,00 SAY mtraco
+        eixo -= linhas
+        cnv.line(mm2p(5), mm2p(eixo), mm2p(201), mm2p(eixo))
+
+        # cnv.rect(13, 430, 557, 0)  # linha
+        if hg.m_set[21] == "S":
+            eixo -= 3
+            cnv.drawString(
+                mm2p(140),
+                mm2p(eixo),
+                f"HTI Sistemas - f.:(81) {hg.FONE_HTI}",
+            )
+
+        # cnv.line(mm2p(5), mm2p(eixo), mm2p(201), mm2p(eixo))
+        # cnv.line(150, 0, 160, 180)
+
         cnv.save()
         # ic()
         hg.arquivo_impressao = f"{mnumero_pedido}.PDF"
@@ -232,6 +545,6 @@ def ped_formulario(mnumero_pedido, ali, mvia):
 
 if __name__ == "__main__":
     conexao_banco()
-    mnum_ped = "411560"
+    mnum_ped = "411550"
     ped_formulario(mnum_ped, "PED_S", "")
     hg.conexao_bd.close()

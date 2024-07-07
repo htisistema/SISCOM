@@ -1,26 +1,13 @@
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import mm
+from datetime import datetime, timedelta
 
+# Define a data de emissão
+mdataemi = datetime.strptime("26/10/2023", "%d/%m/%Y")
 
-def mm2p(milimetros):
-    return milimetros * mm
+# Define o prazo em dias
+mprazo = 20
 
-# Caminho absoluto para a imagem
-imagem_caminho = r"C:\HTI\PYTHON\SISCOM\imagem\001.jpg"
+# Acrescenta o prazo à data de emissão
+data_com_prazo = mdataemi + timedelta(days=mprazo)
 
-# Cria o canvas
-c = canvas.Canvas("example.pdf")
-
-# Desenha uma string
-c.drawString(mm2p(5), mm2p(280), "Exemplo de Texto")
-
-# Desenha uma imagem
-try:
-    # Coordenadas (x, y) e dimensões (largura, altura)
-    c.drawImage(imagem_caminho, mm2p(5), mm2p(230), width=mm2p(15), height=mm2p(15))
-except IOError:
-    print(f"Erro ao abrir o arquivo de imagem: {imagem_caminho}")
-
-# Fecha o canvas
-c.showPage()
-c.save()
+# Exibe a nova data
+print(data_com_prazo.strftime("%d/%m/%Y"))

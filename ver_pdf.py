@@ -120,7 +120,7 @@ def print_pdf(pdf_file, zoom_factor):
             painter.end()
 
 
-def main(file_name):
+def ver_relatorio(file_name):
     global mcaminho_pdf
     mcaminho_pdf = file_name
 

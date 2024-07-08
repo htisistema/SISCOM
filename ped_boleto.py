@@ -25,7 +25,7 @@ def mm2p(milimitros):
     return milimitros / 0.352777
 
 
-def ped_formulario(mnumero_pedido, ali, mvia):
+def ped_boleto(mnumero_pedido, ali, mvia):
     data_obj = datetime.strptime(hg.mdata_sis, "%Y-%m-%d")
     mdatasis = data_obj.strftime("%d/%m/%Y")
 
@@ -83,7 +83,6 @@ def ped_formulario(mnumero_pedido, ali, mvia):
         cnv.drawString(
             mm2p(25), mm2p(eixo + 12), str(hg.m_set[129].strip())
         )  # string EMPRESA
-
         cnv.setFont("Courier", 10)
         cnv.drawString(
             mm2p(25), mm2p(eixo + 9), str(hg.m_set[128].strip())
@@ -596,16 +595,6 @@ def ped_formulario(mnumero_pedido, ali, mvia):
                 f"HTI Sistemas - f.:(81) {hg.FONE_HTI}",
             )
 
-        # cnv.line(mm2p(5), mm2p(eixo), mm2p(201), mm2p(eixo))
-        # cnv.line(150, 0, 160, 180)
-        cnv.showPage()
-        eixo = 275
-        cnv.drawString(
-            mm2p(5),
-            mm2p(eixo),
-            f"HTI Sistemas - f.:(81) {hg.FONE_HTI}",
-        )
-
         cnv.save()
         # ic()
         hg.arquivo_impressao = f"{mnumero_pedido}.PDF"
@@ -620,5 +609,5 @@ def ped_formulario(mnumero_pedido, ali, mvia):
 if __name__ == "__main__":
     conexao_banco()
     mnum_ped = "397749"  # "411550"
-    ped_formulario(mnum_ped, "PED_S", "")
+    ped_boleto(mnum_ped, "PED_S", "")
     hg.conexao_bd.close()

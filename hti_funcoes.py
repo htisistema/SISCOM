@@ -11,7 +11,7 @@ def ver_serie():
 def conexao_banco():
     # Conecte-se ao banco de dados
     # print('conexao')
-    print(f"{hg.host} {hg.port_db}")
+    # print(f"{hg.host} {hg.port_db}")
     # fdb.load_api("C:\\HTI\\PYTHON\\SISCOM\\fbclient.dll")
     hg.conexao_bd = fdb.connect(
         dsn=hg.host,

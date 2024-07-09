@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QMessageBox, QApplication
 
 # from PyQt6.QtCore import QDate, QDateTime, QTime
 from reportlab.pdfgen import canvas
+from reportlab.lib.units import mm
 from reportlab.lib.pagesizes import A4, A0
 from datetime import datetime, timedelta
 import hti_global as hg
@@ -71,12 +72,14 @@ def ped_boleto(mnumero_pedido, ali, mvia):
 
         eixo = 275
         linhas = 3
-        cnv = canvas.Canvas(f"{hg.c_pdf}\\{mnumero_pedido}.pdf", pagesize=A4)
-        cnv.setFont("Courier", 12)
+        width = 80 * mm
+        height = 297 * mm
+        pagesize = (width, height)
+        cnv = canvas.Canvas(f"{hg.c_pdf}\\{mnumero_pedido}.pdf", pagesize=pagesize)
         if os.path.exists(f"{hg.c_imagem}\\001.jpg"):
             cnv.drawImage(
                 f"{hg.c_imagem}\\001.jpg",
-                mm2p(5),
+                mm2p(1),
                 mm2p(eixo),
                 width=mm2p(15),
                 height=mm2p(15),
@@ -84,41 +87,41 @@ def ped_boleto(mnumero_pedido, ali, mvia):
 
             cnv.setFont("Helvetica", 12)
             cnv.drawString(
-                mm2p(25), mm2p(eixo + 10), str(hg.m_set[129].strip())
+                mm2p(20), mm2p(eixo + 10), str(hg.m_set[129].strip())
             )  # string EMPRESA
-            cnv.setFont("Courier", 9)
+            cnv.setFont("Courier", 8)
             cnv.drawString(
-                mm2p(25),
+                mm2p(20),
                 mm2p(eixo + 6),
                 f"{str(hg.m_set[131].strip())} " f", {str(hg.m_set[159].strip())} ",
             )
 
             cnv.drawString(
-                mm2p(25),
+                mm2p(20),
                 mm2p(eixo + 3),
                 f"{str(hg.m_set[133].rstrip())} - " f"{str(hg.m_set[18].strip())}",
             )  # string EMPRESA
-            cnv.setFont("Helvetica", 11)
+            cnv.setFont("Helvetica", 9)
             cnv.drawString(
-                mm2p(25),
+                mm2p(20),
                 mm2p(eixo - 1),
                 f"FONE: {str(hg.m_set[135].strip())}",
             )  # string EMPRESA
         else:
             cnv.setFont("Helvetica", 12)
             cnv.drawString(
-                mm2p(5), mm2p(eixo + 12), str(hg.m_set[129].strip())
+                mm2p(1), mm2p(eixo + 12), str(hg.m_set[129].strip())
             )  # string EMPRESA
             cnv.setFont("Courier", 10)
             cnv.drawString(
-                mm2p(5), mm2p(eixo + 9), str(hg.m_set[128].strip())
+                mm2p(1), mm2p(eixo + 9), str(hg.m_set[128].strip())
             )  # string EMPRESA
             cnv.drawString(
-                mm2p(5),
+                mm2p(1),
                 mm2p(eixo + 3),
                 f"{str(hg.m_set[133].strip())} - " f"{str(hg.m_set[18].strip())}",
             )  # string EMPRESA
-            cnv.setFont("Helvetica", 11)
+            cnv.setFont("Helvetica", 8)
             cnv.drawString(
                 mm2p(25),
                 mm2p(eixo - 1),
@@ -126,25 +129,26 @@ def ped_boleto(mnumero_pedido, ali, mvia):
             )  # string EMPRESA
 
         eixo -= linhas
-        cnv.line(mm2p(5), mm2p(eixo), mm2p(100), mm2p(eixo))
+        cnv.line(mm2p(1), mm2p(eixo), mm2p(80), mm2p(eixo))
         # cnv.setFont("Courier", 10)
-        cnv.setFont("Helvetica", 12)
-        eixo -= 5
+        cnv.setFont("Helvetica", 9)
+        eixo -= 4
         if ali == "orcam":
-            cnv.drawString(mm2p(5), mm2p(eixo), f"{hg.m_set[23]}: {mnumero_pedido}")
+            cnv.drawString(mm2p(1), mm2p(eixo), f"{hg.m_set[23]}: {mnumero_pedido}")
         else:
-            cnv.drawString(mm2p(5), mm2p(eixo), f"{hg.m_set[22]}: {mnumero_pedido}")
+            cnv.drawString(mm2p(1), mm2p(eixo), f"{hg.m_set[22]}: {mnumero_pedido}")
 
-        cnv.setFont("Courier", 9)
-        cnv.drawString(mm2p(63), mm2p(eixo - 1), f"via: {mvia} T:{cons_ped[0][16]}")
+        eixo -= 3
+        cnv.setFont("Courier", 8)
+        cnv.drawString(mm2p(45), mm2p(eixo), f"via: {mvia} T:{cons_ped[0][16]}")
 
         if mvia == "2":
             eixo -= linhas
-            cnv.line(mm2p(5), mm2p(eixo + 1), mm2p(100), mm2p(eixo))
-            cnv.setFont("Courier", 9)
+            cnv.line(mm2p(1), mm2p(eixo + 1), mm2p(100), mm2p(eixo))
+            cnv.setFont("Courier", 8)
             mhora = datetime.now().strftime("%H:%M:%S")
             cnv.drawString(
-                mm2p(5),
+                mm2p(1),
                 mm2p(eixo),
                 f"Emissao 2a.via: {mdatasis} Hora: {mhora} "
                 f"Op.: {hg.geral_cod_usuario}",
@@ -152,29 +156,30 @@ def ped_boleto(mnumero_pedido, ali, mvia):
 
             if cons_ped[0][7] == "*" and not ver_serie() == "141599":
                 eixo -= linhas
-                cnv.drawString(mm2p(5), mm2p(eixo), "Situacao: PAGO")
+                cnv.drawString(mm2p(1), mm2p(eixo), "Situacao: PAGO")
             elif cons_ped[0][7] == "C":
                 eixo -= linhas
                 cnv.drawString(
-                    mm2p(5),
+                    mm2p(1),
                     mm2p(eixo),
                     f"Situacao: CANCELADO - MOTIVO: {cons_ped[0][8]}",
                 )
             elif cons_ped[0][7] == " " or cons_ped[0][7] == "":
                 eixo -= linhas
-                cnv.drawString(mm2p(5), mm2p(eixo), "Situacao: ABERTO")
-                cnv.setFont("Courier", 9)
+                cnv.drawString(mm2p(1), mm2p(eixo), "Situacao: ABERTO")
+                cnv.setFont("Courier", 8)
 
-        eixo -= linhas
-        cnv.line(mm2p(5), mm2p(eixo), mm2p(100), mm2p(eixo))
+        eixo -= 2
+        cnv.line(mm2p(1), mm2p(eixo), mm2p(80), mm2p(eixo))
 
         # cnv.drawString(mm2p(170), mm2p(276), f"Pagina: {mpag}")
 
         if not ver_serie() == "141237" and not ver_serie() == "141473":
+            cnv.setFont("Courier", 10)
             eixo -= linhas
-            cnv.drawString(mm2p(5), mm2p(eixo), "*** SEM VALOR FISCAL ***")
+            cnv.drawString(mm2p(1), mm2p(eixo), "*** SEM VALOR FISCAL ***")
 
-        cnv.setFont("Courier", 9)
+        cnv.setFont("Courier", 8)
 
         if hg.m_set[80] == "S":
             eixo -= linhas
@@ -193,11 +198,10 @@ def ped_boleto(mnumero_pedido, ali, mvia):
 
         # @ PROW(),00 SAY PADL(mvia+'  T:'+ALLTRIM(imppedido[1,3])+IF(mquantd > 1,' C-'+STRZERO(i,2),''),132)
 
-        cnv.setFont("Courier", 11)
+        cnv.setFont("Courier", 8)
         eixo -= linhas
         mcod_cli = str(cons_cli[0])
-        cnv.drawString(mm2p(5), mm2p(eixo), f"{mcod_cli} {cons_cli[1]}")
-        cnv.setFont("Courier", 9)
+        cnv.drawString(mm2p(1), mm2p(eixo), f"{mcod_cli} {cons_cli[1]}")
         # if hg.m_set[38] == "S":
         #     if len(cons_cli[2]) > 0:
         #         cnv.drawString(
@@ -208,65 +212,66 @@ def ped_boleto(mnumero_pedido, ali, mvia):
 
         if hg.m_set[39] == "S":
             eixo -= linhas
-            cnv.drawString(mm2p(5), mm2p(eixo), f"Fantasia: {cons_cli[5]}")
+            cnv.drawString(mm2p(1), mm2p(eixo), f"Fantasia: {cons_cli[5]}")
             # cnv.drawString(mm2p(120), mm2p(eixo), f"   - Fone: {cons_cli[14]}")
 
         eixo -= linhas
         cnv.drawString(
-            mm2p(5),
+            mm2p(1),
             mm2p(eixo),
             f"End.: {cons_cli[7].rstrip()}, {cons_cli[15].rstrip()} - {cons_cli[16].rstrip()} ",
         )
         eixo -= linhas
-        cnv.drawString(mm2p(5), mm2p(eixo), f"Bairro: {cons_cli[8].rstrip()}")
+        cnv.drawString(mm2p(1), mm2p(eixo), f"Bairro: {cons_cli[8].rstrip()}")
         eixo -= linhas
         cnv.drawString(
-            mm2p(5),
+            mm2p(1),
             mm2p(eixo),
             f"Cidade: {cons_cli[9].rstrip()} - {cons_cli[10].rstrip()} "
             f"- Fone: {cons_cli[11].rstrip()}",
         )
-        cnv.setFont("Courier", 8)
 
         if len(cons_cli[13]) > 0:
             eixo -= linhas
-            cnv.drawString(mm2p(5), mm2p(eixo), f"Rota: {cons_cli[13]}")
+            cnv.drawString(mm2p(1), mm2p(eixo), f"Rota: {cons_cli[13]}")
 
         if len(cons_cli[17]) > 0:
             eixo -= linhas
-            cnv.drawString(mm2p(5), mm2p(eixo), f"      {cons_cli[17]}")
+            cnv.drawString(mm2p(1), mm2p(eixo), f"      {cons_cli[17]}")
 
         eixo -= linhas
-        cnv.line(mm2p(5), mm2p(eixo), mm2p(100), mm2p(eixo))
-        cnv.setFont("Courier", 9)
+        cnv.line(mm2p(1), mm2p(eixo), mm2p(80), mm2p(eixo))
+        cnv.setFont("Courier", 7)
         eixo -= linhas
         cnv.drawString(
-            mm2p(5),
+            mm2p(1),
             mm2p(eixo),
             f"Emissao: {mdataemi} - {cons_ped[0][10]} Ope: {cons_ped[0][11]} "
             f"Cod.: {cons_ped[0][12]}",
         )
+
+        cnv.setFont("Courier", 7)
         eixo -= linhas
-        cnv.line(mm2p(5), mm2p(eixo), mm2p(100), mm2p(eixo))
+        cnv.line(mm2p(1), mm2p(eixo), mm2p(80), mm2p(eixo))
         # cnv.rect(13, 710, 557, 0)  # linha
         eixo -= linhas
         cnv.drawString(
-            mm2p(5),
+            mm2p(1),
             mm2p(eixo),
             "Codigo           Descricao                    UN",
         )
         eixo -= linhas + 1
         cnv.drawString(
-            mm2p(5),
+            mm2p(1),
             mm2p(eixo),
             "            Quantd.     Vlr. Venda      Vlr.Total",
         )
         eixo -= linhas
-        cnv.line(mm2p(5), mm2p(eixo), mm2p(100), mm2p(eixo))
+        cnv.line(mm2p(1), mm2p(eixo), mm2p(80), mm2p(eixo))
 
         # cnv.rect(13, 695, 557, 0)  # linha
         # cnv.setFont("Courier", 10)
-        eixo -= 5
+        eixo -= 3
         i = 0
         total_valor = 0
         mtot_volume = 0
@@ -292,13 +297,13 @@ def ped_boleto(mnumero_pedido, ali, mvia):
             )
             total_valor += cons_ped[i][4] * cons_ped[i][5]
             cnv.drawString(
-                mm2p(5),
+                mm2p(1),
                 mm2p(eixo),
                 f"{cons_ped[i][0]} {cons_ped[i][1]} {cons_ped[i][3]}",
             )
             eixo -= linhas
             cnv.drawString(
-                mm2p(22),
+                mm2p(15),
                 mm2p(eixo),
                 f"{mqtd_p} X {mvalor} = {mvalor_total}",
             )
@@ -332,28 +337,28 @@ def ped_boleto(mnumero_pedido, ali, mvia):
 
             eixo -= 4
 
-        cnv.setFont("Courier", 9)
         eixo -= linhas + 3
         cnv.drawString(
-            mm2p(5),
+            mm2p(1),
             mm2p(eixo),
             f"OBS.: {cons_ped[i][17].rstrip()} {cons_ped[i][18].rstrip()}",
         )
 
         eixo -= linhas
         cnv.drawString(
-            mm2p(5),
+            mm2p(1),
             mm2p(eixo),
             f"     {cons_ped[i][19].rstrip()} {cons_ped[i][20].rstrip()}",
         )
         # cnv.rect(13, 470, 557, 0)  # linha
         eixo -= linhas
-        cnv.line(mm2p(5), mm2p(eixo), mm2p(100), mm2p(eixo))
+        cnv.line(mm2p(1), mm2p(eixo), mm2p(80), mm2p(eixo))
+        cnv.setFont("Courier", 9)
 
         # if hg.m_set[1][109] == 'S':
         #    eixo -= linhas
         #    cnv.drawString(
-        #        mm2p(5),
+        #        mm2p(1),
         #        mm2p(eixo),
         #        f"Doc.Vencidos R$: {mlim_venc} Doc.A vencer R$: {mlim_avenc} Sld.Devedor R$: {mtot_limite}")
         if hg.m_set[108] == "S":
@@ -369,37 +374,37 @@ def ped_boleto(mnumero_pedido, ali, mvia):
 
         eixo -= linhas
         cnv.drawString(
-            mm2p(5),
+            mm2p(1),
             mm2p(eixo),
             f"Qtd.Itens: {len(cons_ped)} Volumes: {mtot_volume}",
         )
         eixo -= linhas
         cnv.drawString(
-            mm2p(5),
+            mm2p(1),
             mm2p(eixo),
             f"Sub-total R$: {mt_pedido}",
         )
         eixo -= linhas
         cnv.drawString(
-            mm2p(5),
+            mm2p(1),
             mm2p(eixo),
-            f"Desconto: {mtot_desc}",
+            f"Desconto    : {mtot_desc}",
         )
         cnv.setFont("Helvetica", 11)
         eixo -= linhas + 2
-        cnv.drawString(mm2p(5), mm2p(eixo), f"Total Nota R$: {mtotal_pedido}")
+        cnv.drawString(mm2p(1), mm2p(eixo), f"Total Nota R$: {mtotal_pedido}")
         eixo -= linhas
-        cnv.line(mm2p(5), mm2p(eixo), mm2p(100), mm2p(eixo))
+        cnv.line(mm2p(1), mm2p(eixo), mm2p(80), mm2p(eixo))
 
-        cnv.setFont("Courier", 9)
+        cnv.setFont("Courier", 8)
 
         if cons_ped[0][25] is not None:
             eixo -= linhas
             cnv.drawString(
-                mm2p(5), mm2p(eixo), f"PREVISAO DE ENTREGA: {cons_ped[0][25]}"
+                mm2p(1), mm2p(eixo), f"PREVISAO DE ENTREGA: {cons_ped[0][25]}"
             )  # - {ver_dia(imppedido[1,101])}",)
             eixo -= linhas
-            cnv.line(mm2p(5), mm2p(eixo), mm2p(100), mm2p(eixo))
+            cnv.line(mm2p(1), mm2p(eixo), mm2p(80), mm2p(eixo))
 
             # if len(mtipo_pag) > 0
         if float(cons_ped[0][26][1:3]) == 0:
@@ -408,7 +413,7 @@ def ped_boleto(mnumero_pedido, ali, mvia):
             if cons_ped[0][27][0:2] == "CH":
                 # eixo -= linhas
                 cnv.drawString(
-                    mm2p(5),
+                    mm2p(1),
                     mm2p(eixo),
                     f"Pagamento AVISTA - Modo de Pagamento: CHEQUE",
                 )
@@ -416,14 +421,14 @@ def ped_boleto(mnumero_pedido, ali, mvia):
             elif cons_ped[0][27][0:2] == "DN":
                 # eixo -= linhas
                 cnv.drawString(
-                    mm2p(5),
+                    mm2p(1),
                     mm2p(eixo),
                     f"Pagamento AVISTA - Modo de Pagamento: DINHEIRO",
                 )
             elif cons_ped[0][27][0:2] == "PX":
                 # eixo -= linhas
                 cnv.drawString(
-                    mm2p(5),
+                    mm2p(1),
                     mm2p(eixo),
                     f"Pagamento AVISTA - Modo de Pagamento: PIX",
                 )
@@ -444,28 +449,28 @@ def ped_boleto(mnumero_pedido, ali, mvia):
                 if cons_ped[0][27][0:2] == "CH":
                     eixo -= linhas
                     cnv.drawString(
-                        mm2p(5),
+                        mm2p(1),
                         mm2p(eixo),
                         f"CHEQUES",
                     )
                 elif cons_ped[0][27][0:2] == "DU":
                     eixo -= linhas
                     cnv.drawString(
-                        mm2p(5),
+                        mm2p(1),
                         mm2p(eixo),
                         f"DUPLICATAS",
                     )
                 else:
                     eixo -= linhas
                     cnv.drawString(
-                        mm2p(5),
+                        mm2p(1),
                         mm2p(eixo),
                         f"CARTAO",
                     )
 
-                mtexto1 = f"APRAZO: {cons_ped[0][26][0:1]} + {cons_ped[0][26][1:3]} p/ {cons_ped[0][27][2:5]}"
-                mtexto2 =''
-                mtexto3 =''
+                mtexto1 = f"APRAZO: {cons_ped[0][26][0:1]} + {cons_ped[0][26][1:3]} = {cons_ped[0][27][2:5]}"
+                mtexto2 = ""
+                mtexto3 = ""
                 # print(cons_ped[0][27][5:8])
                 if float(cons_ped[0][27][5:8]) > 0:
                     mtexto1 += f" + {cons_ped[0][27][5:8]}"
@@ -497,16 +502,16 @@ def ped_boleto(mnumero_pedido, ali, mvia):
                     mtexto3 += f" + {cons_ped[0][27][44:47]}"
 
                 eixo -= linhas
-                cnv.drawString(mm2p(5), mm2p(eixo), f"{mtexto1}")
+                cnv.drawString(mm2p(1), mm2p(eixo), f"{mtexto1}")
                 eixo -= linhas
-                cnv.drawString(mm2p(39), mm2p(eixo), f"{mtexto2}")
+                cnv.drawString(mm2p(34), mm2p(eixo), f"{mtexto2}")
                 eixo -= linhas
-                cnv.drawString(mm2p(10), mm2p(eixo), f"{mtexto3}")
+                cnv.drawString(mm2p(34), mm2p(eixo), f"{mtexto3}")
 
                 if cons_ped[0][28] > 0:
                     eixo -= linhas
                     cnv.drawString(
-                        mm2p(5),
+                        mm2p(1),
                         mm2p(eixo),
                         f"Valor da Entrada R$: {cons_ped[0][27]}",
                     )
@@ -517,7 +522,7 @@ def ped_boleto(mnumero_pedido, ali, mvia):
                     mdata_emissao = mdata_emissao.strftime("%d/%m/%Y")
                     eixo -= linhas
                     cnv.drawString(
-                        mm2p(5),
+                        mm2p(1),
                         mm2p(eixo),
                         f"Venc. : {mdata_emissao} - R$: {mtot_prazo}",
                     )
@@ -546,7 +551,7 @@ def ped_boleto(mnumero_pedido, ali, mvia):
 
                         eixo -= linhas
                         cnv.drawString(
-                            mm2p(5),
+                            mm2p(1),
                             mm2p(eixo),
                             f"Venc.{mc_dup+1}:{mdata_venc} - " f"R$: {mtotal}",
                         )
@@ -559,7 +564,7 @@ def ped_boleto(mnumero_pedido, ali, mvia):
             #     if mcust_real-mvlr_ent-mtot_prazo > 0:
             #         eixo -= linhas
             #         cnv.drawString(
-            #             mm2p(5),
+            #             mm2p(1),
             #             mm2p(eixo),
             #             f"'Venc.1: '{mdata+m_dia[1]} - R$: {(mcust_real+mtot_ipi)-mvlr_ent-mtot_prazo)}"
             #
@@ -568,7 +573,7 @@ def ped_boleto(mnumero_pedido, ali, mvia):
             #         cons_finan = hg.conexao_cursor.fetchall()
             #         hg.conexao_bd.commit()
             #         eixo -= linhas
-            #         cnv.drawString(mm2p(5), mm2p(eixo), "Pag. APRAZO",)
+            #         cnv.drawString(mm2p(1), mm2p(eixo), "Pag. APRAZO",)
             #         if len(cons_finan) == 0:
             #             mtexto = f"Modo: FINANCIAMENTO - {mcod_fin} -     - Condicao: "
             #         else:
@@ -582,7 +587,7 @@ def ped_boleto(mnumero_pedido, ali, mvia):
             #         mtexto += f" - Prestacao R$: {mvalor_pres}"
             #         eixo -= linhas
             #         cnv.drawString(
-            #             mm2p(5),
+            #             mm2p(1),
             #             mm2p(eixo),
             #             mtexto,
             #         )
@@ -610,42 +615,44 @@ def ped_boleto(mnumero_pedido, ali, mvia):
             #                 DEVPOS(PROW()+1,00);DEVOUT(cons_caixa[i,13]+'-'+cons_caixa[i,14])
 
         eixo -= linhas
-        cnv.line(mm2p(5), mm2p(eixo), mm2p(100), mm2p(eixo))
+        cnv.line(mm2p(1), mm2p(eixo), mm2p(80), mm2p(eixo))
+        cnv.setFont("Courier", 6)
 
         if len(hg.m_set[24].rstrip()) > 0:
             eixo -= 3
-            cnv.drawString(mm2p(5), mm2p(eixo), f"{hg.m_set[24].rstrip()}")
+            cnv.drawString(mm2p(1), mm2p(eixo), f"{hg.m_set[24].rstrip()}")
 
         if len(hg.m_set[25].rstrip()) > 0:
             eixo -= linhas
             cnv.drawString(
-                mm2p(5),
+                mm2p(1),
                 mm2p(eixo),
                 f"{hg.m_set[25].rstrip()}",
             )
         if len(hg.m_set[26].rstrip()) > 0:
             eixo -= linhas
             cnv.drawString(
-                mm2p(5),
+                mm2p(1),
                 mm2p(eixo),
                 f"{hg.m_set[26].rstrip()}",
             )
         if len(hg.m_set[27].rstrip()) > 0:
             eixo -= linhas
             cnv.drawString(
-                mm2p(5),
+                mm2p(1),
                 mm2p(eixo),
                 f"{hg.m_set[27].rstrip()}",
             )
 
         eixo -= linhas
-        cnv.line(mm2p(5), mm2p(eixo), mm2p(100), mm2p(eixo))
+        cnv.line(mm2p(1), mm2p(eixo), mm2p(80), mm2p(eixo))
 
         # cnv.rect(13, 430, 557, 0)  # linha
         if hg.m_set[21] == "S":
+            cnv.setFont("Helvetica", 6)
             eixo -= 3
             cnv.drawString(
-                mm2p(40),
+                mm2p(45),
                 mm2p(eixo),
                 f"HTI Sistemas - f.:(81) {hg.FONE_HTI}",
             )

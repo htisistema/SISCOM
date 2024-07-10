@@ -8,8 +8,6 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtGui import QGuiApplication
 from hti_funcoes import conexao_banco
 import hti_global as hg
-from venda_ini import pedido_inicial
-from F4_MERC import listar_produto
 from F7_CLI import listar_cliente
 from SACSENHA import listar_usuario
 from F6_FORN import listar_fornecedor
@@ -105,10 +103,14 @@ def sair():
 
 
 def incluir_venda():
+    from venda_ini import pedido_inicial
+
     pedido_inicial()
 
 
 def m_produto():
+    from F4_MERC import listar_produto
+
     listar_produto()
 
 

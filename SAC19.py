@@ -5,6 +5,7 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QButtonGroup, QMessageBox, QAbstractItemView, QTableWidgetItem
 import os
 import hti_global as hg
+from hti_funcoes import conexao_banco
 
 app = QtWidgets.QApplication([])
 app.setStyleSheet(hg.style_sheet)
@@ -27,7 +28,7 @@ nome_file, ext = os.path.splitext(nome_file_com)
 
 tela.statusBar.showMessage(f"<< {nome_file} >>")
 tabela = tela.tableWidget
-
+conexao_banco()
 hg.conexao_cursor.execute(f"SELECT cod_forn, razao FROM sacforn WHERE not forn_desp = 'F'")
 arq_forn = hg.conexao_cursor.fetchall()
 hg.conexao_bd.commit()

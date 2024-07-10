@@ -11,7 +11,7 @@ nome_file = os.path.basename(__file__)
 nome_computador = socket.gethostname()
 endereco_ip = socket.gethostbyname(nome_computador)
 
-VERSAO = "v23.04.13"
+VERSAO = "v24.07.10"
 SISTEMA = ".: SISCOM :. Sistema Automacao Comercial"
 SIT_TIP = "SISCOM"
 HTISISTEMA = ".: HTI Sistemas Ltda :."

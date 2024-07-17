@@ -341,7 +341,8 @@ def ped_formulario(mnumero_pedido, ali, mvia):
             )  # - {ver_dia(imppedido[1,101])}",)
 
             # if len(mtipo_pag) > 0
-        if float(cons_ped[0][26][1:3]) == 0:
+        if cons_ped[0][26] is not None:
+            # if float(cons_ped[0][26][1:3]) == 0:
             # print(cons_ped[0][26][1:3], cons_ped[0][27][0:2])
             eixo -= linhas
             if cons_ped[0][27][0:2] == "CH":

@@ -2,17 +2,18 @@ from PyQt6 import uic, QtWidgets, QtGui, QtCore
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import (
     QApplication,
-    QGroupBox,
 )
 from PyQt6.QtCore import QDateTime, Qt
 from datetime import datetime
 import keyboard
 from hti_funcoes import conexao_banco, gerar_numero_pedido
-from autorizacao_senha import aut_sen
+
+# from autorizacao_senha import aut_sen
 import hti_global as hg
 import os
 from ATENCAO import atencao
 from consulta_produto import listar_produto
+from venda_pdvcx import fechar_pedido
 
 # import time
 
@@ -143,15 +144,15 @@ def criar_tela():
         for resultado in resultados:
             i += 1
             pcod_merc, pmerc, pquantd, pvlr_fat = resultado
-            codigo_produto = pcod_merc
+            # codigo_produto = pcod_merc
             mquantd = "{:9,.3f}".format(pquantd)
             mvalor = "{:10,.2f}".format(pvlr_fat)
             soma = pquantd * pvlr_fat
+            mtotal_geral += soma
             descricao = pmerc
             msoma = "{:12,.2f}".format(soma)
             linha = f"  {i}   {pcod_merc}  {pmerc}"
             linha1 = f"                {mquantd} x {mvalor} = {msoma}"
-            mtotal_geral += soma
             item = QtGui.QStandardItem(linha)
             model.appendRow(item)
             item = QtGui.QStandardItem(linha1)
@@ -163,8 +164,11 @@ def criar_tela():
             imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
         tela.listView.setModel(model)
-        mtotal_g = "{:12,.2f}".format(mtotal_geral)
-        linha1 = f"SUB-TOTAL: {mtotal_g}"
+        # print(mtotal_geral)
+        # mtotal_g = f"{mtotal_geral:12,.2f}"
+
+        mtotal_g = "{:10,.2f}".format(mtotal_geral)
+        linha1 = f"SUB-TOTAL:{mtotal_g}"
         lbl_sub_total.setText(linha1)
         lbl_produto.setText(descricao)
     else:
@@ -802,13 +806,21 @@ def verificar_produto():
 #     # tela.mquantidade.editingFinished.connect(verificar_quantidade)
 
 
-def fecha_pedido():
-    from venda_pdvcx import fechar_pedido
+def fecha_venda():
+    global mnum_ped, mquantidade, mpreco
 
-    fechar_pedido(infor_pedido)
+    fechar_pedido(mnum_ped)
+    mnum_ped = ""
+    mquantidade = 1
+    mpreco = f"{0:,.3f}"
+    mquantidade_txt = f"{1:,.3f}"
+    lbl_preco.setText(mpreco)
+    lbl_total_itens.setText(mpreco)
+    lbl_quantidade.setText(mquantidade_txt)
+    lbl_produto.setText("        C A I X A   L I V R E ")
 
 
-keyboard.add_hotkey("F10", fecha_pedido)
+keyboard.add_hotkey("F10", fecha_venda)
 
 
 def buscar_produto():
@@ -853,7 +865,7 @@ def executar_consulta(m_informa_pedido):
     tela.bt_buscar_produto.clicked.connect(buscar_produto)
     # tela.bt_confirma.setEnabled(False)
     # tela.bt_confirma.clicked.connect(confirma_produto)
-    tela.bt_fecha.clicked.connect(fecha_pedido)
+    tela.bt_fecha.clicked.connect(fecha_venda)
     tela.bt_sair.clicked.connect(fecha_tela)
 
     tela.bt_fecha.setIcon(icon_salvar)

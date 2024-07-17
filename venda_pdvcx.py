@@ -6,6 +6,7 @@ from datetime import datetime
 from icecream import ic
 from hti_funcoes import conexao_banco
 from ped_formulario import ped_formulario
+
 # from ATENCAO import atencao
 # from ver_pagamento import ver_pagamento
 import hti_global as hg
@@ -612,8 +613,9 @@ def salva_pedido():
 
     # print(sql, values)
     m_recebe.clear()
-    ped_formulario(mnumero_pedido)
+    ped_formulario(mnumero_pedido, "PED_S", "")
     # print(PDFViewer(mnumero_pedido))
+    tela.close()
     return
     # fecha_tela()
 

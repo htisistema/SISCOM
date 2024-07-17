@@ -2246,7 +2246,6 @@
    'PYMODULE'),
   ('venda', 'C:\\HTI\\PYTHON\\SISCOM\\venda.py', 'PYMODULE'),
   ('venda_fecha', 'C:\\HTI\\PYTHON\\SISCOM\\venda_fecha.py', 'PYMODULE'),
-  ('venda_ini', 'C:\\HTI\\PYTHON\\SISCOM\\venda_ini.py', 'PYMODULE'),
   ('xml',
    'C:\\Users\\Helio\\AppData\\Local\\Programs\\Python\\Python39\\lib\\xml\\__init__.py',
    'PYMODULE'),

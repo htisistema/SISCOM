@@ -1,15 +1,20 @@
 ECHO OFF
 DEL SISCOMPY.rar
-rar A -p6821 SISCOMPY *.py *.ini *.txt C:\HTI\PYTHON\SISCOM\imagem\*.* C:\HTI\PYTHON\SISCOM\telas\*.*
+CD\HTI\PYTHON\SISCOM
+rar A -p6821 SISCOMPY *.py *.ini .txt C:\HTI\PYTHON\SISCOM\imagem\*.* C:\HTI\PYTHON\SISCOM\telas\*.*
+
+DEL SISCOMPYexe.rar
+rar A SISCOMPYexe *.ini C:\HTI\PYTHON\SISCOM\imagem\*.* C:\HTI\PYTHON\SISCOM\telas\*.* C:\HTI\PYTHON\SISCOM\dist\SISCOMpy.exe
 
 ECHO Backup 
 
 COPY SISCOMPY.rar E:
-
 COPY SISCOMPY.rar C:\BACKUP_HTI
-
 COPY SISCOMPY.rar %3
 
+COPY SISCOMPYexe.rar E:
+COPY SISCOMPYexe.rar C:\BACKUP_HTI
+COPY SISCOMPYexe.rar %3
 
 
 

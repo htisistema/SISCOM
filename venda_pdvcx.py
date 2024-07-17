@@ -1302,7 +1302,7 @@ def fechar_pedido(mnum_pedido):
 
 
 if __name__ == "__main__":
-    mnum_ped = "411561"
+    mnum_ped = ""
     fechar_pedido(mnum_ped)
     app.exec()
     hg.conexao_bd.close()

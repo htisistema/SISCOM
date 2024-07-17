@@ -1,11 +1,7 @@
 # MENU PRINCIPAL
-
 import os
-from PyQt6 import uic
-from PyQt6 import QtWidgets
-from PyQt6.QtGui import QIcon
-from PyQt6.QtGui import QPixmap
-from PyQt6.QtGui import QGuiApplication
+from PyQt6 import uic, QtWidgets
+from PyQt6.QtGui import QIcon, QPixmap, QGuiApplication
 from hti_funcoes import conexao_banco
 import hti_global as hg
 from F7_CLI import listar_cliente
@@ -102,10 +98,22 @@ def sair():
     # tela.quit()
 
 
-def incluir_venda():
-    from venda_ini import pedido_inicial
+m_informacao_pedido = []
 
-    pedido_inicial()
+
+def incluir_venda():
+    from venda import executar_consulta
+    m_informacao_pedido.append("")
+    m_informacao_pedido.append("")
+    m_informacao_pedido.append("")
+    m_informacao_pedido.append("00001 - CONSUMIDOR")
+    m_informacao_pedido.append("")
+    m_informacao_pedido.append("")
+    m_informacao_pedido.append("")
+    m_informacao_pedido.append(0)
+    m_informacao_pedido.append(0)
+    m_informacao_pedido.append(0)
+    executar_consulta(m_informacao_pedido)
 
 
 def m_produto():

@@ -1,4 +1,4 @@
-from PyQt6 import uic, QtWidgets, QtGui
+from PyQt6 import uic, QtWidgets, QtGui, QtCore
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
 from PyQt6.QtWidgets import (
     QApplication,
@@ -83,10 +83,14 @@ tela.usuario.setPixmap(pixmap_redimensionado)
 lbl_operador.setText(f" Operador: {hg.geral_cod_usuario}")
 lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
 lbl_cliente = tela.findChild(QtWidgets.QLabel, "lb_cliente")
-tela.mquantidade.setValue(1)
 lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
 lbl_cabecalho = tela.findChild(QtWidgets.QLabel, "cabecalho")
-lbl_saldo = tela.findChild(QtWidgets.QLabel, "saldo")
+lbl_preco = tela.findChild(QtWidgets.QLabel, "preco")
+lbl_preco.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+lbl_quantidade = tela.findChild(QtWidgets.QLabel, "quantidade")
+lbl_quantidade.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+lbl_total_itens = tela.findChild(QtWidgets.QLabel, "total_itens")
+lbl_total_itens.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
 data_atual = QDateTime.currentDateTime()
 lbl_sub_total = tela.findChild(QtWidgets.QLabel, "sub_total")
 lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
@@ -117,10 +121,12 @@ key_f5 = 0
 mmontador = ""
 mmontador1 = ""
 mcomissao = 0
+mquantidade = 0, 000
+mpreco = 0, 00
 
 
 def criar_tela():
-    print("criar tela")
+    # print("criar tela")
     # time.sleep(1)
     model = QtGui.QStandardItemModel()
     # model.clear()
@@ -166,13 +172,13 @@ def criar_tela():
 
 
 def fecha_tela():
-    print("fecha")
+    # print("fecha")
     tela.close()
     return
 
 
 def on_close_event(event):
-    print("esc")
+    # print("esc")
     tela.close()
     event.accept()
 
@@ -217,15 +223,15 @@ tela.closeEvent = on_close_event
 
 
 def confirma_produto():
-    print("confirma_produto")
-    global mnum_ped, infor_pedido, mmontador, mmontador1, mcomissao
+    # print("confirma_produto")
+    global mnum_ped, infor_pedido, mmontador, mmontador1, mcomissao, mpreco, mquantidade
 
     # hg.conexao_cursor.execute(
     #     f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3][0:5]}"
     # )
     # ver_cliente = hg.conexao_cursor.fetchone()
     # hg.conexao_bd.commit()
-    tela.bt_confirma.setEnabled(False)
+    # tela.bt_confirma.setEnabled(False)
     m_codigo = tela.mcodigo.text()
     hg.conexao_cursor.execute(f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'")
     ver_produto = hg.conexao_cursor.fetchone()
@@ -235,14 +241,18 @@ def confirma_produto():
         tela.mcodigo.setFocus()
         return
 
-    msaldo = f"{ver_produto[55]:,.3f}"
-    lbl_saldo.setText(msaldo)
-    m_quantidade = tela.mquantidade.value()
-    mp_venda = float(ver_produto[45])
+    mpreco_txt = f"{ver_produto[45]:,.3f}"
+    mpreco = float(ver_produto[45])
+    mquantidade_txt = f"{mquantidade:,.3f}"
+    mtot_itens = mquantidade * mpreco
+    mtot_itens = f"{mtot_itens:,.2f}"
+    lbl_preco.setText(mpreco_txt)
+    lbl_quantidade.setText(mquantidade_txt)
+    lbl_total_itens.setText(mtot_itens)
     lbl_produto.setText(ver_produto[8])
     m_codmerc = ver_produto[7]
     m_saldo_ant = float(ver_produto[55])
-    m_saldo_pos = m_saldo_ant - m_quantidade
+    m_saldo_pos = m_saldo_ant - mquantidade
     m_data_f = data_atual.toPyDateTime().date()
     data_formatada = m_data_f.strftime("%Y/%m/%d")
     mcomissao = ver_produto[25]
@@ -288,7 +298,7 @@ def confirma_produto():
             data_formatada,
             mhora,
             m_codmerc,
-            m_quantidade,
+            mquantidade,
             m_saldo_ant,
             m_saldo_pos,
             hg.geral_cod_usuario,
@@ -407,13 +417,13 @@ def confirma_produto():
             ver_produto[16],
             ver_produto[15],
             ver_produto[73],
-            m_quantidade,
+            mquantidade,
             0,
             0,
-            mp_venda,
+            mpreco,
             0,
-            mp_venda * 1,
-            mp_venda,
+            mpreco * 1,
+            mpreco,
             float(ver_produto[46]),
             float(ver_produto[44]),
             float(ver_produto[43]),
@@ -477,145 +487,147 @@ def confirma_produto():
 
     tela.mcodigo.clear()
     tela.mcodigo.setFocus()
-    tela.mpreco_venda.setValue(float(0))
-    tela.mquantidade.setValue(float(1))
-    msaldo = f"{0:,.3f}"
-    lbl_saldo.setText(msaldo)
+    mquantidade = 1
+    mpreco = f"{0:,.3f}"
+    mquantidade_txt = f"{1:,.3f}"
+    lbl_preco.setText(mpreco)
+    lbl_total_itens.setText(mpreco)
+    lbl_quantidade.setText(mquantidade_txt)
     criar_tela()
 
 
-def verificar_preco():
-    global mcomissao, key_f5
-    print("verificar_preco")
-    # tela.mpreco_venda.editingFinished.disconnect()
-    key_f5 = 1
-    tela.bt_confirma.setEnabled(True)
-
-    hg.conexao_cursor.execute(
-        f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3][0:5]}"
-    )
-    ver_cliente = hg.conexao_cursor.fetchone()
-    hg.conexao_bd.commit()
-    if ver_cliente is None:
-        atencao(f"Cliente nao Encontrado Codigo: {infor_pedido[3][0:5]}")
-    m_codigo = tela.mcodigo.text()
-    hg.conexao_cursor.execute(f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'")
-    ver_produto = hg.conexao_cursor.fetchone()
-    hg.conexao_bd.commit()
-    if ver_produto is None:
-        return
-    # print(ver_produto)
-    print(f"codigo: {m_codigo}")
-    print(f"saldo {ver_produto[55]}")
-    msaldo = f"{ver_produto[55]:,.3f}"
-    lbl_saldo.setText(msaldo)
-    m_quantidade = tela.mquantidade.value()
-    mvlr_fat = tela.mpreco_venda.value()
-    mp_venda = float(ver_produto[45])
-    lbl_produto.setText(ver_produto[8])
-    mcomissao = ver_produto[25]
-
-    # tela.mpreco_venda.editingFinished.connect(verificar_preco)
-
-    if 0 < hg.m_set[153] < m_quantidade:
-        atencao("QUANTIDADE Solicitada maior que o MAXIMO Permitido")
-        return
-
-    hg.conexao_cursor.execute(
-        f"SELECT sum(pquantd * pvlr_fat) FROM sacped_s WHERE pnum_ped = '{mnum_ped}'"
-    )
-    msubtotal = hg.conexao_cursor.fetchone()
-    hg.conexao_bd.commit()
-    if msubtotal[0] is None:
-        msub_total = 0
-    else:
-        msub_total = float(msubtotal[0])
-
-    print(
-        f"compras: {infor_pedido[9]} subtotal: {msub_total} vlr_fat {mvlr_fat} qtd: {m_quantidade}"
-    )
-    mvalor_somado = infor_pedido[9] + msub_total + (mvlr_fat * m_quantidade)
-    if mvalor_somado >= infor_pedido[8] > 0:
-        atencao(f"Limite do Cliente foi ultrapassado em R$: " f"{mvalor_somado}")
-        return
-
-    if mp_venda > mvlr_fat:
-        mdesconto = ((mp_venda - mvlr_fat) / mp_venda) * 100
-        if hg.m_set[112] > 0 and mdesconto >= hg.m_set[113]:
-            if hg.m_set[112] > 1:
-                mcomissao = mcomissao * (hg.m_set[112] / 100)
-            else:
-                mdesc = "{:,.2f}".format(mdesconto).rjust(7)
-                mcomissao = mcomissao - (mdesc * hg.m_set[112])
-                if mcomissao < 0:
-                    mcomissao = 0
-
-        mvalor_calculado = mp_venda - ((mvlr_fat / mp_venda) * 100)
-        if (
-            mvalor_calculado > hg.m_set[32] > 0
-            and ver_produto[79] == 0
-            and ver_cliente[0] == 0
-        ):
-            if not aut_sen(
-                f"Codigo Produto.....: {ver_produto[7]} - {ver_produto[8]}\n"
-                f"Valor Solicitado...: {mvlr_fat}\n"
-                f"Preco de Venda.....: {mp_venda}\n"
-                f"Desconto Solicitado: {((mp_venda - mvlr_fat) / mp_venda)*100} %"
-                f"Desconto Autorizado: {hg.m_set[32]} %",
-                "LIB_DESC",
-                "",
-                ver_produto[8],
-                "",
-                "",
-            ):
-                # mquantd = 1
-                return
-        elif ((mp_venda - mvlr_fat) / mp_venda) * 100 > ver_produto[79] > 0:
-            if not aut_sen(
-                f"Cod.Prod..: {ver_produto[7]} - {ver_produto[8]}\n"
-                f"Vlr.Solic.: {mvlr_fat}\n"
-                f"'Pr.Venda..: {mp_venda}\n"
-                f"Desc.Soli.:' {((mp_venda - mvlr_fat)/mp_venda)*100} %\n"
-                f"Desc.Aut..: {ver_produto[79]} %",
-                "LIB_DESC",
-                "",
-                ver_produto[7],
-                "",
-                "",
-            ):
-                return
-        elif hg.m_set[37] == "C" and mvlr_fat < ver_produto[44]:
-            if not aut_sen(
-                f"Cod.Prod..: {ver_produto[7]}\n"
-                f"Vlr.Solic.: {mvlr_fat}\n"
-                f"Pr.Custo..: {ver_produto[44]}",
-                "LIB_DESC",
-                "",
-                ver_produto[7],
-                "",
-                "",
-            ):
-                return
-        elif hg.m_set[37] == "V" and mvlr_fat < mp_venda:
-            if not aut_sen(
-                f"Cod.Prod..: {ver_produto[7]}\n"
-                f"Vlr.Solic.: {mvlr_fat}\n"
-                f"Pr.Venda..: {mp_venda}",
-                "LIB_DESC",
-                "",
-                ver_produto[7],
-                "",
-                "",
-            ):
-                return
-    # if hg.m_set[36] == "S" and not hg.m_set[151] == "S":
-    #     informa_montador()
-
-    if hg.m_indiv[25] == "S":
-        tela.mpreco_venda.setValue(float(ver_produto[45]))
-        confirma_produto()
-
-    # keyboard.add_hotkey("F5", confirma_produto)
+# def verificar_preco():
+#     global mcomissao, key_f5
+#     # print("verificar_preco")
+#     # tela.mpreco_venda.editingFinished.disconnect()
+#     key_f5 = 1
+#     tela.bt_confirma.setEnabled(True)
+#
+#     hg.conexao_cursor.execute(
+#         f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3][0:5]}"
+#     )
+#     ver_cliente = hg.conexao_cursor.fetchone()
+#     hg.conexao_bd.commit()
+#     if ver_cliente is None:
+#         atencao(f"Cliente nao Encontrado Codigo: {infor_pedido[3][0:5]}")
+#     m_codigo = tela.mcodigo.text()
+#     hg.conexao_cursor.execute(f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'")
+#     ver_produto = hg.conexao_cursor.fetchone()
+#     hg.conexao_bd.commit()
+#     if ver_produto is None:
+#         return
+#     # print(ver_produto)
+#     # print(f"codigo: {m_codigo}")
+#     # print(f"saldo {ver_produto[55]}")
+#     # msaldo = f"{ver_produto[55]:,.3f}"
+#     # lbl_saldo.setText(msaldo)
+#     # m_quantidade = tela.mquantidade.value()
+#     # mvlr_fat = tela.mpreco_venda.value()
+#     # mp_venda = float(ver_produto[45])
+#     lbl_produto.setText(ver_produto[8])
+#     mcomissao = ver_produto[25]
+#
+#     # tela.mpreco_venda.editingFinished.connect(verificar_preco)
+#
+#     # if 0 < hg.m_set[153] < m_quantidade:
+#     #     atencao("QUANTIDADE Solicitada maior que o MAXIMO Permitido")
+#     #     return
+#
+#     hg.conexao_cursor.execute(
+#         f"SELECT sum(pquantd * pvlr_fat) FROM sacped_s WHERE pnum_ped = '{mnum_ped}'"
+#     )
+#     msubtotal = hg.conexao_cursor.fetchone()
+#     hg.conexao_bd.commit()
+#     if msubtotal[0] is None:
+#         msub_total = 0
+#     else:
+#         msub_total = float(msubtotal[0])
+#
+#     # print(
+#     #     f"compras: {infor_pedido[9]} subtotal: {msub_total} vlr_fat {mvlr_fat} qtd: {m_quantidade}"
+#     # )
+#     mvalor_somado = infor_pedido[9] + msub_total + (mvlr_fat * m_quantidade)
+#     if mvalor_somado >= infor_pedido[8] > 0:
+#         atencao(f"Limite do Cliente foi ultrapassado em R$: " f"{mvalor_somado}")
+#         return
+#
+#     if mp_venda > mvlr_fat:
+#         mdesconto = ((mp_venda - mvlr_fat) / mp_venda) * 100
+#         if hg.m_set[112] > 0 and mdesconto >= hg.m_set[113]:
+#             if hg.m_set[112] > 1:
+#                 mcomissao = mcomissao * (hg.m_set[112] / 100)
+#             else:
+#                 mdesc = "{:,.2f}".format(mdesconto).rjust(7)
+#                 mcomissao = mcomissao - (mdesc * hg.m_set[112])
+#                 if mcomissao < 0:
+#                     mcomissao = 0
+#
+#         mvalor_calculado = mp_venda - ((mvlr_fat / mp_venda) * 100)
+#         if (
+#             mvalor_calculado > hg.m_set[32] > 0
+#             and ver_produto[79] == 0
+#             and ver_cliente[0] == 0
+#         ):
+#             if not aut_sen(
+#                 f"Codigo Produto.....: {ver_produto[7]} - {ver_produto[8]}\n"
+#                 f"Valor Solicitado...: {mvlr_fat}\n"
+#                 f"Preco de Venda.....: {mp_venda}\n"
+#                 f"Desconto Solicitado: {((mp_venda - mvlr_fat) / mp_venda)*100} %"
+#                 f"Desconto Autorizado: {hg.m_set[32]} %",
+#                 "LIB_DESC",
+#                 "",
+#                 ver_produto[8],
+#                 "",
+#                 "",
+#             ):
+#                 # mquantd = 1
+#                 return
+#         elif ((mp_venda - mvlr_fat) / mp_venda) * 100 > ver_produto[79] > 0:
+#             if not aut_sen(
+#                 f"Cod.Prod..: {ver_produto[7]} - {ver_produto[8]}\n"
+#                 f"Vlr.Solic.: {mvlr_fat}\n"
+#                 f"'Pr.Venda..: {mp_venda}\n"
+#                 f"Desc.Soli.:' {((mp_venda - mvlr_fat)/mp_venda)*100} %\n"
+#                 f"Desc.Aut..: {ver_produto[79]} %",
+#                 "LIB_DESC",
+#                 "",
+#                 ver_produto[7],
+#                 "",
+#                 "",
+#             ):
+#                 return
+#         elif hg.m_set[37] == "C" and mvlr_fat < ver_produto[44]:
+#             if not aut_sen(
+#                 f"Cod.Prod..: {ver_produto[7]}\n"
+#                 f"Vlr.Solic.: {mvlr_fat}\n"
+#                 f"Pr.Custo..: {ver_produto[44]}",
+#                 "LIB_DESC",
+#                 "",
+#                 ver_produto[7],
+#                 "",
+#                 "",
+#             ):
+#                 return
+#         elif hg.m_set[37] == "V" and mvlr_fat < mp_venda:
+#             if not aut_sen(
+#                 f"Cod.Prod..: {ver_produto[7]}\n"
+#                 f"Vlr.Solic.: {mvlr_fat}\n"
+#                 f"Pr.Venda..: {mp_venda}",
+#                 "LIB_DESC",
+#                 "",
+#                 ver_produto[7],
+#                 "",
+#                 "",
+#             ):
+#                 return
+#     # if hg.m_set[36] == "S" and not hg.m_set[151] == "S":
+#     #     informa_montador()
+#
+#     if hg.m_indiv[25] == "S":
+#         tela.mpreco_venda.setValue(float(ver_produto[45]))
+#         confirma_produto()
+#
+#     # keyboard.add_hotkey("F5", confirma_produto)
 
 
 def keyPressEvent(event):
@@ -637,11 +649,11 @@ tela.keyPressEvent = keyPressEvent
 
 
 def verificar_produto():
-    print("verificar_produto")
-    global mnum_ped, infor_pedido
-    m_codigo = tela.mcodigo.text().zfill(5)
+    # print("verificar_produto")
+    global mnum_ped, infor_pedido, mquantidade
+    m_codigo = tela.mcodigo.text()
     tela.mcodigo.returnPressed.disconnect()
-    print(f"{hg.c_produto}\\{m_codigo}.jpg")
+    # print(f"{hg.c_produto}\\{m_codigo}.jpg")
     if os.path.exists(f"{hg.c_produto}\\{m_codigo}.jpg"):
         imagem1 = QPixmap(f"{hg.c_produto}\\{m_codigo}.jpg")
     elif os.path.exists(f"{hg.c_produto}\\{m_codigo}.png"):
@@ -663,25 +675,26 @@ def verificar_produto():
     #     return
     if len(m_codigo.strip()) == 0:
         return
+
     elif m_codigo[0] == "X" or m_codigo[0] == "x":
+        # print(m_codigo[1:20])
         if len(m_codigo[1:20]) > 0:
-            tela.mquantidade.setValue(float(m_codigo[1:20]))
+            mquantidade = float(m_codigo[1:20])
             tela.mcodigo.setText("")
-        else:
-            tela.mcodigo.setText("")
-            tela.mcodigo.setFocus()
-            tela.mpreco_venda.setValue(float(0))
-            tela.mquantidade.setValue(float(1))
-            msaldo = f"{0:,.3f}"
-            lbl_saldo.setText(msaldo)
+            mquantidade_txt = f"{mquantidade:,.3f}"
+            lbl_quantidade.setText(mquantidade_txt)
+
         return
     else:
+        m_codigo = tela.mcodigo.text().zfill(5)
         # print(infor_pedido[3][0:5])
         # hg.conexao_cursor.execute(
         #     f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3][0:5]}"
         # )
         # ver_cliente = hg.conexao_cursor.fetchone()
         # hg.conexao_bd.commit()
+        # if m_codigo[0:1] == "x":
+        #     pass
         if len(m_codigo) <= 5:
             m_codigo = m_codigo.zfill(5)
             hg.conexao_cursor.execute(
@@ -703,86 +716,94 @@ def verificar_produto():
             return
         else:
             # print(ver_produto[55])
-            msaldo = f"{ver_produto[55]:,.3f}"
-            lbl_saldo.setText(msaldo)
+            mpreco_txt = f"{ver_produto[45]:,.3f}"
+            lbl_preco.setText(mpreco_txt)
             lbl_produto.setText(ver_produto[8])
-            tela.mpreco_venda.setValue(float(ver_produto[45]))
+            # tela.mpreco_venda.setValue(float(ver_produto[45]))
             tela.mcodigo.setText(ver_produto[7])
+            mpreco_venda = float(ver_produto[45])
+            mqtd = float(mquantidade)
+            mtot_itens = mpreco_venda * mqtd
+            mtot_itens = f"{mtot_itens:,.2f}"
+            # print(mtot_itens)
+            lbl_total_itens.setText(mtot_itens)
+
             if mnum_ped == "":
                 mnum_ped = gerar_numero_pedido()
-            if hg.m_indiv[25] == "S":
-                verificar_preco()
-            else:
-                tela.mquantidade.setFocus()
-                tela.mquantidade.selectAll()
-                return
+            # if hg.m_indiv[25] == "S":
+            #     verificar_preco()
+            # else:
+            #     # tela.mquantidade.setFocus()
+            #     # tela.mquantidade.selectAll()
+            #     return
 
-        # if hg.m_indiv[25] == "S":
-        #     verificar_preco()
+    confirma_produto()
+    # if hg.m_indiv[25] == "S":
+    #     verificar_preco()
 
 
-def verificar_quantidade():
-    print("verificar_quantidade")
-    tela.mquantidade.editingFinished.disconnect()
-    m_codigo = tela.mcodigo.text()
-    hg.conexao_cursor.execute(f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'")
-    ver_produto = hg.conexao_cursor.fetchone()
-    hg.conexao_bd.commit()
-    if ver_produto is None:
-        return
-
-    m_quantidade = tela.mquantidade.value()
-    if ver_produto[102] == "S" and m_quantidade > ver_produto[55]:
-        atencao("MERCADORIA BLOQUEADA para nao vender com SALDO A MENOR")
-        return
-
-    if (
-        ver_produto[27] > 0
-        and ver_produto[27] >= (ver_produto[55] - m_quantidade)
-        and not ver_produto[8] == "DIVERSOS"
-        and (hg.m_set[106] == "P" or hg.m_set[106] == "2")
-        and not hg.m_indiv[25] == "T"
-    ):
-        atencao(
-            f"'SALDO esta menor que o ESTOQUE MINIMO: {ver_produto[27]} estipulado !!!"
-        )
-
-    if (
-        m_quantidade > ver_produto[55]
-        and not ver_produto[8] == "DIVERSOS"
-        and (hg.m_set[106] == "P" or hg.m_set[106] == "2")
-        and not ver_produto[8][0:1] == "@"
-    ):
-        if not aut_sen(
-            f"Quantidade Solicitada: {m_quantidade}\n Maior que saldo......: {ver_produto[55]}",
-            "LIB_SALDO",
-            "",
-            m_codigo,
-            "",
-            "",
-        ):
-            return
-
-        mlibera = "S"
-
-    if 0 < hg.m_set[152] < m_quantidade:
-        if not aut_sen(
-            f"Quantidade Solicitada: {m_quantidade} maior que Permitido pela ADM: {hg.m_set[152]} "
-            f"... Senha de autorizacao:",
-            "LIB_SALDOADM",
-            "",
-            m_codigo,
-            "",
-            "",
-        ):
-            return
-    tela.mpreco_venda.setFocus()
-    tela.mpreco_venda.selectAll()
-    tela.mquantidade.editingFinished.connect(verificar_quantidade)
+# def verificar_quantidade():
+#     # print("verificar_quantidade")
+#     global mquantidade
+#     m_codigo = tela.mcodigo.text()
+#     hg.conexao_cursor.execute(f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'")
+#     ver_produto = hg.conexao_cursor.fetchone()
+#     hg.conexao_bd.commit()
+#     if ver_produto is None:
+#         return
+#
+#     # m_quantidade = tela.mquantidade.value()
+#     if ver_produto[102] == "S" and mquantidade > ver_produto[55]:
+#         atencao("MERCADORIA BLOQUEADA para nao vender com SALDO A MENOR")
+#         return
+#
+#     if (
+#         ver_produto[27] > 0
+#         and ver_produto[27] >= (float(ver_produto[55]) - mquantidade)
+#         and not ver_produto[8] == "DIVERSOS"
+#         and (hg.m_set[106] == "P" or hg.m_set[106] == "2")
+#         and not hg.m_indiv[25] == "T"
+#     ):
+#         atencao(
+#             f"'SALDO esta menor que o ESTOQUE MINIMO: {ver_produto[27]} estipulado !!!"
+#         )
+#
+#     if (
+#         mquantidade > ver_produto[55]
+#         and not ver_produto[8] == "DIVERSOS"
+#         and (hg.m_set[106] == "P" or hg.m_set[106] == "2")
+#         and not ver_produto[8][0:1] == "@"
+#     ):
+#         if not aut_sen(
+#             f"Quantidade Solicitada: {mquantidade}\n Maior que saldo......: {ver_produto[55]}",
+#             "LIB_SALDO",
+#             "",
+#             m_codigo,
+#             "",
+#             "",
+#         ):
+#             return
+#
+#         mlibera = "S"
+#
+#     if 0 < hg.m_set[152] < mquantidade:
+#         if not aut_sen(
+#             f"Quantidade Solicitada: {mquantidade} maior que Permitido pela ADM: {hg.m_set[152]} "
+#             f"... Senha de autorizacao:",
+#             "LIB_SALDOADM",
+#             "",
+#             m_codigo,
+#             "",
+#             "",
+#         ):
+#             return
+#     # tela.mpreco_venda.setFocus()
+#     # tela.mpreco_venda.selectAll()
+#     # tela.mquantidade.editingFinished.connect(verificar_quantidade)
 
 
 def fecha_pedido():
-    from venda_fecha import fechar_pedido
+    from venda_pdvcx import fechar_pedido
 
     fechar_pedido(infor_pedido)
 
@@ -796,18 +817,26 @@ def buscar_produto():
 
 
 def executar_consulta(m_informa_pedido):
-    global mnum_ped, infor_pedido
+    global mnum_ped, infor_pedido, mpreco, mquantidade
+    mpreco = 0
+    mquantidade = 0
     keyboard.add_hotkey("ESC", fecha_tela)
     # instancia = ConsultaProduto()
     infor_pedido = m_informa_pedido
-    tela.mquantidade.editingFinished.connect(verificar_quantidade)
-    tela.mpreco_venda.editingFinished.connect(verificar_preco)
+    mpreco_txt = f"{mpreco:,.3f}"
+    mquantidade_txt = f"{mquantidade:,.3f}"
+    mtot_itens = f"{mquantidade * mpreco:,.2f}"
+    lbl_preco.setText(mpreco_txt)
+    lbl_quantidade.setText(mquantidade_txt)
+    lbl_total_itens.setText(mtot_itens)
+    # tela.mquantidade.editingFinished.connect(verificar_quantidade)
+    # tela.mpreco_venda.editingFinished.connect(verificar_preco)
     tela.mcodigo.returnPressed.connect(verificar_produto)
     tela.mcodigo.setFocus()
     mnum_ped = m_informa_pedido[0]
-    group_box = tela.findChild(QGroupBox, "gb_cliente")
-    # Altera o título do QGroupBox
-    group_box.setTitle(f"Codigo do Cliente: {m_informa_pedido[3]}")
+    # group_box = tela.findChild(QGroupBox, "gb_cliente")
+    # # Altera o título do QGroupBox
+    # group_box.setTitle(f"Codigo do Cliente: {m_informa_pedido[3]}")
 
     # quebra de linha em uma string
     # lbl_cliente.setText(f"{m_informa_pedido[0]}<br/>{m_informa_pedido[1]}")
@@ -817,13 +846,13 @@ def executar_consulta(m_informa_pedido):
     else:
         tipo_venda = "Aprazo"
 
-    lbl_cliente.setText(
-        f"Vendedor: {m_informa_pedido[4]} \nForma de pagamento: {m_informa_pedido[5]}\n"
-        f"Tipo de Venda: {tipo_venda}"
-    )
+    # lbl_cliente.setText(
+    #     f"Vendedor: {m_informa_pedido[4]} \nForma de pagamento: {m_informa_pedido[5]}\n"
+    #     f"Tipo de Venda: {tipo_venda}"
+    # )
     tela.bt_buscar_produto.clicked.connect(buscar_produto)
-    tela.bt_confirma.setEnabled(False)
-    tela.bt_confirma.clicked.connect(confirma_produto)
+    # tela.bt_confirma.setEnabled(False)
+    # tela.bt_confirma.clicked.connect(confirma_produto)
     tela.bt_fecha.clicked.connect(fecha_pedido)
     tela.bt_sair.clicked.connect(fecha_tela)
 
@@ -879,7 +908,8 @@ def pesquisa_produto():
 
 if __name__ == "__main__":
     conexao_banco()
-    m_informacao_pedido.append("145082")
+    # 145082
+    m_informacao_pedido.append("")
     m_informacao_pedido.append("")
     m_informacao_pedido.append("")
     m_informacao_pedido.append("00006 - ACEROLANDIA")

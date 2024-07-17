@@ -140,8 +140,11 @@ border-width: 2px;
       <height>110</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">font: 18pt &quot;Segoe UI&quot;;</string>
+    </property>
     <property name="text">
-     <string>Vendas</string>
+     <string>PDV</string>
     </property>
    </widget>
   </widget>
@@ -151,7 +154,7 @@ border-width: 2px;
      <x>0</x>
      <y>0</y>
      <width>1250</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuArquivo">

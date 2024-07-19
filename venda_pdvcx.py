@@ -1295,9 +1295,11 @@ def fechar_pedido(mnum_pedido):
     # tela.bt_fecha.setIcon(icon_salvar)
     tela.bt_sair.clicked.connect(fecha_tela)
     tela.bt_sair.setIcon(icon_sair)
+    print("fech")
+    tela.ds_dinheiro.setFocus()
+    tela.ds_dinheiro.selectAll()
 
     # tela.mcodigo.returnPressed.connect(verificar_produto)
-    # tela.mcodigo.setFocus()
     # tela.textBrowser.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
     criar_tela()
     tela.show()

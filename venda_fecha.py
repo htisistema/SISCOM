@@ -699,6 +699,7 @@ def fechar_pedido(m_informa_pedido):
     # tela.mcodigo.returnPressed.connect(verificar_produto)
     # tela.mcodigo.setFocus()
     # tela.textBrowser.itemDoubleClicked.connect(lambda item: editar_item(item.row()))
+    tela.ds_dinheiro.setFocus()
     criar_tela(info_inicial_pedido[0])
     liberar_campos()
     verifica_condicao()

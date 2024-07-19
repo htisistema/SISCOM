@@ -1,8 +1,6 @@
 from PyQt6 import uic, QtWidgets, QtGui, QtCore
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
-from PyQt6.QtWidgets import (
-    QApplication,
-)
+from PyQt6.QtWidgets import QApplication, QListView
 from PyQt6.QtCore import QDateTime, Qt
 from datetime import datetime
 import keyboard
@@ -30,6 +28,7 @@ qt_rectangle.moveCenter(center_point)
 tela.move(qt_rectangle.topLeft())
 icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
 icon_salvar = QIcon(f"{hg.c_imagem}\\confirma.png")
+icon_consulta = QIcon(f"{hg.c_imagem}\\consulta.png")
 tela.setWindowIcon(icon)
 # Centraliza a janela na tela
 # AJUSTAR A TELA EM RELACAO AO MONITOR
@@ -69,7 +68,7 @@ if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
 else:
     imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
-pixmap_redimensionado = imagem.scaled(450, 350)  # redimensiona a imagem para 100x100
+pixmap_redimensionado = imagem.scaled(280, 240)  # redimensiona a imagem para 100x100
 tela.foto_produto.setPixmap(pixmap_redimensionado)
 # print(f"{hg.c_usuario}\\{hg.geral_cod_usuario}.jpg")
 
@@ -99,6 +98,7 @@ m_informacao_pedido = []
 mnum_ped = ""
 infor_pedido = []
 key_f5 = 0
+key_f10 = 0
 # # tela do montador
 # tela_mont = uic.loadUi(f"{hg.c_ui}\\montador.ui")
 # tela_mont.setWindowTitle("Inclusao de Montadores")
@@ -119,11 +119,19 @@ key_f5 = 0
 #
 # pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
 # tela_mont.empresa.setPixmap(pixmap_redimensionado)
-mmontador = ""
-mmontador1 = ""
+# mmontador = ""
+# mmontador1 = ""
 mcomissao = 0
 mquantidade = 0, 000
 mpreco = 0, 00
+
+
+def limpar_list_view():
+    list_view = tela.findChild(QListView, "listView")
+    if list_view:
+        model = list_view.model()
+        if model:
+            model.clear()
 
 
 def criar_tela():
@@ -141,6 +149,7 @@ def criar_tela():
     mtotal_geral = i = 0
     descricao = codigo_produto = ""
     if len(resultados) > 0:
+
         for resultado in resultados:
             i += 1
             pcod_merc, pmerc, pquantd, pvlr_fat = resultado
@@ -228,7 +237,7 @@ tela.closeEvent = on_close_event
 
 def confirma_produto():
     # print("confirma_produto")
-    global mnum_ped, infor_pedido, mmontador, mmontador1, mcomissao, mpreco, mquantidade
+    global mnum_ped, infor_pedido, mcomissao, mpreco, mquantidade, key_f10
 
     # hg.conexao_cursor.execute(
     #     f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3][0:5]}"
@@ -455,8 +464,8 @@ def confirma_produto():
             0,
             ver_produto[60],
             float(ver_produto[22]),
-            mmontador,
-            mmontador1,
+            "",
+            "",
             mcomissao,
             ver_produto[26],
             float(ver_produto[74]),
@@ -498,6 +507,7 @@ def confirma_produto():
     lbl_total_itens.setText(mpreco)
     lbl_quantidade.setText(mquantidade_txt)
     criar_tela()
+    key_f10 = 1
 
 
 # def verificar_preco():
@@ -635,7 +645,7 @@ def confirma_produto():
 
 
 def keyPressEvent(event):
-    global key_f5
+    global key_f5, key_f10
     if (
         event.key() == Qt.Key.Key_Enter or event.key() == Qt.Key.Key_Return
     ) and key_f5 == 1:
@@ -647,6 +657,16 @@ def keyPressEvent(event):
     elif event.key() == Qt.Key.Key_F5 and key_f5 == 1:
         confirma_produto()
         key_f5 = 0
+
+    # if (
+    #     event.key() == Qt.Key.Key_Enter or event.key() == Qt.Key.Key_Return
+    # ) and key_f10 == 1:
+    #     salva_venda()
+    #     key_f10 = 0
+    if event.key() == Qt.Key.Key_F10 and key_f10 == 1:
+        # print('f12')
+        salva_venda()
+        key_f10 = 0
 
 
 tela.keyPressEvent = keyPressEvent
@@ -806,7 +826,7 @@ def verificar_produto():
 #     # tela.mquantidade.editingFinished.connect(verificar_quantidade)
 
 
-def fecha_venda():
+def salva_venda():
     global mnum_ped, mquantidade, mpreco
 
     fechar_pedido(mnum_ped)
@@ -814,13 +834,17 @@ def fecha_venda():
     mquantidade = 1
     mpreco = f"{0:,.3f}"
     mquantidade_txt = f"{1:,.3f}"
+    limpar_list_view()
+    criar_tela()
     lbl_preco.setText(mpreco)
     lbl_total_itens.setText(mpreco)
     lbl_quantidade.setText(mquantidade_txt)
+    linha1 = f"SUB-TOTAL:      0,00"
+    lbl_sub_total.setText(linha1)
     lbl_produto.setText("        C A I X A   L I V R E ")
 
 
-keyboard.add_hotkey("F10", fecha_venda)
+# keyboard.add_hotkey("F10", salva_venda)
 
 
 def buscar_produto():
@@ -865,11 +889,12 @@ def executar_consulta(m_informa_pedido):
     tela.bt_buscar_produto.clicked.connect(buscar_produto)
     # tela.bt_confirma.setEnabled(False)
     # tela.bt_confirma.clicked.connect(confirma_produto)
-    tela.bt_fecha.clicked.connect(fecha_venda)
+    tela.bt_fecha.clicked.connect(salva_venda)
     tela.bt_sair.clicked.connect(fecha_tela)
 
     tela.bt_fecha.setIcon(icon_salvar)
     tela.bt_sair.setIcon(icon_sair)
+    tela.bt_buscar_produto.setIcon(icon_consulta)
     tela.show()
     criar_tela()
 

@@ -255,7 +255,7 @@ border-radius: 12px;</string>
      </rect>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string>        Foto do Produto</string>
     </property>
    </widget>
   </widget>

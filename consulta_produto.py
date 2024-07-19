@@ -50,15 +50,29 @@ def pesquisa_prod():
     # print(f"pesquisa_produto {nome_buscar}")
     # or cod_merc LIKE UPPER('%{nome_buscar}%') or cod_barr LIKE UPPER('%{nome_buscar}%')
     # or ref LIKE UPPER('%{nome_buscar}%'))
-    hg.conexao_cursor.execute(
-        f"SELECT CAST(cod_merc as char(5)) as cod_merc, COALESCE(merc, ' ') as merc, "
-        f"REPLACE(CAST(saldo_mer AS DECIMAL(12, 2)), '.', ',') as saldomer, "
-        f"REPLACE(CAST(pr_venda AS DECIMAL(12, 2)), '.', ',') as prvenda, "
-        f"REPLACE(CAST({valor_aprazo_calculado} AS DECIMAL(12, 2)), '.', ','), "
-        f"COALESCE(unidade, ' '), "
-        f"COALESCE(cod_barr, ' '), COALESCE(ref, ' ') FROM sacmerc "
-        f"WHERE merc LIKE UPPER('%{nome_buscar}%') ORDER BY merc"
-    )
+    print(nome_buscar[0:1], nome_buscar[1:])
+    if nome_buscar[0:1] == '*':
+        nome_buscar = nome_buscar[1:]
+        hg.conexao_cursor.execute(
+            f"SELECT CAST(cod_merc as char(5)) as cod_merc, COALESCE(merc, ' ') as merc, "
+            f"REPLACE(CAST(saldo_mer AS DECIMAL(12, 2)), '.', ',') as saldomer, "
+            f"REPLACE(CAST(pr_venda AS DECIMAL(12, 2)), '.', ',') as prvenda, "
+            f"REPLACE(CAST({valor_aprazo_calculado} AS DECIMAL(12, 2)), '.', ','), "
+            f"COALESCE(unidade, ' '), "
+            f"COALESCE(cod_barr, ' '), COALESCE(ref, ' ') FROM sacmerc "
+            f"WHERE merc LIKE UPPER('%{nome_buscar}%') ORDER BY merc"
+        )
+    else:
+        hg.conexao_cursor.execute(
+            f"SELECT CAST(cod_merc as char(5)) as cod_merc, COALESCE(merc, ' ') as merc, "
+            f"REPLACE(CAST(saldo_mer AS DECIMAL(12, 2)), '.', ',') as saldomer, "
+            f"REPLACE(CAST(pr_venda AS DECIMAL(12, 2)), '.', ',') as prvenda, "
+            f"REPLACE(CAST({valor_aprazo_calculado} AS DECIMAL(12, 2)), '.', ','), "
+            f"COALESCE(unidade, ' '), "
+            f"COALESCE(cod_barr, ' '), COALESCE(ref, ' ') FROM sacmerc "
+            f"WHERE merc LIKE UPPER('{nome_buscar}%') ORDER BY merc"
+        )
+
     dados_lidos = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()
     tela.pesquisa.textChanged.connect(pesquisa_prod)

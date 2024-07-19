@@ -10,43 +10,43 @@ from hti_funcoes import conexao_banco, gerar_numero_pedido
 import hti_global as hg
 import os
 from ATENCAO import atencao
-from consulta_produto import listar_produto
+from consulta_produto import consulta_produto
 from venda_pdvcx import fechar_pedido
 
 # import time
 
 app = QApplication([])
 app.setStyleSheet(hg.style_sheet)
-tela = uic.loadUi(f"{hg.c_ui}\\venda_pdv.ui")
+tela_venda = uic.loadUi(f"{hg.c_ui}\\venda_pdv.ui")
 icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
-tela.setWindowIcon(icon)
-tela.setWindowTitle(f"PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}")
-# Centraliza a janela na tela
-qt_rectangle = tela.frameGeometry()
+tela_venda.setWindowIcon(icon)
+tela_venda.setWindowTitle(f"PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}")
+# Centraliza a janela na tela_venda
+qt_rectangle = tela_venda.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
-tela.move(qt_rectangle.topLeft())
+tela_venda.move(qt_rectangle.topLeft())
 icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
 icon_salvar = QIcon(f"{hg.c_imagem}\\confirma.png")
 icon_consulta = QIcon(f"{hg.c_imagem}\\consulta.png")
-tela.setWindowIcon(icon)
-# Centraliza a janela na tela
-# AJUSTAR A TELA EM RELACAO AO MONITOR
-qt_rectangle = tela.frameGeometry()
+tela_venda.setWindowIcon(icon)
+# Centraliza a janela na tela_venda
+# AJUSTAR A tela_venda EM RELACAO AO MONITOR
+qt_rectangle = tela_venda.frameGeometry()
 center_point = app.primaryScreen().availableGeometry().center()
 qt_rectangle.moveCenter(center_point)
-tela.move(qt_rectangle.topLeft())
+tela_venda.move(qt_rectangle.topLeft())
 
 if hg.mtp_tela == "G":
     primary_screen = QGuiApplication.primaryScreen()
     if primary_screen is not None:
         screen_geometry = primary_screen.geometry()
-        tela.setGeometry(screen_geometry)
+        tela_venda.setGeometry(screen_geometry)
 
 # PEGA O NOME DO ARQUIVO EM EXECUCAO
 nome_file_com = os.path.basename(__file__)
 nome_file, ext = os.path.splitext(nome_file_com)
-tela.statusbar.showMessage(f"<< {nome_file} >>")
+tela_venda.statusbar.showMessage(f"<< {nome_file} >>")
 
 if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
     imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
@@ -54,14 +54,14 @@ else:
     imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
 pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
-tela.empresa.setPixmap(pixmap_redimensionado)
+tela_venda.empresa.setPixmap(pixmap_redimensionado)
 
 logohti = QPixmap(f"{hg.c_imagem}\\LOGOhti.png")
 pixmap_redimensionado = logohti.scaled(85, 85)  # redimensiona a imagem para 100x100
-tela.logohti.setStyleSheet(
+tela_venda.logohti.setStyleSheet(
     "background-color: rgb(190, 216, 255);border-width: 0px;border-radius: 0px;"
 )
-tela.logohti.setPixmap(pixmap_redimensionado)
+tela_venda.logohti.setPixmap(pixmap_redimensionado)
 
 if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
     imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
@@ -69,48 +69,48 @@ else:
     imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
 pixmap_redimensionado = imagem.scaled(280, 240)  # redimensiona a imagem para 100x100
-tela.foto_produto.setPixmap(pixmap_redimensionado)
+tela_venda.foto_produto.setPixmap(pixmap_redimensionado)
 # print(f"{hg.c_usuario}\\{hg.geral_cod_usuario}.jpg")
 
-lbl_operador = tela.findChild(QtWidgets.QLabel, "operador")
+lbl_operador = tela_venda.findChild(QtWidgets.QLabel, "operador")
 if os.path.exists(f"{hg.c_usuario}\\{hg.geral_cod_usuario}.jpg"):
     usuario = QPixmap(f"{hg.c_usuario}\\{hg.geral_cod_usuario}.jpg")
 
 else:
     usuario = QPixmap(f"{hg.c_usuario}\\htiusu.jpg")
 pixmap_redimensionado = usuario.scaled(125, 130)  # redimensiona a imagem para 100x100
-tela.usuario.setPixmap(pixmap_redimensionado)
+tela_venda.usuario.setPixmap(pixmap_redimensionado)
 lbl_operador.setText(f" Operador: {hg.geral_cod_usuario}")
-lbl_numero_pedido = tela.findChild(QtWidgets.QLabel, "numero_pedido")
-lbl_cliente = tela.findChild(QtWidgets.QLabel, "lb_cliente")
-lbl_produto = tela.findChild(QtWidgets.QLabel, "produto")
-lbl_cabecalho = tela.findChild(QtWidgets.QLabel, "cabecalho")
-lbl_preco = tela.findChild(QtWidgets.QLabel, "preco")
+lbl_numero_pedido = tela_venda.findChild(QtWidgets.QLabel, "numero_pedido")
+lbl_cliente = tela_venda.findChild(QtWidgets.QLabel, "lb_cliente")
+lbl_produto = tela_venda.findChild(QtWidgets.QLabel, "produto")
+lbl_cabecalho = tela_venda.findChild(QtWidgets.QLabel, "cabecalho")
+lbl_preco = tela_venda.findChild(QtWidgets.QLabel, "preco")
 lbl_preco.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
-lbl_quantidade = tela.findChild(QtWidgets.QLabel, "quantidade")
+lbl_quantidade = tela_venda.findChild(QtWidgets.QLabel, "quantidade")
 lbl_quantidade.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
-lbl_total_itens = tela.findChild(QtWidgets.QLabel, "total_itens")
+lbl_total_itens = tela_venda.findChild(QtWidgets.QLabel, "total_itens")
 lbl_total_itens.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
 data_atual = QDateTime.currentDateTime()
-lbl_sub_total = tela.findChild(QtWidgets.QLabel, "sub_total")
+lbl_sub_total = tela_venda.findChild(QtWidgets.QLabel, "sub_total")
 lbl_cabecalho.setText(f"Itens  Codigo   Descricao                  ")
 m_informacao_pedido = []
 mnum_ped = ""
 infor_pedido = []
 key_f5 = 0
 key_f10 = 0
-# # tela do montador
-# tela_mont = uic.loadUi(f"{hg.c_ui}\\montador.ui")
-# tela_mont.setWindowTitle("Inclusao de Montadores")
+# # tela_venda do montador
+# tela_venda_mont = uic.loadUi(f"{hg.c_ui}\\montador.ui")
+# tela_venda_mont.setWindowTitle("Inclusao de Montadores")
 # # icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
 # # icon_sair = QIcon(f"{hg.c_imagem}\\sair.png")
 # # icon_incluir = QIcon(f"{hg.c_imagem}\\incluir.png")
-# tela_mont.setWindowIcon(icon)
-# if hg.mtp_tela == "G":
+# tela_venda_mont.setWindowIcon(icon)
+# if hg.mtp_tela_venda == "G":
 #     primary_screen = QGuiApplication.primaryScreen()
 #     if primary_screen is not None:
 #         screen_geometry = primary_screen.geometry()
-#         tela_mont.setGeometry(screen_geometry)
+#         tela_venda_mont.setGeometry(screen_geometry)
 #
 # if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
 #     imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
@@ -118,7 +118,7 @@ key_f10 = 0
 #     imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 #
 # pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100x100
-# tela_mont.empresa.setPixmap(pixmap_redimensionado)
+# tela_venda_mont.empresa.setPixmap(pixmap_redimensionado)
 # mmontador = ""
 # mmontador1 = ""
 mcomissao = 0
@@ -127,15 +127,15 @@ mpreco = 0, 00
 
 
 def limpar_list_view():
-    list_view = tela.findChild(QListView, "listView")
+    list_view = tela_venda.findChild(QListView, "listView")
     if list_view:
         model = list_view.model()
         if model:
             model.clear()
 
 
-def criar_tela():
-    # print("criar tela")
+def criar_tela_venda():
+    # print("criar tela_venda")
     # time.sleep(1)
     model = QtGui.QStandardItemModel()
     # model.clear()
@@ -172,7 +172,7 @@ def criar_tela():
         else:
             imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
-        tela.listView.setModel(model)
+        tela_venda.listView.setModel(model)
         # print(mtotal_geral)
         # mtotal_g = f"{mtotal_geral:12,.2f}"
 
@@ -184,19 +184,19 @@ def criar_tela():
         lbl_produto.setText("        C A I X A   L I V R E ")
 
 
-def fecha_tela():
+def fecha_tela_venda():
     # print("fecha")
-    tela.close()
+    tela_venda.close()
     return
 
 
 def on_close_event(event):
     # print("esc")
-    tela.close()
+    tela_venda.close()
     event.accept()
 
 
-tela.closeEvent = on_close_event
+tela_venda.closeEvent = on_close_event
 
 # class MainWindow(QMainWindow):
 #     def __init__(self):
@@ -206,33 +206,33 @@ tela.closeEvent = on_close_event
 
 # def confirma_montador():
 #     global mmontador, mmontador1
-#     index = tela_mont.cb_montador.currentIndex()
-#     mop = tela_mont.cb_montador.itemText(index)
+#     index = tela_venda_mont.cb_montador.currentIndex()
+#     mop = tela_venda_mont.cb_montador.itemText(index)
 #     mmontador = mop[0:3]
-#     index = tela_mont.cb_montador1.currentIndex()
-#     mop = tela_mont.cb_montador1.itemText(index)
+#     index = tela_venda_mont.cb_montador1.currentIndex()
+#     mop = tela_venda_mont.cb_montador1.itemText(index)
 #     mmontador1 = mop[0:3]
 #     print(mmontador, mmontador1)
-#     tela_mont.close()
+#     tela_venda_mont.close()
 #     # confirma_produto()
 #
 #
 # def informa_montador():
-#     # tela_mont.pb_confirma.clicked.connect(confirma_montador)
-#     # # print(tela.pb_confirma)
+#     # tela_venda_mont.pb_confirma.clicked.connect(confirma_montador)
+#     # # print(tela_venda.pb_confirma)
 #     # hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
 #     # arq_usuario = hg.conexao_cursor.fetchall()
 #     # hg.conexao_bd.commit()
 #     # item = "000 - "
-#     # tela_mont.cb_montador.addItem(item)
-#     # tela_mont.cb_montador1.addItem(item)
+#     # tela_venda_mont.cb_montador.addItem(item)
+#     # tela_venda_mont.cb_montador1.addItem(item)
 #     # for ret_usuario in arq_usuario:
 #     #     item = f"{ret_usuario[0]} - {ret_usuario[1]}".strip("(),")
-#     #     tela_mont.cb_montador.addItem(item)
-#     #     tela_mont.cb_montador1.addItem(item)
-#     # tela_mont.cb_montador.setCurrentIndex(0)
-#     # tela_mont.cb_montador1.setCurrentIndex(0)
-#     tela_mont.show()
+#     #     tela_venda_mont.cb_montador.addItem(item)
+#     #     tela_venda_mont.cb_montador1.addItem(item)
+#     # tela_venda_mont.cb_montador.setCurrentIndex(0)
+#     # tela_venda_mont.cb_montador1.setCurrentIndex(0)
+#     tela_venda_mont.show()
 
 
 def confirma_produto():
@@ -244,14 +244,14 @@ def confirma_produto():
     # )
     # ver_cliente = hg.conexao_cursor.fetchone()
     # hg.conexao_bd.commit()
-    # tela.bt_confirma.setEnabled(False)
-    m_codigo = tela.mcodigo.text()
+    # tela_venda.bt_confirma.setEnabled(False)
+    m_codigo = tela_venda.mcodigo.text()
     hg.conexao_cursor.execute(f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'")
     ver_produto = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
     if ver_produto is None:
         atencao("Produto nao encontrado ou estar em branco...")
-        tela.mcodigo.setFocus()
+        tela_venda.mcodigo.setFocus()
         return
 
     mpreco_txt = f"{ver_produto[45]:,.3f}"
@@ -269,13 +269,13 @@ def confirma_produto():
     m_data_f = data_atual.toPyDateTime().date()
     data_formatada = m_data_f.strftime("%Y/%m/%d")
     mcomissao = ver_produto[25]
-    tela.mcodigo.setText(ver_produto[7])
+    tela_venda.mcodigo.setText(ver_produto[7])
     mhora = datetime.now().strftime("%H:%M:%S")
-    # index = tela_mont.cb_montador.currentIndex()
-    # mop = tela_mont.cb_montador.itemText(index)
+    # index = tela_venda_mont.cb_montador.currentIndex()
+    # mop = tela_venda_mont.cb_montador.itemText(index)
     # mmontador = mop[0:3]
-    # index = tela_mont.cb_montador1.currentIndex()
-    # mop = tela_mont.cb_montador1.itemText(index)
+    # index = tela_venda_mont.cb_montador1.currentIndex()
+    # mop = tela_venda_mont.cb_montador1.itemText(index)
     # mmontador1 = mop[0:3]
 
     hg.conexao_cursor.execute(
@@ -498,24 +498,24 @@ def confirma_produto():
     )
     hg.conexao_bd.commit()
 
-    tela.mcodigo.clear()
-    tela.mcodigo.setFocus()
+    tela_venda.mcodigo.clear()
+    tela_venda.mcodigo.setFocus()
     mquantidade = 1
     mpreco = f"{0:,.3f}"
     mquantidade_txt = f"{1:,.3f}"
     lbl_preco.setText(mpreco)
     lbl_total_itens.setText(mpreco)
     lbl_quantidade.setText(mquantidade_txt)
-    criar_tela()
+    criar_tela_venda()
     key_f10 = 1
 
 
 # def verificar_preco():
 #     global mcomissao, key_f5
 #     # print("verificar_preco")
-#     # tela.mpreco_venda.editingFinished.disconnect()
+#     # tela_venda.mpreco_venda.editingFinished.disconnect()
 #     key_f5 = 1
-#     tela.bt_confirma.setEnabled(True)
+#     tela_venda.bt_confirma.setEnabled(True)
 #
 #     hg.conexao_cursor.execute(
 #         f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3][0:5]}"
@@ -524,7 +524,7 @@ def confirma_produto():
 #     hg.conexao_bd.commit()
 #     if ver_cliente is None:
 #         atencao(f"Cliente nao Encontrado Codigo: {infor_pedido[3][0:5]}")
-#     m_codigo = tela.mcodigo.text()
+#     m_codigo = tela_venda.mcodigo.text()
 #     hg.conexao_cursor.execute(f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'")
 #     ver_produto = hg.conexao_cursor.fetchone()
 #     hg.conexao_bd.commit()
@@ -535,13 +535,13 @@ def confirma_produto():
 #     # print(f"saldo {ver_produto[55]}")
 #     # msaldo = f"{ver_produto[55]:,.3f}"
 #     # lbl_saldo.setText(msaldo)
-#     # m_quantidade = tela.mquantidade.value()
-#     # mvlr_fat = tela.mpreco_venda.value()
+#     # m_quantidade = tela_venda.mquantidade.value()
+#     # mvlr_fat = tela_venda.mpreco_venda.value()
 #     # mp_venda = float(ver_produto[45])
 #     lbl_produto.setText(ver_produto[8])
 #     mcomissao = ver_produto[25]
 #
-#     # tela.mpreco_venda.editingFinished.connect(verificar_preco)
+#     # tela_venda.mpreco_venda.editingFinished.connect(verificar_preco)
 #
 #     # if 0 < hg.m_set[153] < m_quantidade:
 #     #     atencao("QUANTIDADE Solicitada maior que o MAXIMO Permitido")
@@ -638,7 +638,7 @@ def confirma_produto():
 #     #     informa_montador()
 #
 #     if hg.m_indiv[25] == "S":
-#         tela.mpreco_venda.setValue(float(ver_produto[45]))
+#         tela_venda.mpreco_venda.setValue(float(ver_produto[45]))
 #         confirma_produto()
 #
 #     # keyboard.add_hotkey("F5", confirma_produto)
@@ -653,7 +653,7 @@ def keyPressEvent(event):
         key_f5 = 0
     elif event.key() == Qt.Key.Key_Escape:
         # print("Esc pressionado")
-        fecha_tela()
+        fecha_tela_venda()
     elif event.key() == Qt.Key.Key_F5 and key_f5 == 1:
         confirma_produto()
         key_f5 = 0
@@ -669,14 +669,14 @@ def keyPressEvent(event):
         key_f10 = 0
 
 
-tela.keyPressEvent = keyPressEvent
+tela_venda.keyPressEvent = keyPressEvent
 
 
 def verificar_produto():
     # print("verificar_produto")
     global mnum_ped, infor_pedido, mquantidade
-    m_codigo = tela.mcodigo.text()
-    tela.mcodigo.returnPressed.disconnect()
+    m_codigo = tela_venda.mcodigo.text()
+    tela_venda.mcodigo.returnPressed.disconnect()
     # print(f"{hg.c_produto}\\{m_codigo}.jpg")
     if os.path.exists(f"{hg.c_produto}\\{m_codigo}.jpg"):
         imagem1 = QPixmap(f"{hg.c_produto}\\{m_codigo}.jpg")
@@ -689,8 +689,8 @@ def verificar_produto():
             imagem1 = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
 
     pixmap_redim = imagem1.scaled(500, 350)  # redimensiona a imagem para 100x100
-    tela.foto_produto.setPixmap(pixmap_redim)
-    tela.mcodigo.returnPressed.connect(verificar_produto)
+    tela_venda.foto_produto.setPixmap(pixmap_redim)
+    tela_venda.mcodigo.returnPressed.connect(verificar_produto)
 
     # print(f"codigo: {m_codigo}")
     # if len(m_codigo) == 0:
@@ -704,13 +704,13 @@ def verificar_produto():
         # print(m_codigo[1:20])
         if len(m_codigo[1:20]) > 0:
             mquantidade = float(m_codigo[1:20])
-            tela.mcodigo.setText("")
+            tela_venda.mcodigo.setText("")
             mquantidade_txt = f"{mquantidade:,.3f}"
             lbl_quantidade.setText(mquantidade_txt)
 
         return
     else:
-        m_codigo = tela.mcodigo.text().zfill(5)
+        m_codigo = tela_venda.mcodigo.text().zfill(5)
         # print(infor_pedido[3][0:5])
         # hg.conexao_cursor.execute(
         #     f"SELECT desconto FROM saccli WHERE cod_cli = {infor_pedido[3][0:5]}"
@@ -743,8 +743,8 @@ def verificar_produto():
             mpreco_txt = f"{ver_produto[45]:,.3f}"
             lbl_preco.setText(mpreco_txt)
             lbl_produto.setText(ver_produto[8])
-            # tela.mpreco_venda.setValue(float(ver_produto[45]))
-            tela.mcodigo.setText(ver_produto[7])
+            # tela_venda.mpreco_venda.setValue(float(ver_produto[45]))
+            tela_venda.mcodigo.setText(ver_produto[7])
             mpreco_venda = float(ver_produto[45])
             mqtd = float(mquantidade)
             mtot_itens = mpreco_venda * mqtd
@@ -757,8 +757,8 @@ def verificar_produto():
             # if hg.m_indiv[25] == "S":
             #     verificar_preco()
             # else:
-            #     # tela.mquantidade.setFocus()
-            #     # tela.mquantidade.selectAll()
+            #     # tela_venda.mquantidade.setFocus()
+            #     # tela_venda.mquantidade.selectAll()
             #     return
 
     confirma_produto()
@@ -769,14 +769,14 @@ def verificar_produto():
 # def verificar_quantidade():
 #     # print("verificar_quantidade")
 #     global mquantidade
-#     m_codigo = tela.mcodigo.text()
+#     m_codigo = tela_venda.mcodigo.text()
 #     hg.conexao_cursor.execute(f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'")
 #     ver_produto = hg.conexao_cursor.fetchone()
 #     hg.conexao_bd.commit()
 #     if ver_produto is None:
 #         return
 #
-#     # m_quantidade = tela.mquantidade.value()
+#     # m_quantidade = tela_venda.mquantidade.value()
 #     if ver_produto[102] == "S" and mquantidade > ver_produto[55]:
 #         atencao("MERCADORIA BLOQUEADA para nao vender com SALDO A MENOR")
 #         return
@@ -821,9 +821,9 @@ def verificar_produto():
 #             "",
 #         ):
 #             return
-#     # tela.mpreco_venda.setFocus()
-#     # tela.mpreco_venda.selectAll()
-#     # tela.mquantidade.editingFinished.connect(verificar_quantidade)
+#     # tela_venda.mpreco_venda.setFocus()
+#     # tela_venda.mpreco_venda.selectAll()
+#     # tela_venda.mquantidade.editingFinished.connect(verificar_quantidade)
 
 
 def salva_venda():
@@ -835,7 +835,7 @@ def salva_venda():
     mpreco = f"{0:,.3f}"
     mquantidade_txt = f"{1:,.3f}"
     limpar_list_view()
-    criar_tela()
+    criar_tela_venda()
     lbl_preco.setText(mpreco)
     lbl_total_itens.setText(mpreco)
     lbl_quantidade.setText(mquantidade_txt)
@@ -848,15 +848,19 @@ def salva_venda():
 
 
 def buscar_produto():
-    mcodigo_produto = listar_produto()
-    tela.mcodigo.setText(mcodigo_produto)
+    # from consulta_produto import consulta_produto
+    mcod = ' '
+    mcodigo_produto = consulta_produto(mcod)
+    if mcodigo_produto is None:
+        print(f"retorno: {mcodigo_produto}")
+        tela_venda.mcodigo.setText(mcodigo_produto)
 
 
 def executar_consulta(m_informa_pedido):
     global mnum_ped, infor_pedido, mpreco, mquantidade
     mpreco = 0
     mquantidade = 0
-    keyboard.add_hotkey("ESC", fecha_tela)
+    keyboard.add_hotkey("ESC", fecha_tela_venda)
     # instancia = ConsultaProduto()
     infor_pedido = m_informa_pedido
     mpreco_txt = f"{mpreco:,.3f}"
@@ -865,12 +869,12 @@ def executar_consulta(m_informa_pedido):
     lbl_preco.setText(mpreco_txt)
     lbl_quantidade.setText(mquantidade_txt)
     lbl_total_itens.setText(mtot_itens)
-    # tela.mquantidade.editingFinished.connect(verificar_quantidade)
-    # tela.mpreco_venda.editingFinished.connect(verificar_preco)
-    tela.mcodigo.returnPressed.connect(verificar_produto)
-    tela.mcodigo.setFocus()
+    # tela_venda.mquantidade.editingFinished.connect(verificar_quantidade)
+    # tela_venda.mpreco_venda.editingFinished.connect(verificar_preco)
+    tela_venda.mcodigo.returnPressed.connect(verificar_produto)
+    tela_venda.mcodigo.setFocus()
     mnum_ped = m_informa_pedido[0]
-    # group_box = tela.findChild(QGroupBox, "gb_cliente")
+    # group_box = tela_venda.findChild(QGroupBox, "gb_cliente")
     # # Altera o título do QGroupBox
     # group_box.setTitle(f"Codigo do Cliente: {m_informa_pedido[3]}")
 
@@ -886,60 +890,60 @@ def executar_consulta(m_informa_pedido):
     #     f"Vendedor: {m_informa_pedido[4]} \nForma de pagamento: {m_informa_pedido[5]}\n"
     #     f"Tipo de Venda: {tipo_venda}"
     # )
-    tela.bt_buscar_produto.clicked.connect(buscar_produto)
-    # tela.bt_confirma.setEnabled(False)
-    # tela.bt_confirma.clicked.connect(confirma_produto)
-    tela.bt_fecha.clicked.connect(salva_venda)
-    tela.bt_sair.clicked.connect(fecha_tela)
+    tela_venda.bt_buscar_produto.clicked.connect(buscar_produto)
+    # tela_venda.bt_confirma.setEnabled(False)
+    # tela_venda.bt_confirma.clicked.connect(confirma_produto)
+    tela_venda.bt_fecha.clicked.connect(salva_venda)
+    tela_venda.bt_sair.clicked.connect(fecha_tela_venda)
 
-    tela.bt_fecha.setIcon(icon_salvar)
-    tela.bt_sair.setIcon(icon_sair)
-    tela.bt_buscar_produto.setIcon(icon_consulta)
-    tela.show()
-    criar_tela()
+    tela_venda.bt_fecha.setIcon(icon_salvar)
+    tela_venda.bt_sair.setIcon(icon_sair)
+    tela_venda.bt_buscar_produto.setIcon(icon_consulta)
+    tela_venda.show()
+    criar_tela_venda()
 
-    # tela_mont.pb_confirma.clicked.connect(confirma_montador)
-    # # print(tela.pb_confirma)
+    # tela_venda_mont.pb_confirma.clicked.connect(confirma_montador)
+    # # print(tela_venda.pb_confirma)
     # hg.conexao_cursor.execute(f"SELECT scod_op, snome FROM insopera ORDER BY snome")
     # arq_usuario = hg.conexao_cursor.fetchall()
     # hg.conexao_bd.commit()
     # item = "000 - "
-    # tela_mont.cb_montador.addItem(item)
-    # tela_mont.cb_montador1.addItem(item)
+    # tela_venda_mont.cb_montador.addItem(item)
+    # tela_venda_mont.cb_montador1.addItem(item)
     # for ret_usuario in arq_usuario:
     #     item = f"{ret_usuario[0]} - {ret_usuario[1]}".strip("(),")
-    #     tela_mont.cb_montador.addItem(item)
-    #     tela_mont.cb_montador1.addItem(item)
-    # tela_mont.cb_montador.setCurrentIndex(0)
-    # tela_mont.cb_montador1.setCurrentIndex(0)
+    #     tela_venda_mont.cb_montador.addItem(item)
+    #     tela_venda_mont.cb_montador1.addItem(item)
+    # tela_venda_mont.cb_montador.setCurrentIndex(0)
+    # tela_venda_mont.cb_montador1.setCurrentIndex(0)
 
 
-def pesquisa_produto():
-    nome_buscar = tela.mcodigo.text()
-    if len(nome_buscar) <= 5:
-        hg.conexao_cursor.execute(
-            f"select cod_merc, merc, pr_venda FROM sacmerc "
-            f"WHERE cod_merc = '{nome_buscar}'"
-        )
-    else:
-        hg.conexao_cursor.execute(
-            f"select cod_merc, merc, pr_venda FROM sacmerc "
-            f"WHERE cod_barr = '{nome_buscar}'"
-        )
-    resutado_prod = hg.conexao_cursor.fetchone()
-    hg.conexao_bd.commit()
-    if resutado_prod is not None:
-        atencao(f"Pesquisa de PRODUTO, PRODUTO: {resutado_prod[0]}'")
-        # if not mnum_ped == "":
-        #     print(mnum_ped)
-        return
-    else:
-        atencao("PRODUTO nao encontrado...!!!")
-        return
+# def pesquisa_produto():
+#     nome_buscar = tela_venda.mcodigo.text()
+#     if len(nome_buscar) <= 5:
+#         hg.conexao_cursor.execute(
+#             f"select cod_merc, merc, pr_venda FROM sacmerc "
+#             f"WHERE cod_merc = '{nome_buscar}'"
+#         )
+#     else:
+#         hg.conexao_cursor.execute(
+#             f"select cod_merc, merc, pr_venda FROM sacmerc "
+#             f"WHERE cod_barr = '{nome_buscar}'"
+#         )
+#     resutado_prod = hg.conexao_cursor.fetchone()
+#     hg.conexao_bd.commit()
+#     if resutado_prod is not None:
+#         atencao(f"Pesquisa de PRODUTO, PRODUTO: {resutado_prod[0]}'")
+#         # if not mnum_ped == "":
+#         #     print(mnum_ped)
+#         return
+#     else:
+#         atencao("PRODUTO nao encontrado...!!!")
+#         return
 
 
 # def venda():
-#     tela.mcodigo.textChanged.connect(pesquisa_produto)
+#     tela_venda.mcodigo.textChanged.connect(pesquisa_produto)
 #     return
 
 

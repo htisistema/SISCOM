@@ -1200,7 +1200,7 @@ def condicao_pagamento():
         f"COALESCE(dia3, 0), COALESCE(dia4, 0), COALESCE(dia5, 0), COALESCE(dia6, 0), "
         f"COALESCE(dia7, 0), COALESCE(dia8, 0), COALESCE(dia9, 0), COALESCE(dia10, 0), "
         f"COALESCE(dia11, 0), COALESCE(dia12, 0), COALESCE(dia13, 0), COALESCE(dia14, 0), "
-        f"COALESCE(dia15, 0) FROM sactabpg WHERE sigla = {mtipo_pg} ORDER BY codigo"
+        f"COALESCE(dia15, 0) FROM sactabpg WHERE sigla = '{mtipo_pg}' ORDER BY codigo"
     )
     # Recupere o resultado
     arq_sactabpg = hg.conexao_cursor.fetchall()
@@ -1306,7 +1306,7 @@ def fechar_pedido(mnum_pedido):
 
 
 if __name__ == "__main__":
-    mnum_ped = ""
+    mnum_ped = "411642"
     fechar_pedido(mnum_ped)
     app.exec()
     hg.conexao_bd.close()

@@ -103,17 +103,7 @@ m_informacao_pedido = []
 
 def incluir_venda():
     from venda_pdv import venda_pdv
-    m_informacao_pedido.append("")
-    m_informacao_pedido.append("")
-    m_informacao_pedido.append("")
-    m_informacao_pedido.append("00001 - CONSUMIDOR")
-    m_informacao_pedido.append("")
-    m_informacao_pedido.append("")
-    m_informacao_pedido.append("")
-    m_informacao_pedido.append(0)
-    m_informacao_pedido.append(0)
-    m_informacao_pedido.append(0)
-    venda_pdv(m_informacao_pedido)
+    venda_pdv()
 
 
 def m_produto():

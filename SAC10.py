@@ -156,8 +156,8 @@ def habilitar_objeto():
 def listar_grupo():
     # pesquisa()
     hg.conexao_cursor.execute(f"SELECT CAST(substring(gru_sub from 1 for 3) as char(3)) as grupo, "
-                                      f"CAST(substring(gru_sub from 4 for 2) as char(3)) as subgrupo, "
-                                      f"COALESCE(merc, ' ') as merc FROM sacgrupo ORDER BY gru_sub")
+                              f"CAST(substring(gru_sub from 4 for 2) as char(3)) as subgrupo, "
+                              f"COALESCE(merc, ' ') as merc FROM sacgrupo ORDER BY gru_sub")
 
     dados_lidos = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()

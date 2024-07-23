@@ -1,24 +1,30 @@
 from PyQt6 import uic, QtWidgets, QtGui, QtCore
 from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap
-from PyQt6.QtWidgets import QApplication, QListView, QMainWindow, QTableWidgetItem, QDialog
+from PyQt6.QtWidgets import (
+    QApplication,
+    QListView,
+    QMainWindow,
+    QTableWidgetItem,
+)
 from PyQt6.QtCore import QDateTime, Qt
 from PyQt6.QtCore import QEventLoop, pyqtSlot
 from datetime import datetime
 import keyboard
 from hti_funcoes import conexao_banco, gerar_numero_pedido
+
 # from autorizacao_senha import aut_sen
 import hti_global as hg
 import os
 from ATENCAO import atencao
-# from consulta_produto import consulta_produto
 from venda_pdvcx import fechar_pedido
-
-# import time
-# global app
 
 app = QApplication([])
 app.setStyleSheet(hg.style_sheet)
 tela_venda = uic.loadUi(f"{hg.c_ui}\\venda_pdv.ui")
+# BLOQUEIA O "X" DA TELA
+tela_venda.setWindowFlags(
+    tela_venda.windowFlags() & ~Qt.WindowType.WindowCloseButtonHint
+)
 icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
 tela_venda.setWindowIcon(icon)
 tela_venda.setWindowTitle(f"PEDIDO DE VENDA         {hg.SISTEMA}  Versao: {hg.VERSAO}")
@@ -162,7 +168,7 @@ class TelaProduto(QMainWindow):
         self.close()
 
     def pesquisa_prod(self):
-        print("pesquisa_prod")
+
         nome_buscar = self.tela.pesquisa.text().strip().upper()
         resultados = (
             [dado for dado in self.dados_lidos if nome_buscar in dado[1]]
@@ -204,7 +210,7 @@ class TelaProduto(QMainWindow):
         return self.mcod_produto
 
     def closeEvent(self, event):
-        if hasattr(self, 'loop'):
+        if hasattr(self, "loop"):
             self.loop.quit()
         event.accept()
 
@@ -217,6 +223,98 @@ def buscar_produto():
     tela_produto = TelaProduto()
     resultado = tela_produto.consulta_produto()
     return resultado
+
+
+class AlterarProduto(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        print("AlterarProduto")
+        self.dados_pdv = []
+        self.init_ui()
+
+    def init_ui(self):
+        print("init_ui")
+        self.tela = uic.loadUi(f"{hg.c_ui}\\alteracao_pdv.ui", self)
+        self.setWindowTitle("ALTERACAO DE PRODUTO PDV")
+        icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
+        self.setWindowIcon(icon)
+        self.tabela1 = self.tela.tableWidget
+        if os.path.exists(f"{hg.c_imagem}\\htifirma.jpg"):
+            imagem = QPixmap(f"{hg.c_imagem}\\htifirma.jpg")
+        else:
+            imagem = QPixmap(f"{hg.c_imagem}\\htifirma1.jpg")
+
+        pixmap_redimensionado = imagem.scaled(350, 50)
+        self.tela.empresa.setPixmap(pixmap_redimensionado)
+
+        self.tela.bt_sair.clicked.connect(self.close)
+        self.tabela1.cellActivated.connect(lambda row, col: self.editar_prod(row))
+        self.tabela1.itemDoubleClicked.connect(
+            lambda item: self.editar_prod(item.row())
+        )
+        self.tela.ds_quantidade.setAlignment(Qt.AlignmentFlag.AlignRight)
+
+        self.consulta_pdv()
+
+    def carregar_pdv(self):
+        print("carregar_pdv")
+        hg.conexao_cursor.execute(
+            f"SELECT pcod_merc, pmerc, REPLACE(CAST(pquantd AS DECIMAL(12, 3)), '.', ','), "
+            f"REPLACE(CAST(pvlr_fat AS DECIMAL(12, 2)), '.', ',') FROM sacped_s "
+            f"WHERE pnum_ped = '{mnum_ped}' order by sr_recno"
+        )
+        self.dados_pdv = hg.conexao_cursor.fetchall()
+        hg.conexao_bd.commit()
+
+    def editar_prod(self, row):
+        print("editar_prod")
+        item = self.tabela1.item(row, 0)
+        qtd = self.tabela1.item(row, 2).text()
+        qtd = qtd.replace(",", ".")
+        print(f"quantidade: {qtd}")
+        lbl_produto = self.tela.findChild(QtWidgets.QLabel, "produto")
+        mcodigo = self.tabela1.item(row, 0).text()
+        mdescri = self.tabela1.item(row, 1).text()
+        lbl_produto.setText(f"{mcodigo} {mdescri}")
+
+        self.tela.ds_quantidade.setValue(float(qtd))
+        mcod_produto = item.text()
+        print(f"editar {mcod_produto}")
+        # self.close()
+
+    def listar_pdv(self, resultados):
+        self.tabela1.setRowCount(len(resultados))
+        self.tabela1.setColumnCount(4)
+        for i, linha_p in enumerate(resultados):
+            for j, valor in enumerate(linha_p):
+                valor = str(valor) if valor is not None else ""
+                item = QTableWidgetItem(valor)
+                self.tabela1.setItem(i, j, item)
+        header = self.tabela1.horizontalHeader()
+        header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        header.setStretchLastSection(False)
+
+        self.tabela1.setEditTriggers(
+            QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
+        )
+
+    def consulta_pdv(self):
+        print("consulta pdv")
+        self.carregar_pdv()
+        self.listar_pdv(self.dados_pdv)
+        self.show()
+        # Bloquear o loop de eventos principal até a janela ser fechada
+        loop = QEventLoop()
+        self.loop = loop
+        self.show()
+        loop.exec()
+        return
+
+    def closeEvent(self, event):
+        print("closeEvent")
+        if hasattr(self, "loop"):
+            self.loop.quit()
+        event.accept()
 
 
 def limpar_list_view():
@@ -294,7 +392,7 @@ tela_venda.closeEvent = on_close_event
 
 def confirma_produto():
     # print("confirma_produto")
-    global mnum_ped, mcomissao, mpreco, mquantidade, key_f10
+    global mnum_ped, mcomissao, mpreco, mquantidade, key_f10, key_f5
     m_codigo = tela_venda.mcodigo.text()
     hg.conexao_cursor.execute(f"SELECT * FROM sacmerc WHERE cod_merc = '{m_codigo}'")
     ver_produto = hg.conexao_cursor.fetchone()
@@ -552,20 +650,30 @@ def confirma_produto():
     lbl_quantidade.setText(mquantidade_txt)
     criar_tela_venda()
     key_f10 = 1
+    key_f5 = 1
 
 
 def keyPressEvent(event):
     global key_f5, key_f10
-    if (
-        event.key() == Qt.Key.Key_Enter or event.key() == Qt.Key.Key_Return
-    ) and key_f5 == 1:
-        confirma_produto()
-        key_f5 = 0
-    elif event.key() == Qt.Key.Key_Escape:
-        # print("Esc pressionado")
-        fecha_tela_venda()
-    elif event.key() == Qt.Key.Key_F5 and key_f5 == 1:
-        confirma_produto()
+    print("keyPressEvent")
+    # if (
+    #     event.key() == Qt.Key.Key_Enter or event.key() == Qt.Key.Key_Return
+    # ) and key_f5 == 1:
+    #     # confirma_produto()
+    #     AlterarProduto()
+    #     key_f5 = 0
+    # elif event.key() == Qt.Key.Key_Escape:
+    #     # print("Esc pressionado")
+    #     fecha_tela_venda()
+
+    if event.key() == Qt.Key.Key_F5 and key_f5 == 1:
+        print("f5")
+        app = QApplication.instance()
+        if app is None:
+            app = QApplication([])
+
+        AlterarProduto()
+        # confirma_produto()
         key_f5 = 0
 
     if event.key() == Qt.Key.Key_F10 and key_f10 == 1:

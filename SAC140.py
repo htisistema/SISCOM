@@ -53,9 +53,6 @@ pixmap_redimensionado = imagem.scaled(350, 50)  # redimensiona a imagem para 100
 tela.empresa.setPixmap(pixmap_redimensionado)
 
 
- 
-
-
 def sac140():
     # hg.conexao_cursor.execute("SELECT * FROM sacsetup")
     # # Recupere o resultado

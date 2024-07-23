@@ -104,6 +104,10 @@ valor = campo_data.cleanText()
 logging.info('Starting my app')
 O método info() é um dos cinco níveis de logging suportados pelo módulo logging, com níveis crescentes de gravidade (em ordem crescente): DEBUG, INFO, WARNING, ERROR, e CRITICAL.
 
+# BLOQUEIA O "X" DA TELA
+tela.setWindowFlags(tela.windowFlags() & ~Qt.WindowType.WindowCloseButtonHint)
+
+
 # so poder digitar de 1 a 9
 import re
 from PyQt5.QtGui import QRegExpValidator

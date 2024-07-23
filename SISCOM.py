@@ -2,6 +2,7 @@ import time
 import os
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QApplication,
     QMessageBox,
@@ -13,13 +14,15 @@ from menu import criar_menu
 start_time = time.time()
 
 app = QApplication([])
-print(
-    f"Tempo para carregar a interface do usuário: {time.time() - start_time} segundos"
-)
-start_time = time.time()
+# print(
+#     f"Tempo para carregar a interface do usuário: {time.time() - start_time} segundos"
+# )
+# start_time = time.time()
 # app.setStyleSheet(hg.style_sheet)
 # Carregar interface do usuário
 tela = uic.loadUi(f"{hg.c_ui}\\siscom.ui")
+# BLOQUEIA O "X" DA TELA
+tela.setWindowFlags(tela.windowFlags() & ~Qt.WindowType.WindowCloseButtonHint)
 
 # Configurações iniciais da tela
 icon = QIcon(f"{hg.c_imagem}\\htiico.ico")
@@ -53,19 +56,22 @@ tela.logohti.setPixmap(pixmap_redimensionado)
 # Configurar label de versão
 lbl_nome_cliente = tela.findChild(QtWidgets.QLabel, "versao")
 lbl_nome_cliente.setText(f"Versao: {hg.VERSAO}")
-print(
-    f"Tempo para carregar a app.setStyleSheet(hg.style_sheet): {time.time() - start_time} segundos"
-)
+# print(
+#     f"Tempo para carregar a app.setStyleSheet(hg.style_sheet): {time.time() - start_time} segundos"
+# )
 
 start_time = time.time()
 conexao_banco()
-print(f"Tempo para conectar ao banco de dados: {time.time() - start_time} segundos")
+# print(f"Tempo para conectar ao banco de dados: {time.time() - start_time} segundos")
 
 
 # def on_close_event(event):
 #     tela.close()
 #     event.accept()
 #     tela.closeEvent = on_close_event
+# def closeEvent(event):
+#     # Evento de fechamento pode ser sobrescrito para evitar o fechamento com "X"
+#     event.ignore()
 
 
 def verificar_senha():
@@ -92,11 +98,11 @@ def verificar_senha():
 
 
 def fecha_tela():
-   tela.close()
-   # tela.closeEvent = on_close_event
-   hg.conexao_cursor.close()
-   hg.conexao_bd.close()
-   app.quit()
+    tela.close()
+    # tela.closeEvent = on_close_event
+    hg.conexao_cursor.close()
+    hg.conexao_bd.close()
+    app.quit()
 
 
 def dados_login():
@@ -124,7 +130,7 @@ def dados_login():
 if __name__ == "__main__":
     start_time = time.time()
     dados_login()
-    print(f"Tempo para carregar inicio: {time.time() - start_time} segundos")
+    # print(f"Tempo para carregar inicio: {time.time() - start_time} segundos")
     app.exec()
     tela.close()
     hg.conexao_cursor.close()

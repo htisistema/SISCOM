@@ -253,6 +253,8 @@ class AlterarProduto(QMainWindow):
             lambda item: self.editar_prod(item.row())
         )
         self.tela.ds_quantidade.setAlignment(Qt.AlignmentFlag.AlignRight)
+        # self.tela.preco.setAlignment(Qt.AlignmentFlag.AlignVCenter)
+        # self.tela.preco.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.consulta_pdv()
 
@@ -260,7 +262,7 @@ class AlterarProduto(QMainWindow):
         print("carregar_pdv")
         hg.conexao_cursor.execute(
             f"SELECT pcod_merc, pmerc, REPLACE(CAST(pquantd AS DECIMAL(12, 3)), '.', ','), "
-            f"REPLACE(CAST(pvlr_fat AS DECIMAL(12, 2)), '.', ',') FROM sacped_s "
+            f"REPLACE(CAST(pvlr_fat AS DECIMAL(12, 2)), '.', ','), sr_recno FROM sacped_s "
             f"WHERE pnum_ped = '{mnum_ped}' order by sr_recno"
         )
         self.dados_pdv = hg.conexao_cursor.fetchall()
@@ -269,18 +271,89 @@ class AlterarProduto(QMainWindow):
     def editar_prod(self, row):
         print("editar_prod")
         item = self.tabela1.item(row, 0)
-        qtd = self.tabela1.item(row, 2).text()
-        qtd = qtd.replace(",", ".")
-        print(f"quantidade: {qtd}")
+        self.qtd = self.tabela1.item(row, 2).text()
+        preco = self.tabela1.item(row, 3).text()
+        self.qtd = self.qtd.replace(",", ".")
+        print(f"quantidade: {self.qtd}")
         lbl_produto = self.tela.findChild(QtWidgets.QLabel, "produto")
-        mcodigo = self.tabela1.item(row, 0).text()
+        lbl_preco = self.tela.findChild(QtWidgets.QLabel, "preco")
+        self.mcodigo = self.tabela1.item(row, 0).text()
         mdescri = self.tabela1.item(row, 1).text()
-        lbl_produto.setText(f"{mcodigo} {mdescri}")
+        lbl_produto.setText(f"{self.mcodigo} {mdescri}")
+        lbl_preco.setText(preco)
 
-        self.tela.ds_quantidade.setValue(float(qtd))
-        mcod_produto = item.text()
-        print(f"editar {mcod_produto}")
+        self.tela.ds_quantidade.setValue(float(self.qtd))
+        print(f"editar {self.mcodigo}")
         # self.close()
+
+    def atualizar_pdv(self):
+        hg.conexao_cursor.execute(
+            f"SELECT saldo_mer, PR_VENDA, CUST_MERC FROM sacmerc WHERE cod_merc = '{self.mcodigo}'"
+        )
+        ver_produto = hg.conexao_cursor.fetchone()
+        hg.conexao_bd.commit()
+        m_data_f = data_atual.toPyDateTime().date()
+        data_formatada = m_data_f.strftime("%Y/%m/%d")
+        mhora = datetime.now().strftime("%H:%M:%S")
+        mqtd_digitada = self.tela.ds_quantidade.value()
+        m_saldo_ant = ver_produto[0]
+        print(float(self.qtd), mqtd_digitada)
+        mdif_qtd = float(self.qtd) - mqtd_digitada
+        m_saldo_pos = float(m_saldo_ant) - mdif_qtd
+        if mdif_qtd < 0 :
+            status = 'S'
+        else:
+            status = 'E'
+
+        hg.conexao_cursor.execute(
+            f"UPDATE sacmerc SET saldo_mer = {m_saldo_pos}, "
+            f"data_atu = '{data_formatada}' WHERE cod_merc = {self.mcodigo}"
+        )
+        hg.conexao_bd.commit()
+
+        sql = (
+            "INSERT INTO logproduto ("
+            "data_sis, "
+            "data, "
+            "hora, "
+            "cod_prod, "
+            "quantd, "
+            "saldo_ant, "
+            "saldo_pos, "
+            "cod_oper, "
+            "prog, "
+            "terminal, "
+            "processo, "
+            "ent_sai, "
+            "PRECO_V, "
+            "PRECO_C, "
+            "SR_DELETED) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+        )
+
+        hg.conexao_cursor.execute(
+            sql,
+            (
+                data_formatada,
+                data_formatada,
+                mhora,
+                self.mcodigo,
+                mquantidade,
+                m_saldo_ant,
+                m_saldo_pos,
+                hg.geral_cod_usuario,
+                "VENDA",
+                hg.nome_computador,
+                f"ALTERACAO PD: '{mnum_ped}'",
+                status,
+                float(ver_produto[1]),
+                float(ver_produto[2]),
+                " ",
+            ),
+        )
+        hg.conexao_bd.commit()
+        print('atualizacao com sucesso')
+        return
 
     def listar_pdv(self, resultados):
         self.tabela1.setRowCount(len(resultados))
@@ -297,6 +370,8 @@ class AlterarProduto(QMainWindow):
         self.tabela1.setEditTriggers(
             QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
         )
+        self.tela.bt_salvar.clicked.connect(self.atualizar_pdv)
+        # self.tela.bt_sair.clicked.connect(sair_alteracao)
 
     def consulta_pdv(self):
         print("consulta pdv")
@@ -416,9 +491,9 @@ def confirma_produto():
     m_saldo_pos = m_saldo_ant - mquantidade
     m_data_f = data_atual.toPyDateTime().date()
     data_formatada = m_data_f.strftime("%Y/%m/%d")
+    mhora = datetime.now().strftime("%H:%M:%S")
     mcomissao = ver_produto[25]
     tela_venda.mcodigo.setText(ver_produto[7])
-    mhora = datetime.now().strftime("%H:%M:%S")
 
     hg.conexao_cursor.execute(
         f"UPDATE sacmerc SET saldo_mer = {m_saldo_pos}, "

@@ -665,8 +665,8 @@ def alteracao_produto(codigo_produto):
     hg.conexao_cursor.execute(f"SELECT * FROM sacmerc WHERE cod_merc = {codigo_produto} ")
     arq_prod = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
-    hg.conexao_cursor.execute(f"SELECT SUM(pquantd) FROM sacped_s WHERE sr_deleted = ' ' AND "
-                                      f"pcod_merc = {codigo_produto} AND (ppag IS NULL OR ppag = ' ')")
+    hg.conexao_cursor.execute(f"SELECT SUM(pquantd) FROM sacped_s WHERE sr_deleted = ' ' "
+                              f"AND pcod_merc = {codigo_produto} AND (ppag IS NULL OR ppag = ' ')")
     arq_saldo_haver = hg.conexao_cursor.fetchone()
     hg.conexao_bd.commit()
     if arq_prod is not None:
@@ -709,7 +709,7 @@ def alteracao_produto(codigo_produto):
             break
     mbusca = arq_prod[6][1:3]
     hg.conexao_cursor.execute(f"select gru_sub, merc from sacgrupo where gru_sub like UPPER('%{mbusca}%') "
-                                      f"and CHAR_LENGTH(trim(gru_sub)) = 5")
+                              f"and CHAR_LENGTH(trim(gru_sub)) = 5")
     arq_sub_grupo = hg.conexao_cursor.fetchall()
     hg.conexao_bd.commit()
     for ret_sub_grupo in arq_sub_grupo:

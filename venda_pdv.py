@@ -12,7 +12,7 @@ from datetime import datetime
 import keyboard
 from hti_funcoes import conexao_banco, gerar_numero_pedido
 
-# from autorizacao_senha import aut_sen
+from autorizacao_senha import aut_sen
 import hti_global as hg
 import os
 from ATENCAO import atencao
@@ -270,7 +270,11 @@ class AlterarProduto(QMainWindow):
 
     def editar_prod(self, row):
         print("editar_prod")
+        self.tela.ds_quantidade.setFocus()
+        self.tela.ds_quantidade.selectAll()
+
         item = self.tabela1.item(row, 0)
+        self.msr_recno = self.tabela1.item(row, 4).text()
         self.qtd = self.tabela1.item(row, 2).text()
         preco = self.tabela1.item(row, 3).text()
         self.qtd = self.qtd.replace(",", ".")
@@ -288,26 +292,50 @@ class AlterarProduto(QMainWindow):
 
     def atualizar_pdv(self):
         hg.conexao_cursor.execute(
+            f"SELECT pcod_merc, pmerc, pquantd, sr_recno FROM sacped_s "
+            f"WHERE sr_recno = {self.msr_recno}"
+        )
+        consulta_ped = hg.conexao_cursor.fetchone()
+        hg.conexao_bd.commit()
+
+        hg.conexao_cursor.execute(
             f"SELECT saldo_mer, PR_VENDA, CUST_MERC FROM sacmerc WHERE cod_merc = '{self.mcodigo}'"
         )
+        self.qtd = self.tela.ds_quantidade.value()
         ver_produto = hg.conexao_cursor.fetchone()
         hg.conexao_bd.commit()
         m_data_f = data_atual.toPyDateTime().date()
         data_formatada = m_data_f.strftime("%Y/%m/%d")
         mhora = datetime.now().strftime("%H:%M:%S")
-        mqtd_digitada = self.tela.ds_quantidade.value()
-        m_saldo_ant = ver_produto[0]
-        print(float(self.qtd), mqtd_digitada)
-        mdif_qtd = float(self.qtd) - mqtd_digitada
-        m_saldo_pos = float(m_saldo_ant) - mdif_qtd
-        if mdif_qtd < 0 :
-            status = 'S'
+        mqtd_digitada = float(consulta_ped[2])
+        msaldo_produto = float(ver_produto[0])
+        mdif_qtd = mqtd_digitada - float(self.qtd)
+        if mqtd_digitada > self.qtd:
+            # if not aut_sen("Quantidade menor que o Solicitador Anteriormente:",
+            #                "LIB_ALTSLDPED","","","","AMBIE"):
+            #     return
+            status = "E"
+            mdif_qtd = mqtd_digitada - float(self.qtd)
+            m_saldo_pos = msaldo_produto + mdif_qtd
         else:
-            status = 'E'
+
+            status = "S"
+            mdif_qtd = mqtd_digitada - float(self.qtd)
+            m_saldo_pos = msaldo_produto + mdif_qtd
+
+        # print(
+        #     f"saldo atual: {msaldo_produto} qtd solicitado: {mqtd_digitada} qtd alterado: {self.qtd} "
+        #     f"saldo pos: {m_saldo_pos} diferenca: {mdif_qtd} status {status}"
+        # )
 
         hg.conexao_cursor.execute(
             f"UPDATE sacmerc SET saldo_mer = {m_saldo_pos}, "
             f"data_atu = '{data_formatada}' WHERE cod_merc = {self.mcodigo}"
+        )
+        hg.conexao_bd.commit()
+        hg.conexao_cursor.execute(
+            f"UPDATE sacped_s SET pquantd = {self.qtd} "
+            f"WHERE sr_recno = {self.msr_recno}"
         )
         hg.conexao_bd.commit()
 
@@ -339,7 +367,7 @@ class AlterarProduto(QMainWindow):
                 mhora,
                 self.mcodigo,
                 mquantidade,
-                m_saldo_ant,
+                msaldo_produto,
                 m_saldo_pos,
                 hg.geral_cod_usuario,
                 "VENDA",
@@ -352,12 +380,16 @@ class AlterarProduto(QMainWindow):
             ),
         )
         hg.conexao_bd.commit()
-        print('atualizacao com sucesso')
-        return
+        print("atualizacao com sucesso")
+        if hasattr(self, "loop"):
+            self.loop.quit()
+        self.tela.close()
+        criar_tela_venda()
+        # return
 
     def listar_pdv(self, resultados):
         self.tabela1.setRowCount(len(resultados))
-        self.tabela1.setColumnCount(4)
+        self.tabela1.setColumnCount(5)
         for i, linha_p in enumerate(resultados):
             for j, valor in enumerate(linha_p):
                 valor = str(valor) if valor is not None else ""
